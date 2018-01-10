@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+ <!-- 引入JQuery -->
+    <script type="text/javascript" src="js/jquery-easyui-1.5.3/jquery.min.js"></script>    
+    <script type="text/javascript" src="js/jquery-easyui-1.5.3/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/jquery-easyui-1.5.3/locale/easyui-lang-zh_CN.js"></script>
+    <link rel="stylesheet" href="js/jquery-easyui-1.5.3/themes/default/easyui.css" type="text/css"/>
+    <link rel="stylesheet" href="js/jquery-easyui-1.5.3/themes/icon.css" type="text/css"/>
+    <script type="text/javascript">
+    var rightids="";
+    function doSearch(){
+    	$('#dg').datagrid('load',{
+    		
+    		rolename: $('#rolename').val()
+    	});
+    }
+    function newRole(){
+        $('#dlg').dialog('open').dialog('setTitle','新增角色信息');
+        $('#fm').form('clear');
+        url = 'role/add';
+    }
+    function editRole(){
+    	var row = $('#dg').datagrid('getSelected');
+    	if (row){
+    	    $('#dlg').dialog('open').dialog('setTitle','编辑角色信息');
+    	    $('#fm').form({        	    	
+                    onLoadSuccess:function(data){ 
+                    	//设置checkbox
+                        $.each(data.rolerights, function (n, value) {                           
+                            var rightid = value.rightid;
+                            
+                            var node = $('#tt').tree('find',rightid);                            
+                            $('#tt').tree('check',node.target);                             
+                        });
+                    } 
+                });
+    	    $('#fm').form('load',row);
+    	   
+    	    url = 'role/update?roleid='+row.roleid;
+    	}    	
+    }
+    function saveRole(){
+    	getChecked();
+        $('#fm').form('submit',{
+            url: url,
+            queryParams:{
+            	rightids:rightids
+            },
+            onSubmit: function(){           	
+            	if(rightids.trim()!="")
+                	return $(this).form('validate');
+            	else{
+            		alert("请至少分配一个权限！");
+            	return false;
+            	}
+            },
+            success: function(result){
+                var result = eval('('+result+')');
+                if (result.errorMsg){
+                    $.messager.show({
+                        title: 'Error',
+                        msg: result.errorMsg
+                    });
+                } else {
+                    $('#dlg').dialog('close');        // close the dialog
+                    $('#dg').datagrid('reload');    // reload the user data
+                }
+            }
+        });
+    }
+    </script>
+</head>
+<body>
+<table id="dg" title="角色管理" class="easyui-datagrid" style="width:100%;height:600px;margin-bottom:8px;"
+       url="role/query" data-options="rownumbers:true,singleSelect:true,idField:'roleid',fitColumns:true"
+       toolbar="#toolbar" pagination="true" pageSize="20">
+    <thead>
+    <tr>
+    	<th field="roleid" width="50">序号</th>
+        <th field="rolename" width="50">角色名</th>
+        <th field="creator" width="50">录入人</th>
+        <th field="createtime" width="50">录入日期</th>
+        <th field="rights" width="150">权限</th>
+    </tr>
+    </thead>
+</table>
+<div id="toolbar">
+	
+	角色名称:
+	<input id="rolename" style="line-height:26px;border:1px solid #ccc">
+	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="doSearch()">查询</a>	
+    <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRole()">添加角色</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRole()">分配权限</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyRole()">删除角色</a>
+</div>
+
+<div id="dlg" class="easyui-dialog" style="width:400px;height:400px;padding:20px 40px"
+        closed="true" buttons="#dlg-buttons">
+    <form id="fm" method="post">
+    	
+      
+        <div style="margin-bottom:20px">
+            <input class="easyui-textbox" name="rolename" style="width:90%" data-options="label:'角色名:',required:true">           
+        </div>   
+        <div style="margin-bottom:0px">
+        	<label class="textbox-label textbox-label-before" style="text-align:left" >权限:</label>
+        </div>      
+        <div class="easyui-panel" style="padding:5px">
+        <ul id="tt" class="easyui-tree" data-options="url:'right/list',method:'get',animate:true,checkbox:true"></ul>
+        <script>        
+        $('#tt').tree({
+        	checkbox: true,
+            cascadeCheck: false,
+            onCheck: function (node, checked) {         	
+                if (checked) {
+                    var parentNode = $("#tt").tree('getParent', node.target);
+                    if (parentNode != null) {
+                        $("#tt").tree('check', parentNode.target);
+                    }
+                } else {
+                    var childNode = $("#tt").tree('getChildren', node.target);
+                    if (childNode.length > 0) {
+                        for (var i = 0; i < childNode.length; i++) {
+                            $("#tt").tree('uncheck', childNode[i].target);
+                        }
+                    }
+                }
+            }
+        });
+        
+
+        function getChecked()
+        {             	
+        	var checkednodes = $('#tt').tree('getChecked', 'checked');       
+           	var arr = [];
+            for (var i = 0; i < checkednodes.length; i++) {
+                arr.push(checkednodes[i].id);
+            }
+            rightids= arr.join(',');                     
+        }
+        </script>
+    </div>
+        
+    </form>
+</div>
+<div id="dlg-buttons">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveRole()">保存</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">取消</a>
+</div>
+</body>
+</html>

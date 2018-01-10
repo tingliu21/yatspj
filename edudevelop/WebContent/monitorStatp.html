@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<!-- 引入 echarts.js -->
+    <script src="js/echarts.js"></script>
+        <script src="js/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+ <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 800px;height:1500px;"></div>
+    
+    <script type="text/javascript">
+   
+	// 基于准备好的dom，初始化echarts图表
+    var myChart = echarts.init(document.getElementById('main')); 
+    $.get('monitor/getAvgScoreP?xzqhdm=330000&year=2016').done(function (data){
+    	console.log(data);
+    	
+    	var monitorname=[];
+    	for(var i=0;i<54;i++){
+    		var name =i+1;
+    		monitorname.push(name);
+    	}
+    	
+		
+		var option = {
+		    
+		    tooltip: {},
+		    title: {
+				left:'center',
+       	        
+       	     	top:0,
+// 		        text: '各监测点全省平均值实现程度比较',
+		       
+		       
+		    },
+		    legend: {
+		    	top:30,
+		        data:['省均值','目标值']
+		    },
+		    xAxis: [{
+		        type: 'value',
+		        max: 4,
+		        splitLine: {
+		            show: false
+		        }
+		    }],
+		    yAxis: [{
+		        type: 'category',
+		        data:monitorname,
+		        axisLabel: {
+		            interval: 0,
+		            rotate: 30
+		        },
+		        splitLine: {
+		            show: false
+		        }
+		    }],
+		    series: [{
+		        type: 'bar',
+		        name:'省均值',
+		        z:3,
+		        label: {
+		            normal: {
+		                position: 'insideRight',
+		                show: true,
+		                formatter: '{c}'//{b}表示类别，如1-54，{c}表示柱子的取值
+		            
+		            }
+		        },
+		        data:data[0].value
+		        
+		    }, {
+		        type: 'bar',
+		        name:'目标值',
+		        barGap: '-100%', // Make series be overlap
+		        silent: true,
+		        label: {
+		            normal: {
+		                position: 'right',
+		                show: true,
+		                color:'#999'
+		            }
+		        },
+		        itemStyle: {
+		            normal: {
+		                color: '#eee'
+		            }
+		        },
+		        data: data[1].value
+		        
+		    }]
+		}
+		// 为echarts对象加载数据 
+        myChart.setOption(option); 
+    
+    });
+    </script>
+</body>
+</html>

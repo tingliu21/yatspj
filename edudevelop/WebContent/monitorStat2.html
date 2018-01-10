@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<!-- 引入 echarts.js -->
+    <script src="js/echarts.js"></script>
+        <script src="js/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+ <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 800px;height:600px;"></div>
+    
+    <script type="text/javascript">
+   
+	// 基于准备好的dom，初始化echarts图表
+    var myChart = echarts.init(document.getElementById('main')); 
+    $.get('monitor/getAvgScore1?xzqhdm=330000&year=2016').done(function (data){
+    	console.log(data);
+    	
+    	var option = {
+    		    tooltip: {
+    		        trigger: 'axis',
+    		        axisPointer: {
+    		            type: 'cross',
+    		            crossStyle: {
+    		                color: '#999'
+    		            }
+    		        }
+    		    },
+    		    toolbox: {
+    		        feature: {
+    		            dataView: {show: true, readOnly: false},
+    		            magicType: {show: true, type: ['line', 'bar']},
+    		            restore: {show: true},
+    		            saveAsImage: {show: true}
+    		        }
+    		    },
+    		    legend: {
+    		        data:['全省平均值','目标值']
+    		    },
+    		    xAxis: [
+    		        {
+    		            type: 'category',
+    		            data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月','13月'],
+    		            axisPointer: {
+    		                type: 'shadow'
+    		            }
+    		        }
+    		    ],
+    		    yAxis: [
+    		        {
+    		            type: 'value',
+    		            name: '得分',
+    		            min: 0,
+    		            max: 50,
+    		            interval: 10,
+    		            axisLabel: {
+    		                formatter: '{value}'
+    		            }
+    		        }
+    		    ],
+    		    series: [
+    		        {
+    		            name:'全省平均值',
+    		            type:'bar',
+    		            data:data[0].value
+    		        },
+    		       
+    		        {
+    		            name:'目标值',
+    		            type:'line',
+    		           
+    		            data:data[1].value
+    		        }
+    		    ]
+    		};
+
+    	 // 为echarts对象加载数据 
+        myChart.setOption(option); 
+    
+    });
+    </script>
+</body>
+</html>

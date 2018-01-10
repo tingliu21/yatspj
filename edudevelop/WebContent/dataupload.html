@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div class="wrap">
+		<input type="text" name="year" value="2016"/>
+		<button id="up">点击上传文件</button>
+		<button id="calc">现代化教育评估</button>
+		<div>
+			<p id="before"></p>
+			<p id="process"></p>
+			<div id="fileWrap">
+				<p>上传文件列表</p>
+			</div>
+		</div>
+	</div>
+
+<script>
+	var btn = document.getElementById('up'),
+		bf = document.getElementById("before"),
+		prs = document.getElementById("process");
+
+	btn.onclick = function(){
+		myUpload({
+			url: 'data/upload',
+			maxSize: 10,
+			multiple: false,
+			beforeSend: function(file){
+				bf.innerText = "开始上传...";
+			},
+			callback: function(res){
+				 //res = JSON.parse(res);
+				 console.log(res);
+				 alert(res.result);
+				/*if(res && res.code == 0){
+					// alert("上传成功！");
+					bf.innerText = "上传成功!"
+				}else{
+					alert(res.msg);
+				}
+				
+				var fileWrap  = document.getElementById('fileWrap');
+				
+				for(var i=0; i<res.data.length; i++){
+					var p = document.createElement('p');
+					var file = document.createElement('a');
+					file.href = '//front-js.cc/test/fileupload/' + res.data[i].StoredIn;
+					file.target = "_blank"
+					file.innerText = "文件名：" + res.data[i].StoredIn;
+					p.appendChild(file);
+					fileWrap.appendChild(p);
+				} */
+			},
+			uploading: function(pre){
+				prs.innerText = "当前上传进度为：" + pre + "%";
+			}
+		});
+	}
+	var calcbtn = document.getElementById('calc');
+	calcbtn.onclick = function(){
+		var fd = new FormData(),
+        xhr = new XMLHttpRequest();
+		//fd.append('year',2016);
+		xhr.open('post', 'data/calc?year='+2016);
+		xhr.send(fd);
+		
+        xhr.onreadystatechange = function(){
+            if(xhr.status == 200){
+                if(xhr.readyState == 4){
+                	alert(xhr.responseText);
+                    
+                }
+            }else{
+            	alert("教育现代化评估失败！");
+            }
+        }
+        
+	}
+	function myUpload(option){
+		var fd = new FormData(),
+        xhr = new XMLHttpRequest(),
+		        input;
+		input = document.createElement('input');
+		input.setAttribute('id', 'myUploadInput');
+		input.setAttribute('type', 'file');
+		input.setAttribute('name', 'Filedata');
+		if(option.multiple){
+			input.setAttribute('multiple', true);
+		}
+		document.body.appendChild(input);
+		input.style.display = 'none';
+		input.click();
+		var fileType = ['doc','docx','xls','xlsx','csv','jpg','png','ppt','pptx'];
+		input.onchange = function(){
+	        if(!input.value){return;}
+	        console.log(input.value)
+	        var type = input.value.split('.').pop();
+			if(fileType.indexOf(type.toLocaleLowerCase()) == -1){
+				alert("暂不支持该类型的文件，请重新选择!");
+			    return;
+			}
+			var file = input.files[0];
+			//for(var i=0, file; file=input.files[i++];){
+				if(option.maxSize &&  file.size > option.maxSize * 1024 * 1024){
+		        	alert('请上传小于'+option.maxSize+'M的文件');
+		            return;
+		        }
+			//}
+	        if(option.beforeSend instanceof Function){
+	            if(option.beforeSend(input) === false){
+	                return false;
+	            }
+	        }
+	        //for(var i=0, file; file=input.files[i++];){
+	        	console.log(fd)
+				//fd.append('file'+i, file);
+	        	fd.append('Filedata', file);
+	        	fd.append('year',2016);
+			//}
+	        xhr.open('post', option.url);
+	        xhr.onreadystatechange = function(){
+	            if(xhr.status == 200){
+	                if(xhr.readyState == 4){
+	                    if(option.callback instanceof Function){
+	                        option.callback(xhr.responseText);
+	                    }
+	                }
+	            }else{
+	            	alert("上传失败！");
+	            }
+	        }
+	        xhr.upload.onprogress = function(event){
+	            var pre = Math.floor(100 * event.loaded / event.total);
+	            if(option.uploading instanceof Function){
+	                option.uploading(pre);
+	            }
+	        }
+	        xhr.send(fd);
+	    }
+	}
+</script>
+
+</body>
+</html>

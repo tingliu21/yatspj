@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/demo/demo.css">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="http://www.jeasyui.com/easyui/datagrid-groupview.js"></script>
+    <style type="text/css">
+    th{
+    	border: 1px solid #95B8E7;
+    	margin: 0;
+   		padding: 2px 4px;
+    }
+    td{
+    	border: 1px solid #95B8E7;
+    	margin: 0;
+   		padding: 2px 4px;
+    }
+    table{
+    border: 1px solid #95B8E7;
+     border-style: solid;
+    padding: 0px ;
+    margin: 0;
+     
+    }
+    </style>
+</head>
+
+<body>
+<h2>浙江省县（市、区）教育现代化发展水平监测指标</h2>
+<p>上城区</p>
+<div class="easyui-panel" style="padding:5px;">
+        <a href="monitor/export?xzqhdm=330102&year=2016" class="easyui-linkbutton" data-options="plain:true">导出</a>
+        </div>
+        
+ <table  title="监测指标"  cellspacing="0" style="width:1000px;height:550px;"
+           >
+        <thead>
+            <tr>
+                <th width="80">一级指标</th>
+                <th width="80">二级指标</th>
+                <th width="80">三级指标</th>
+                <th colspan="3" width="300">监测点</th>
+                <th width="80" align="center">目标值</th>
+                <th width="60" align="center">权重</th>
+				<th width="60" align="center">监测值</th>
+                <th width="60  align="center">得分</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            	<td rowspan="45">优先发展（34分）</td>
+            	<td rowspan="13">经费保障（11分）</td>
+            	<td rowspan="13">财政依法拨款</td>
+            	<td colspan="3">1.公共财政教育支出增长比例高于财政经常性收入增长比例</td>
+            	<td >达到</td>
+            	<td >2</td>
+            	<td id="P_1"></td>
+				<td id="G_1"></td>
+            </tr>
+            <tr>           	
+            	<td rowspan="5">2.生均教育事业费预算拨款比上一年度增长</td>
+            	<td colspan="2">小学</td>
+            	<td >达到</td>
+            	<td >0.5</td>
+				<td id="P_2_1"></td>
+				<td id="G_2_1"></td>
+            </tr>
+            <tr>           	
+            	<td colspan="2">初中</td>
+            	<td >达到</td>
+            	<td >0.5</td>
+				<td id="P_2_2"></td>
+				<td id="G_2_2"></td>
+            </tr>
+            <tr>           	
+            	<td colspan="2">普通高中</td>
+            	<td >达到</td>
+            	<td >0.5</td>
+				<td id="P_2_3"></td>
+				<td id="G_2_3"></td>
+            </tr>
+            <tr>           	
+            	<td colspan="2">中职学校</td>
+            	<td >达到</td>
+            	<td >0.5</td>
+				<td id="P_2_4"></td>
+				<td id="G_2_4"></td>
+            </tr>
+            <tr>           	
+            	<td colspan="2">特殊学校</td>
+            	<td >达到</td>
+            	<td >0.5</td>
+				<td id="P_2_5"></td>
+				<td id="G_2_5"></td>
+            </tr>
+            <tr>           	
+            	<td rowspan="5">3.生均公用经费比上一年度增长</td>
+            	<td colspan="2">小学</td>
+            	<td >达到</td>
+            	<td >0.5</td>
+				<td id="P_3_1"></td>
+				<td id="G_3_1"></td>
+            </tr>
+            <tr>           	
+            	<td colspan="2">初中</td>
+            	<td >达到</td>
+            	<td >0.5</td>
+				<td id="P_3_2"></td>
+				<td id="G_3_2"></td>
+            </tr>
+            <tr>           	
+            	<td colspan="2">普通高中</td>
+            	<td >达到</td>
+            	<td >0.5</td>
+				<td id="P_3_3"></td>
+				<td id="G_3_3"></td>
+            </tr>
+            <tr>           	
+            	<td colspan="2">中职学校</td>
+            	<td >达到</td>
+            	<td >0.5</td>
+				<td id="P_3_4"></td>
+				<td id="G_3_4"></td>
+            </tr>
+            <tr>           	
+            	<td colspan="2">特殊学校</td>
+            	<td >达到</td>
+            	<td >0.5</td>
+				<td id="P_3_5"></td>
+				<td id="G_3_5"></td>
+            </tr>
+            <tr>
+            	<td colspan="3">4.公共财政教育支出占公共财政支出的比例比上一年度提高</td>
+            	<td >达到</td>
+            	<td >2</td>
+				<td id="P_4"></td>
+				<td id="G_4"></td>
+            </tr>
+            <tr>
+            	<td colspan="3">5.学前教育公共财政教育经费占同级公共财政教育经费比例（无高中市辖区）</td>
+            	<td >8%（12%）</td>
+            	<td >2</td>
+				<td id="P_5"></td>
+				<td id="G_5"></td>
+            </tr>
+ 			<tr>
+            	<td rowspan="22">教师保障（14分）</td>
+            	<td rowspan="12">教师队伍结构</td>
+            	<td rowspan="7">6.生师比</td>
+            	<td colspan="2">幼儿园</td>
+            	<td >15:1</td>
+            	<td >0.5</td>
+				<td id="P_6_1"></td>
+				<td id="G_6_1"></td>
+            </tr>
+            <tr>
+            	<td colspan="2">小学</td>
+            	<td >15:1</td>
+            	<td >0.5</td>
+				<td id="P_6_2"></td>
+				<td id="G_6_2"></td>
+            </tr>
+            <tr>
+            	<td colspan="2">初中</td>
+            	<td >11:1</td>
+            	<td >0.5</td>
+				<td id="P_6_3"></td>
+				<td id="G_6_3"></td>
+            </tr>
+            <tr>
+            	<td colspan="2">普通高中</td>
+            	<td >10:1</td>
+				<td >0.5</td>
+				<td id="P_6_4"></td>
+				<td id="G_6_4"></td>
+            </tr>
+            <tr>
+            	<td colspan="2">中职学校</td>
+            	<td >10:1</td>
+            	<td >0.5</td>
+				<td id="P_6_5"></td>
+				<td id="G_6_5"></td>
+            </tr>
+            <tr>
+            	<td rowspan="2" colspan="2">特殊学校</td>
+            	<td >义务段<br>3:1</td>
+            	<td >0.25</td>
+				<td id="P_6_6_1"></td>
+				<td id="G_6_6_1"></td>
+            </tr>
+             <tr>
+            	<td >非义务段<br>2.5:1</td>
+            	<td >0.25</td>
+				 <td id="P_6_6_2"></td>
+				 <td id="G_6_6_2"></td>
+            </tr>
+            <tr>
+            	<td rowspan="5">7.艺术教师、体育教师总数占专任教师的比例</td>
+            	<td colspan="2">小学艺术</td>
+            	<td >9%</td>
+            	<td >0.5</td>
+				<td id="P_7_1"></td>
+				<td id="G_7_1"></td>
+            </tr>
+            <tr>
+            	<td colspan="2">小学体育</td>
+            	<td >9%</td>
+            	<td >0.5</td>
+				<td id="P_7_2"></td>
+				<td id="G_7_2"></td>
+            </tr>
+            <tr>
+            	<td colspan="2">初中艺术</td>
+            	<td >7%</td>
+            	<td >0.5</td>
+				<td id="P_7_3"></td>
+				<td id="G_7_3"></td>
+            </tr>
+            <tr>
+            	<td colspan="2">初中体育</td>
+            	<td >9%</td>
+            	<td >0.5</td>
+				<td id="P_7_4"></td>
+				<td id="G_7_4"></td>
+            </tr>
+            <tr>
+            	<td colspan="2">高中体育</td>
+            	<td >6%</td>
+            	<td >0.5</td>
+				<td id="P_7_5"></td>
+				<td id="G_7_5"></td>
+            </tr>
+            <tr>
+            	<td rowspan="5">教师学历资格</td>
+            	<td rowspan="4">8.高于规定学历（学位）专任教师比例</td>
+            	<td colspan="2">幼儿教师专科及以上</td>
+            	<td >95%</td>
+            	<td >0.5</td>
+				<td id="P_8_1"></td>
+				<td id="G_8_1"></td>
+            </tr>
+            <tr>
+            	<td colspan="2">小学教师本科及以上</td>
+            	<td >90%</td>
+            	<td >0.5</td>
+				<td id="P_8_2"></td>
+				<td id="G_8_2"></td>
+            </tr>
+            <tr>
+            	<td colspan="2">初中教师研究生及以上</td>
+            	<td >8%</td>
+            	<td >0.5</td>
+				<td id="P_8_3"></td>
+				<td id="G_8_3"></td>
+            </tr>
+            <tr>
+            	<td colspan="2">高中教师研究生及以上</td>
+            	<td >20%</td>
+            	<td >0.5</td>
+				<td id="P_8_4"></td>
+				<td id="G_8_4"></td>
+            </tr>
+            <tr>
+            	<td colspan="3">9.中小学（含幼儿园）专任教师持有教师资格证比例</td>
+            	<td >100%</td>
+            	<td >1</td>
+				<td id="P_9"></td>
+				<td id="G_9"></td>
+			</tr>
+            <tr>
+            	<td rowspan="4">教师待遇</td>
+            	<td colspan="3">10.在编中小学（含幼儿园）教师平均收入不低于当地公务员平均收入★</td>
+            	<td >达到</td>
+            	<td >2</td>
+				<td id="P_10"></td>
+				<td id="G_10"></td>
+            </tr>
+            <tr>
+            	<td rowspan="3">11.非编中小学（含幼儿园）教师平均收入达到当地同职称在编教师收入★</td>
+            	<td colspan="2">幼儿园</td>
+            	<td >达到</td>
+            	<td >0.5</td>
+				<td id="P_11_1"></td>
+				<td id="G_11_1"></td>
+            </tr>
+             <tr>
+            	<td colspan="2">民办民工子弟学校</td>
+            	<td >达到</td>
+            	<td >0.5</td>
+				 <td id="P_11_2"></td>
+				 <td id="G_11_2"></td>
+            </tr>
+            <tr>
+            	<td colspan="2">其他公、民办学校</td>
+            	<td >达到</td>
+            	<td >0.5</td>
+				<td id="P_11_3"></td>
+				<td id="G_11_3"></td>
+            </tr>
+            <tr>
+            	<td >教师培训</td>
+            	<td colspan="3">12.教师全员培训考核成绩</td>
+            	<td >98</td>
+            	<td >2</td>
+				<td id="P_12"></td>
+				<td id="G_12"></td>
+            </tr>
+            <tr>
+            	<td rowspan="10">资源保障（9分）</td>
+            	<td rowspan="6">条件保障</td>
+            	<td colspan="3">13.义务教育标准化学校比例★</td>
+            	<td >95%</td>
+            	<td >3</td>
+				<td id="P_13"></td>
+				<td id="G_13"></td>
+            </tr>
+            <tr>
+            	<td rowspan="2">14.生均教学仪器设备值不低于3000元，且比上一年度增长</td>
+            	<td colspan="2">目标值</td>
+            	<td >3000</td>
+            	<td >0.5</td>
+				<td id="P_14_1"></td>
+				<td id="G_14_1"></td>
+            </tr>
+            <tr>
+            	<td colspan="2">增长率</td>
+            	<td >8%</td>
+            	<td >1</td>
+				<td id="P_14_2"></td>
+				<td id="G_14_2"></td>
+            </tr>
+            <tr>
+            	<td rowspan="3">15.中小学校生均图书达到目标值的学校比例</td>
+            	<td colspan="2">小学35册</td>
+            	<td >100%</td>
+            	<td >0.5</td>
+				<td id="P_15_1"></td>
+				<td id="G_15_1"></td>
+            </tr>
+             <tr>
+            	<td colspan="2">初中45册</td>
+            	<td >100%</td>
+            	<td >0.5</td>
+				 <td id="P_15_2"></td>
+				 <td id="G_15_2"></td>
+            </tr>
+            <tr>
+            	<td colspan="2">高中50册</td>
+            	<td >100%</td>
+            	<td >0.5</td>
+				<td id="P_15_3"></td>
+				<td id="G_15_3"></td>
+            </tr>
+            <tr>
+            	<td rowspan="4">信息技术保障</td>
+            	<td colspan="3">16.每百名学生拥有功能教室、创新实验室的数量★</td>
+            	<td >2</td>
+            	<td >1</td>
+				<td id="P_16"></td>
+				<td id="G_16"></td>
+            </tr>
+            <tr>
+            	<td  rowspan="2" colspan="3">17.校园网络骨干带宽达到1G以上，且教学场所实现无线校园网覆盖的学校比例</td>
+            	<td>100%</td>
+            	<td >0.5</td>
+				<td id="P_17_1"></td>
+				<td id="G_17_1"></td>
+            </tr>
+			<tr>
+				<td>40%</td>
+				<td >0.5</td>
+				<td id="P_17_2"></td>
+				<td id="G_17_2"></td>
+			</tr>
+            <tr>
+            	<td colspan="3">18.省级（区域）教育资源服务平台教师活跃度</td>
+            	<td >80%</td>
+            	<td >0.5</td>
+				<td id="P_18"></td>
+				<td id="G_18"></td>
+            </tr>
+			<tr>
+				<td rowspan="19">育人为本（16分）</td>
+				<td rowspan="8">课程设置（6分）</td>
+				<td rowspan="3">国家课程</td>
+				<td rowspan="3">19.义务教育开齐开足国家规定的体育、美育、综合实践活动课程的学校比例★</td>
+				<td colspan="2">体育课</td>
+				<td >100%</td>
+				<td >1</td>
+				<td id="P_19_1"></td>
+				<td id="G_19_1"></td>
+			</tr>
+			<tr>
+				<td colspan="2">美育课</td>
+				<td >100%</td>
+				<td >1</td>
+				<td id="P_19_2"></td>
+				<td id="G_19_2"></td>
+			</tr>
+			<tr>
+				<td colspan="2">综合素质课</td>
+				<td >100%</td>
+				<td >1</td>
+				<td id="P_19_3"></td>
+				<td id="G_19_3"></td>
+			</tr>
+		    <tr>
+				<td rowspan="5">课程改革</td>
+				<td rowspan="5">20.学前教育幼儿户外游戏、义务教育拓展性课程与高中选修课程课时数达到规定值的学校比例★</td>
+				<td >幼儿园</td>
+				<td >20%</td>
+				<td >100%</td>
+				<td >0.6</td>
+				<td id="P_20_1"></td>
+				<td id="G_20_1"></td>
+			</tr>
+			<tr>
+			　　<td >小学</td>
+			　　<td >15%</td>
+			　　<td >100%</td>
+			　　<td >0.6</td>
+				<td id="P_20_2"></td>
+				<td id="G_20_2"></td>
+			</tr>
+			<tr>
+				<td >初中</td>
+				<td >20%</td>
+				<td >100%</td>
+				<td >0.6</td>
+				<td id="P_20_3"></td>
+				<td id="G_20_3"></td>
+			</tr>
+			<tr>
+				<td >普高</td>
+				<td >35%</td>
+				<td >100%</td>
+				<td >0.6</td>
+				<td id="P_20_4"></td>
+				<td id="G_20_4"></td>
+			</tr>
+			<tr>
+				<td >中职</td>
+				<td >50%</td>
+				<td >100%</td>
+				<td >0.6</td>
+				<td id="P_20_5"></td>
+				<td id="G_20_5"></td>
+			</tr>
+			<tr>
+				<td rowspan="4">育人环境（3分）</td>
+				<td rowspan="2">校园文化</td>
+				<td colspan="3">21.建有规范化心理健康辅导站的中小学校比例★</td>
+				<td >100%</td>
+				<td >1</td>
+				<td id="P_21"></td>
+				<td id="G_21"></td>
+			</tr>
+			<tr>
+				<td colspan="3">22.具有“一校一品”校园文化品牌的学校比例★</td>
+				<td >100%</td>
+				<td >1</td>
+				<td id="P_22"></td>
+				<td id="G_22"></td>
+			</tr>
+			<tr>
+				<td rowspan="2">学校管理</td>
+				<td rowspan="2">23.拥有章程及学校事业发展规划的学校比例★</td>
+				<td colspan="2">章程</td>
+				<td >100%</td>
+				<td >0.5</td>
+				<td id="P_23_1"></td>
+				<td id="G_23_1"></td>
+			</tr>
+			<tr>
+				<td colspan="2">发展规划</td>
+				<td >100%</td>
+				<td >0.5</td>
+				<td id="P_23_2"></td>
+				<td id="G_23_2"></td>
+			</tr>
+			<tr>
+				<td >教育合力（1分）</td>
+				<td >社会支持</td>
+				<td  colspan="3">24.社会公益性博物馆、体育、文化、科技设施供学校及学生免费使用的比例★</td>
+				<td >100%</td>
+				<td >1</td>
+				<td id="P_24"></td>
+				<td id="G_24"></td>
+			</tr>
+            <tr>
+				<td rowspan="6">国际交流与合作（6分）</td>
+			    <td rowspan="4">教师国际交流</td>
+			    <td rowspan="3">25.专任教师拥有境外学习研修经历的比例</td>
+			    <td colspan="2">小学</td>
+			    <td >3%</td>
+			    <td >1</td>
+				<td id="P_25_1"></td>
+				<td id="G_25_1"></td>
+			</tr>
+			<tr>
+				<td colspan="2">初中</td>
+				<td >3%</td>
+				<td >1</td>
+				<td id="P_25_2"></td>
+				<td id="G_25_2"></td>
+			</tr>
+			<tr>
+				<td colspan="2">高中</td>
+				<td >10%</td>
+				<td >1</td>
+				<td id="P_25_3"></td>
+				<td id="G_25_3"></td>
+			</tr>
+			<tr>
+				<td colspan="3">26.拥有全职外籍教师的学校比例</td>
+				<td>10%</td>
+				<td>1</td>
+				<td id="P_26"></td>
+				<td id="G_26"></td>
+			</tr>
+			<tr>
+				<td rowspan="2">友好学校</td>
+				<td rowspan="2" colspan="3">27.与境外学校建立友好关系的学校比例
+					其中，建设千校结好特色品牌项目的学校比例</td>
+				<td>30%</td>
+				<td>1</td>
+				<td id="P_27_1"></td>
+				<td id="G_27_1"></td>
+			</tr>
+			<tr>
+				<td>10%</td>
+				<td>1</td>
+				<td id="P_27_2"></td>
+				<td id="G_27_2"></td>
+			</tr>
+
+			<tr>
+		        <td rowspan="25">促进公平（26分）</td>
+				<td rowspan="11">义务教育优质均衡（15分）</td>
+				<td rowspan="2">资源均衡</td>
+				<td colspan="3">28.所有小学办学条件校际优质均衡差异系数</td>
+				<td>0.35</td>
+				<td>3.5</td>
+				<td id="P_28"></td>
+				<td id="G_28"></td>
+			</tr>
+			<tr>
+				<td colspan="3">29.所有初中办学条件校际优质均衡差异系数</td>
+				<td>0.3</td>
+				<td>3.5</td>
+				<td id="P_29"></td>
+				<td id="G_29"></td>
+			</tr>
+			<tr>
+				<td rowspan="3">招生均衡</td>
+				<td colspan="3">30.优质高中招生名额分配到初中学校比例★</td>
+				<td>60%</td>
+				<td>1</td>
+				<td id="P_30"></td>
+				<td id="G_30"></td>
+			</tr>
+			<tr>
+				<td colspan="3">31.高中计划招生数占初中毕业生总人数的比例★</td>
+				<td>98%</td>
+				<td>1</td>
+				<td id="P_31"></td>
+				<td id="G_31"></td>
+			</tr>
+			<tr>
+				<td colspan="3">32.中职学校新生中超过普高录取线的人数比例★</td>
+				<td>20%</td>
+				<td>1</td>
+				<td id="P_32"></td>
+				<td id="G_32"></td>
+			</tr>
+			<tr>
+				<td rowspan="2">师资均衡</td>
+				<td rowspan="2" colspan="3">33.义务教育公办学校参加交流的校长、教师占符合交流条件的校长、教师的比例其中，骨干教师占总交流教师的比例</td>
+				<td>10%</td>
+				<td>0.5</td>
+				<td id="P_33_1"></td>
+				<td id="G_33_1"></td>
+			</tr>
+			<tr>
+				<td>20%</td>
+				<td>0.5</td>
+				<td id="P_33_2"></td>
+				<td id="G_33_2"></td>
+			</tr>
+			<tr>
+				<td rowspan="4">班级均衡</td>
+				<td rowspan="4">34.班额达标的班级比例</td>
+				<td colspan="2">幼儿园小班25人，中班30人，大班35人及以下</td>
+				<td>80%</td>
+				<td>1</td>
+				<td id="P_34_1"></td>
+				<td id="G_34_1"></td>
+			</tr>
+			<tr>
+				<td colspan="2">小学40人及以下</td>
+				<td>90%</td>
+				<td>1</td>
+				<td id="P_34_2"></td>
+				<td id="G_34_2"></td>
+			</tr>
+			<tr>
+				<td colspan="2">初中45人及以下</td>
+				<td>90%</td>
+				<td>1</td>
+				<td id="P_34_3"></td>
+				<td id="G_34_3"></td>
+			</tr>
+			<tr>
+				<td colspan="2">高中40人及以下</td>
+				<td>80%</td>
+				<td>1</td>
+				<td id="P_34_4"></td>
+				<td id="G_34_4"></td>
+			</tr>
+			<tr>
+				<td rowspan="8">教育协调发展（6分）</td>
+				<td rowspan="2">学前教育</td>
+				<td colspan="3">35.普惠性幼儿园覆盖面</td>
+				<td>85%</td>
+				<td>1</td>
+				<td id="P_35"></td>
+				<td id="G_35"></td>
+			</tr>
+			<tr>
+				<td colspan="3">36.省二级及以上幼儿园覆盖面</td>
+				<td>60%</td>
+				<td>1</td>
+				<td id="P_36"></td>
+				<td id="G_36"></td>
+			</tr>
+			<tr>
+				<td rowspan="3">职业教育</td>
+				<td colspan="3">37.中职学校与普通高中在校生大体相当</td>
+				<td>45:55</td>
+				<td>1</td>
+				<td id="P_37"></td>
+				<td id="G_37"></td>
+			</tr>
+			<tr>
+				<td rowspan="2" colspan="3">38.中职学校“双师型”教师比例
+					其中，技师及以上职称教师占“双师型”教师的比例</td>
+				<td>85%</td>
+				<td>0.5</td>
+				<td id="P_38_1"></td>
+				<td id="G_38_1"></td>
+			</tr>
+			<tr>
+				<td>60%</td>
+				<td>0.5</td>
+				<td id="P_38_2"></td>
+				<td id="G_38_2"></td>
+			</tr>
+			<tr>
+				<td rowspan="3">继续教育</td>
+				<td colspan="3">39.职成社学校城乡劳动力人口年培训率★</td>
+				<td>60</td>
+				<td>1</td>
+				<td id="P_39"></td>
+				<td id="G_39"></td>
+			</tr>
+			<tr>
+				<td rowspan="2" colspan="3">40.城市（农村）成人教育年参与率其中，老年人社区教育活动年参与率★</td>
+				<td>60</td>
+				<td>0.5</td>
+				<td id="P_40_1"></td>
+				<td id="G_40_1"></td>
+			</tr>
+			<tr>
+				<td>60</td>
+				<td>1</td>
+				<td id="P_40_2"></td>
+				<td id="G_40_2"></td>
+			</tr>
+			<tr>
+				<td rowspan="6">弱势群体教育保障（5分）</td>
+				<td >随迁子女</td>
+				<td colspan="3">41.随迁子女与当地户籍学生享受同等待遇的比例</td>
+				<td>100%</td>
+				<td>2</td>
+				<td id="P_41"></td>
+				<td id="G_41"></td>
+			</tr>
+			<tr>
+				<td rowspan="4">残疾儿童少年</td>
+				<td rowspan="4">42.适龄持证残疾儿童少年入学率★</td>
+				<td colspan="2">幼儿园</td>
+				<td>90%</td>
+				<td>0.5</td>
+				<td id="P_42_1"></td>
+				<td id="G_42_1"></td>
+			</tr>
+			<tr>
+				<td colspan="2">小学</td>
+				<td>95%</td>
+				<td>0.5</td>
+				<td id="P_42_2"></td>
+				<td id="G_42_2"></td>
+			</tr>
+			<tr>
+				<td colspan="2">初中</td>
+				<td>95%</td>
+				<td>0.5</td>
+				<td id="P_42_3"></td>
+				<td id="G_42_3"></td>
+			</tr>
+			<tr>
+				<td colspan="2">高中</td>
+				<td>95%</td>
+				<td>0.5</td>
+				<td id="P_42_4"></td>
+				<td id="G_42_4"></td>
+			</tr>
+			<tr>
+				<td >农村留守儿童</td>
+				<td colspan="3">43.建立农村留守儿童结对帮扶制度的学校比例★</td>
+				<td>100%</td>
+				<td>1</td>
+				<td id="P_43"></td>
+				<td id="G_43"></td>
+			</tr>
+
+			<tr>
+				<td rowspan="13">教育质量(14分)</td>
+				<td rowspan="6">教育发展水平（7分）</td>
+				<td >学前教育</td>
+				<td colspan="3">44.学前教育入园率</td>
+				<td>97%</td>
+				<td>1</td>
+				<td id="P_44"></td>
+				<td id="G_44"></td>
+			</tr>
+			<tr>
+				<td >义务教育</td>
+				<td colspan="3">45.义务教育入学率</td>
+				<td>100%</td>
+				<td>1</td>
+				<td id="P_45"></td>
+				<td id="G_45"></td>
+			</tr>
+			<tr>
+				<td >高中教育</td>
+				<td colspan="3">46.高中教育毛入学率</td>
+				<td>98%</td>
+				<td>1</td>
+				<td id="P_46"></td>
+				<td id="G_46"></td>
+			</tr>
+			<tr>
+				<td rowspan="2">教育综合发展</td>
+				<td colspan="3">47.主要劳动年龄人口平均受教育年限★</td>
+				<td>13.5</td>
+				<td>1</td>
+				<td id="P_47"></td>
+				<td id="G_47"></td>
+			</tr>
+			<tr>
+				<td colspan="3">48.当地15岁以上常住人口识字率</td>
+				<td>98%</td>
+				<td>2</td>
+				<td id="P_48"></td>
+				<td id="G_48"></td>
+			</tr>
+			<tr>
+				<td >教育投入水平</td>
+				<td colspan="3">49.全社会教育投入（不含公共财政教育经费）比上一年度增长</td>
+				<td>达到</td>
+				<td>2</td>
+				<td id="P_49"></td>
+				<td id="G_49"></td>
+			</tr>
+			<tr>
+				<td rowspan="7">各类教育质量（7分）</td>
+				<td rowspan="4">义务教育</td>
+				<td rowspan="2">50.义务教育学业水平质量监测累计合格率</td>
+				<td colspan="2">小学</td>
+				<td>97%</td>
+				<td>1</td>
+				<td id="P_50_1"></td>
+				<td id="G_50_1"></td>
+			</tr>
+			<tr>
+				<td colspan="2">初中</td>
+				<td>97%</td>
+				<td>1</td>
+				<td id="P_50_2"></td>
+				<td id="G_50_2"></td>
+			</tr>
+			<tr>
+				<td rowspan="2">51.义务教育学生体质健康合格率率</td>
+				<td colspan="2">小学</td>
+				<td>100%</td>
+				<td>1</td>
+				<td id="P_51_1"></td>
+				<td id="G_51_1"></td>
+			</tr>
+			<tr>
+				<td colspan="2">初中</td>
+				<td>100%</td>
+				<td>1</td>
+				<td id="P_51_2"></td>
+				<td id="G_51_2"></td>
+			</tr>
+			<tr>
+				<td rowspan="2">普通高中</td>
+				<td colspan="3">52.普通高中学业水平考试累计合格率</td>
+				<td>97%</td>
+				<td>1</td>
+				<td id="P_52"></td>
+				<td id="G_52"></td>
+			</tr>
+			<tr>
+				<td colspan="3">53.高校新生体质健康合格率</td>
+				<td>95%</td>
+				<td>1</td>
+				<td id="P_53"></td>
+				<td id="G_53"></td>
+			</tr>
+			<tr>
+				<td >职业高中</td>
+				<td colspan="3">54.中职学校毕业生初次就业率</td>
+				<td>98%</td>
+				<td>1</td>
+				<td id="P_54"></td>
+				<td id="G_54"></td>
+			</tr>
+
+			<tr>
+				<td >社会认可（10分）</td>
+				<td >教育满意（10分）</td>
+				<td >教育满意度测评</td>
+				<td colspan="3">55.社会公众（含学生、家长、教师、校长、社会代表等）对教育工作的满意度调查得分</td>
+				<td>90</td>
+				<td>10</td>
+				<td id="P_55"></td>
+				<td id="G_55"></td>
+			</tr>
+
+			<tr>
+				<td >反向扣分</td>
+				<td colspan="6">教育工作出现重大安全事故、群体事件、招生违规等并产生较大负面影响</td>
+				<td>-5</td>
+				<td id="P_56"></td>
+				<td id="G_56"></td>
+			</tr>
+
+
+	 </tbody>
+    </table>
+    <script type="text/javascript">
+        $(document).ready(function(){
+        	  htmlobj=$.ajax({url:"monitor/get?xzqhdm=330102&year=2016", success: function(data){
+        		  for(var key in data){
+        			  var value = data[key];
+        			  $("#"+key).text(value);
+        		  }
+        	        
+              }});
+        	 
+        	});
+        $("#xx").text(1);
+    </script>
+
+</body>
+</html>

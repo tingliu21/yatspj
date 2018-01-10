@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<!-- 引入 echarts.js -->
+<script src="js/echarts.js"></script>
+<script src="js/jquery-3.2.1.min.js"></script>
+<!-- 引入EasyUI -->
+<script type="text/javascript"
+	src="js/jquery-easyui-1.5.3/jquery.easyui.min.js"></script>
+<!-- 引入EasyUI的样式文件-->
+<link rel="stylesheet"
+	href="js/jquery-easyui-1.5.3/themes/default/easyui.css" type="text/css" />
+</head>
+<body>
+	<div class="easyui-panel"
+		style="width: 100%; max-width: 850px; padding: 10px 10px;">
+		<div style="margin-bottom: 20px">
+			<input class="easyui-combobox" name="language" style="width: 30%;"
+				data-options="
+                        url: 'xzqh/getXZQH?code=33&level=2',
+                        method: 'get',
+                        valueField:'xzqhdm',
+                        textField:'xzqhmc',
+                        groupField:'group',
+                        label: '请选择地市',
+                        labelPosition: 'top',
+                        onSelect: function(rec){
+				            
+				            showScoreByCity(rec.xzqhdm,rec.xzqhmc);
+                        }
+                    ">
+		</div>
+
+		<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+		<div id="main" style="width: 800px; height: 600px;"></div>
+	</div>
+
+	<script type="text/javascript">
+   
+	// 基于准备好的dom，初始化echarts图表
+    var myChart = echarts.init(document.getElementById('main')); 
+	
+    function showScoreByCity( xzqhdm,xzqhmc) 
+    {  
+    	var name = xzqhmc+'一级指标得分比较';
+	    $.get('monitor/getScore1?year=2016&xzqhdm='+xzqhdm).done(function (data){
+	    		
+	    	 var data0=[];
+             var data1=[];
+             var data2=[];
+             var data3=[];
+             var data4=[];
+             var titlename=[];
+             var mvalue=[];
+             
+             for (var i = 0; i < data.length; i++) {
+         		//titledata.push(jsondata[i].name);        		
+         		mvalue=data[i].value;        		
+         		//titlename.push(data[i].name);
+         		var d0 ={
+            			name: data[i].name,
+             		    value:mvalue[0]
+             	};
+         		var d1 ={
+            			name: data[i].name,
+             		    value:mvalue[1]
+             	};
+         		var d2 ={
+            			name: data[i].name,
+             		    value:mvalue[2]
+             	};
+         		var d3 ={
+            			name: data[i].name,
+             		    value:mvalue[3]
+             	};
+         		var d4 ={
+            			name: data[i].name,
+             		    value:mvalue[4]
+             	};
+         		data0.push(d0);
+        		data1.push(d1);
+        		data2.push(d2);
+        		data3.push(d3);
+        		data4.push(d4);
+         		
+         	}
+             function NumDescSort(a,b){
+                 return a.value-b.value;
+             }
+             data0.sort(NumDescSort);
+             data1.sort(NumDescSort);
+             data2.sort(NumDescSort);
+             data3.sort(NumDescSort);
+             data4.sort(NumDescSort);
+             for (var i = 0; i < data.length; i++) {
+            	 titlename.push(data0[i].name);
+             }
+             console.log(data0);  
+	    	var option = {
+    			 	title: {
+    			 		left:'center',
+    	       	        text: name,
+    	       	        top:0
+    	       	    },
+	    		    tooltip: {
+	    		        trigger: 'axis',
+	    		        axisPointer: {
+	    		            type: 'cross',
+	    		            crossStyle: {
+	    		                color: '#999'
+	    		            }
+	    		        }
+	    		    },
+	    		    toolbox: {
+	    		        feature: {
+	    		            dataView: {show: true, readOnly: false},
+	    		            magicType: {show: true, type: ['line', 'bar']},
+	    		            restore: {show: true},
+	    		            saveAsImage: {show: true}
+	    		        }
+	    		    },
+	    		    legend: {
+	    		    	
+	    		    	top:30,
+	    		        data:['优先发展','育人为本','促进公平','教育质量','社会认可'],
+	    		        selectedMode: 'single'
+	    		    },
+	    		    
+	    		    xAxis: [
+	    		        {
+	    		            type: 'category',
+	    		            data: titlename,
+	    		            axisLabel:{  
+	    		                interval: 0,
+	    		                rotate: 30
+	    		            },
+	    		            axisPointer: {
+	    		                type: 'shadow'
+	    		            }
+	    		        }
+	    		    ],
+	    		    yAxis: [
+	    		        {
+	    		            type: 'value',
+	    		            name: '得分',
+	    		            min: 0,
+	    		            max:  function(value) {
+	    		                return Math.ceil(value.max/5)*5;
+	    		            },
+	    		            interval: 5,
+	    		            axisLabel: {
+	    		                formatter: '{value}'
+	    		            }
+	    		        }
+	    		    ],
+	    		    series: [
+	    		        {
+	    		            name:'优先发展',
+	    		            type:'bar',
+	    		            label: {
+	    			            normal: {
+	    			                position: 'top',
+	    			                show: true
+	    			            }
+	    			        },
+	    		            data:data0
+	    		        }, {
+	    		            name:'育人为本',
+	    		            type:'bar',
+	    		            label: {
+	    			            normal: {
+	    			                position: 'top',
+	    			                show: true
+	    			            }
+	    			        },
+	    		            data:data1
+	    		        }, {
+	    		            name:'促进公平',
+	    		            type:'bar',
+	    		            label: {
+	    			            normal: {
+	    			                position: 'top',
+	    			                show: true
+	    			            }
+	    			        },
+	    		            data:data2
+	    		        }, {
+	    		            name:'教育质量',
+	    		            type:'bar',
+	    		            label: {
+	    			            normal: {
+	    			                position: 'top',
+	    			                show: true
+	    			            }
+	    			        },
+	    		            data:data3
+	    		        }, {
+	    		            name:'社会认可',
+	    		            type:'bar',
+	    		            label: {
+	    			            normal: {
+	    			                position: 'top',
+	    			                show: true
+	    			            }
+	    			        },
+	    		            data:data4
+	    		        }
+	    		    ]
+	    		};
+	
+	    	 // 为echarts对象加载数据 
+	        myChart.setOption(option); 
+	    
+	    });
+    }
+    </script>
+</body>
+</html>

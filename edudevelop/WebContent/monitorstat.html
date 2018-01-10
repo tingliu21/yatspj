@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<!-- 引入 echarts.js -->
+    <script src="js/echarts.js"></script>
+        <script src="js/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+ <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 800px;height:600px;"></div>
+    
+    <script type="text/javascript">
+   
+	// 基于准备好的dom，初始化echarts图表
+    var myChart = echarts.init(document.getElementById('main')); 
+    $.get('monitor/getCityTotalScore?xzqhdm=330000&year=2016').done(function (data){
+    	console.log(data);
+    	var cname=[],mvalue=[];
+    	
+    	for(var i = 0; i < data.length; i++){
+    		cname.push(data[i].name);
+    		mvalue.push(data[i].value);
+    	}
+    	
+    	var option = {
+    			title: {
+    				left:'center',
+           	        
+           	     	top:0,
+//            	        text: '浙江省各地市平均分比较'
+           	    },
+    		    tooltip: {
+    		        trigger: 'axis',
+    		        axisPointer: {
+    		            type: 'cross',
+    		            crossStyle: {
+    		                color: '#999'
+    		            }
+    		        }
+    		    },
+    		    /* toolbox: {
+    		        feature: {
+    		            dataView: {show: true, readOnly: false},
+    		            magicType: {show: true, type: ['line', 'bar']},
+    		            restore: {show: true},
+    		            saveAsImage: {show: true}
+    		        }
+    		    }, */
+    		    legend: {
+    		    	top:30,
+    		        data:['浙江省各地市得分','目标值'],
+    		        selectedMode: 'single'
+    		    },
+    		   /*  grid:{
+                    x:100,
+                    y:100,
+                    x2:100,
+                    y2:100
+                }, */
+    		    xAxis: [
+    		        {
+    		            type: 'category',
+    		            data: cname,
+    		            axisLabel:{  
+    		                interval: 0,
+    		                rotate: 30
+    		            },
+    		            axisPointer: {
+    		                type: 'shadow'
+    		            }
+    		        }
+    		    ],
+    		    yAxis: [
+    		        {
+    		            type: 'value',
+    		            name: '得分',
+    		            min: 0,
+    		            max:  function(value) {
+    		                return Math.ceil(value.max/10)*10;
+    		            },
+    		            interval: 10,
+    		            axisLabel: {
+    		                formatter: '{value}'
+    		            }
+    		        }
+    		    ],
+    		    series: [
+    		        {
+    		            name:'浙江省各地市得分',
+    		            type:'bar',
+    		            label: {
+    			            normal: {
+    			                position: 'insideTop',
+    			                show: true
+    			            }
+    			        },
+    			        barWidth: 40,
+    		            data:mvalue
+    		        }
+    		    ]
+    		};
+
+    	 // 为echarts对象加载数据 
+        myChart.setOption(option); 
+    
+    });
+    </script>
+</body>
+</html>

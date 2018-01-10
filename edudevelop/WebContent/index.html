@@ -1,0 +1,291 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>EduDevelop</title>
+    <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.12.1/jquery-ui.js"></script>
+    <!-- 引入JQuery -->
+    <script type="text/javascript" src="js/jquery-easyui-1.5.3/jquery.min.js"></script>
+    <!-- 引入EasyUI -->
+    <script type="text/javascript" src="js/jquery-easyui-1.5.3/jquery.easyui.min.js"></script>
+    <!-- 引入EasyUI的中文国际化js，让EasyUI支持中文 -->
+    <script type="text/javascript" src="js/jquery-easyui-1.5.3/locale/easyui-lang-zh_CN.js"></script>
+    <!-- 引入EasyUI的样式文件-->
+    <link rel="stylesheet" href="js/jquery-easyui-1.5.3/themes/default/easyui.css" type="text/css"/>
+    <!-- 引入EasyUI的图标样式文件-->
+    <link rel="stylesheet" href="js/jquery-easyui-1.5.3/themes/icon.css" type="text/css"/>
+    
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+
+    <script type="text/javascript">
+        $(function(){
+            //导航切换
+            $(".menuson li").click(function(){
+                $(".menuson li.active").removeClass("active")
+                $(this).addClass("active");
+            });
+
+            $('.title').click(function(){
+                var $ul = $(this).next('ul');
+                $('dd').find('ul').slideUp();
+                if($ul.is(':visible')){
+                    $(this).next('ul').slideUp();
+                }else{
+                    $(this).next('ul').slideDown();
+                }
+            });
+            $('#monitor').click(function(){
+            	$('.rightinfo').load('monitor_report.html');
+            });
+            $('#usermgr').click(function(){
+            	$('.rightinfo').load('usermgr.html');
+            });
+            $('#rolemgr').click(function(){
+            	$('.rightinfo').load('rolemgr.html');
+            });
+        })
+    </script>
+</head>
+<body>
+    <!-- 页头 -->
+    <div class="header">
+        <div class="topleft">
+            <a href="index.html"><img src="images/loginlogo.png" title="系统首页" /></a>
+        </div>
+        <div class="topright">
+            <ul>
+                <li><span><img src="images/help.png" title="帮助"  class="helpimg"/></span><a href="#">帮助</a></li>
+                <li><a href="#">关于</a></li>
+                <li><a href="login.html" target="_parent">退出</a></li>
+            </ul>
+
+            <div class="user">
+                <span>admin</span>
+                <i>消息</i>
+                <b>5</b>
+            </div>
+        </div>
+    </div>
+
+    <!--左边导航栏-->
+    <div class="left">
+        <dl class="leftmenu">
+            <dd>
+                <div class="title">
+                    <span><img src="images/leftico01.png" /></span>数据报表
+                </div>
+                <ul class="menuson">
+                    <li><cite></cite><a href="index.html" target="rightFrame">数据录入</a><i></i></li>
+                    <li class="active"><cite></cite><a href="right.html" target="rightFrame">数据查询</a><i></i></li>
+                    <!-- <li><cite></cite><a href="imgtable.html" target="rightFrame">图片数据表</a><i></i></li>
+                    <li><cite></cite><a href="form.html" target="rightFrame">添加编辑</a><i></i></li>
+                    <li><cite></cite><a href="imglist.html" target="rightFrame">图片列表</a><i></i></li>
+                    <li><cite></cite><a href="imglist1.html" target="rightFrame">自定义</a><i></i></li>
+                    <li><cite></cite><a href="tools.html" target="rightFrame">常用工具</a><i></i></li>
+                    <li><cite></cite><a href="filelist.html" target="rightFrame">信息管理</a><i></i></li>
+                    <li><cite></cite><a href="tab.html" target="rightFrame">Tab页</a><i></i></li>
+                    <li><cite></cite><a href="error.html" target="rightFrame">404页面</a><i></i></li> -->
+                </ul>
+            </dd>
+
+            <dd>
+                <div class="title">
+                    <span><img src="images/leftico02.png" /></span>监测指标
+                </div>
+                <ul class="menuson">
+                    <li><cite></cite><a href="#">单项指标计算</a><i></i></li>
+                    <li><cite></cite><a href="#">总指标计算</a><i></i></li>
+                    <li><cite></cite><a href="#" id="monitor">指标查询</a><i></i></li>
+                </ul>
+            </dd>
+
+
+            <dd><div class="title"><span><img src="images/leftico03.png" /></span>监测指标可视化</div>
+                <ul class="menuson">
+                    <li><cite></cite><a href="#">单项指标可视化</a><i></i></li>
+                    <li><cite></cite><a href="#">总指标可视化</a><i></i></li>
+                    <li><cite></cite><a href="#">年度对比</a><i></i></li>
+                    <!-- <li><cite></cite><a href="#">其他</a><i></i></li> -->
+                </ul>
+            </dd>
+
+
+            <dd><div class="title"><span><img src="images/leftico04.png" /></span>报表统计</div>
+                <ul class="menuson">
+                    <li><cite></cite><a href="#">报表生成</a><i></i></li>
+                    <!-- <li><cite></cite><a href="#">常用资料</a><i></i></li>
+                    <li><cite></cite><a href="#">信息列表</a><i></i></li>
+                    <li><cite></cite><a href="#">其他</a><i></i></li> -->
+                </ul>
+
+            </dd>
+
+			<dd><div class="title"><span><img src="images/leftico04.png" /></span>系统管理</div>
+                <ul class="menuson">
+                    <li><cite></cite><a href="#" id="usermgr">用户管理</a><i></i></li>
+                    <li><cite></cite><a href="#" id="rolemgr">角色管理</a><i></i></li>
+                    <li><cite></cite><a href="#">指标管理</a><i></i></li>
+                    <!-- <li><cite></cite><a href="#">信息列表</a><i></i></li>
+                    <li><cite></cite><a href="#">其他</a><i></i></li> -->
+                </ul>
+
+            </dd>
+        </dl>
+    </div>
+
+    <!--中间主界面-->
+    <div class="main">     
+
+        <div class="rightinfo">
+
+            <div class="tools">
+
+                <ul class="toolbar">
+                    <li class="click"><span><img src="images/t01.png" /></span>添加</li>
+                    <li class="click"><span><img src="images/t02.png" /></span>修改</li>
+                    <li><span><img src="images/t03.png" /></span>删除</li>
+                    <li><span><img src="images/t04.png" /></span>统计</li>
+                </ul>
+
+
+                <ul class="toolbar1">
+                    <li><span><img src="images/t05.png" /></span>设置</li>
+                </ul>
+
+            </div>
+
+
+            <table class="imgtable">
+
+                <thead>
+                <tr>
+                    <th width="100px;">缩略图</th>
+                    <th>标题</th>
+                    <th>栏目</th>
+                    <th>权限</th>
+                    <th>发布人</th>
+                    <th>是否审核</th>
+                    <th>点击</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr>
+                    <td class="imgtd"><img src="images/img11.png" /></td>
+                    <td><a href="#">非常不错的国外后台模板，支持HTML5</a><p>发布时间：2013-10-12 09:25:18</p></td>
+                    <td>后台界面<p>ID: 82122</p></td>
+                    <td>开放浏览</td>
+                    <td>admin</td>
+                    <td>已审核</td>
+                    <td>128</td>
+                </tr>
+
+                <tr>
+                    <td class="imgtd"><img src="images/img12.png" /></td>
+                    <td><a href="#">一套简约形状图标UI下载</a><p>发布时间：2013-10-12 09:25:18</p></td>
+                    <td>图标设计<p>ID: 82122</p></td>
+                    <td>开放浏览</td>
+                    <td>uimaker</td>
+                    <td><i>未审核</i></td>
+                    <td>235</td>
+                </tr>
+
+                <tr>
+                    <td class="imgtd"><img src="images/img13.png" /></td>
+                    <td><a href="#">配色软件界面设计PSD下载</a><p>发布时间：2013-10-12 09:25:18</p></td>
+                    <td>软件界面<p>ID: 82122</p></td>
+                    <td>开放浏览</td>
+                    <td>admin</td>
+                    <td>已审核</td>
+                    <td>100</td>
+                </tr>
+
+                <tr>
+                    <td class="imgtd"><img src="images/img14.png" /></td>
+                    <td><a href="#">uimaker.com分享-123张switch界面UI设计</a><p>发布时间：2013-10-12 09:25:18</p></td>
+                    <td>图标设计<p>ID: 82122</p></td>
+                    <td>开放浏览</td>
+                    <td>user</td>
+                    <td>已审核</td>
+                    <td>96</td>
+                </tr>
+
+                <tr>
+                    <td class="imgtd"><img src="images/img15.png" /></td>
+                    <td><a href="#">章鱼图标PSD源文件下载</a><p>发布时间：2013-10-12 09:25:18</p></td>
+                    <td>界面设计<p>ID: 82122</p></td>
+                    <td>开放浏览</td>
+                    <td>admin</td>
+                    <td>已审核</td>
+                    <td>45</td>
+                </tr>
+
+                </tbody>
+
+            </table>
+
+
+
+
+
+
+            <div class="pagin">
+                <div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页</div>
+                <ul class="paginList">
+                    <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>
+                    <li class="paginItem"><a href="javascript:;">1</a></li>
+                    <li class="paginItem current"><a href="javascript:;">2</a></li>
+                    <li class="paginItem"><a href="javascript:;">3</a></li>
+                    <li class="paginItem"><a href="javascript:;">4</a></li>
+                    <li class="paginItem"><a href="javascript:;">5</a></li>
+                    <li class="paginItem more"><a href="javascript:;">...</a></li>
+                    <li class="paginItem"><a href="javascript:;">10</a></li>
+                    <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>
+                </ul>
+            </div>
+
+
+            <div class="tip">
+                <div class="tiptop"><span>提示信息</span><a></a></div>
+
+                <div class="tipinfo">
+                    <span><img src="images/ticon.png" /></span>
+                    <div class="tipright">
+                        <p>是否确认对信息的修改 ？</p>
+                        <cite>如果是请点击确定按钮 ，否则请点取消。</cite>
+                    </div>
+                </div>
+
+                <div class="tipbtn">
+                    <input name="" type="button"  class="sure" value="确定" />&nbsp;
+                    <input name="" type="button"  class="cancel" value="取消" />
+                </div>
+
+            </div>
+
+
+
+
+        </div>
+
+        <div class="tip">
+            <div class="tiptop"><span>提示信息</span><a></a></div>
+
+            <div class="tipinfo">
+                <span><img src="images/ticon.png" /></span>
+                <div class="tipright">
+                    <p>是否确认对信息的修改 ？</p>
+                    <cite>如果是请点击确定按钮 ，否则请点取消。</cite>
+                </div>
+            </div>
+
+            <div class="tipbtn">
+                <input name="" type="button"  class="sure" value="确定" />&nbsp;
+                <input name="" type="button"  class="cancel" value="取消" />
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<!-- 引入 echarts.js -->
+    <script src="js/echarts.js"></script>
+        <script src="js/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+ <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 800px;height:600px;"></div>
+    
+    <script type="text/javascript">
+   
+	// 基于准备好的dom，初始化echarts图表
+    var myChart = echarts.init(document.getElementById('main')); 
+    $.get('monitor/getAvgScore2?xzqhdm=330000&year=2016').done(function (data){
+    	console.log(data);
+    	
+    	var option = {
+    			title: {
+    				left:'center',         	        
+           	     	top:0,
+//            	        text: '浙江省二级指标得分情况图'
+           	    },
+    		    tooltip: {
+    		        trigger: 'axis',
+    		        axisPointer: {
+    		            type: 'cross',
+    		            crossStyle: {
+    		                color: '#999'
+    		            }
+    		        }
+    		    },
+    		   /*  toolbox: {
+    		        feature: {
+    		            dataView: {show: true, readOnly: false},
+    		            magicType: {show: true, type: ['line', 'bar']},
+    		            restore: {show: true},
+    		            saveAsImage: {show: true}
+    		        }
+    		    }, */
+    		    legend: {
+    		    	top:10,
+    		        data:['省均值','目标值'],
+    		        
+    		       
+    		    },
+    		   /*  grid:{
+                    x:100,
+                    y:100,
+                    x2:100,
+                    y2:100
+                }, */
+    		    xAxis: [
+    		        {
+    		            type: 'category',
+    		            data: ['经费保障','教师保障','资源保障','课程设置','育人环境','教育合力','国际交流与合作','义务教育优质均衡','教育协调发展','弱势群体教育保障','教育发展水平','各类教育质量','教育满意'],
+    		            axisLabel:{  
+    		                interval: 0,
+    		                rotate: 30
+    		            },
+    		            axisPointer: {
+    		                type: 'shadow'
+    		            }
+    		        }
+    		    ],
+    		    yAxis: [
+    		        {
+    		            type: 'value',
+    		            name: '得分',
+    		            min: 0,
+    		            max:  function(value) {
+    		                return Math.ceil(value.max/5)*5;
+    		            },
+    		            interval: 5,
+    		            axisLabel: {
+    		                formatter: '{value}'
+    		            }
+    		        }
+    		    ],
+    		    series: [
+    		        {
+    		            name:'省均值',
+    		            type:'bar',
+    		            z:3,
+    		            label: {
+    			            normal: {
+    			                position: 'insideTop',
+    			                show: true
+    			            }
+    			        },
+    		            data:data[0].value
+    		        },
+    		       
+    		        {
+    		            name:'目标值',
+    		            type:'bar',
+    		            barGap: '-100%', // Make series be overlap
+    			        silent: true,
+    			        itemStyle: {
+    			            normal: {
+    			                color: '#eee'
+    			            }
+    			        },
+    			        label: {
+    			            normal: {
+    			                position: 'top',
+    			                show: true,
+    			                color:'#999'
+    			            }
+    			        },
+    		            data:data[1].value
+    		        }
+    		    ]
+    		};
+
+    	 // 为echarts对象加载数据 
+        myChart.setOption(option); 
+    
+    });
+    </script>
+</body>
+</html>

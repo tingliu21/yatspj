@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<!-- 引入 echarts.js -->
+<script src="js/echarts.js"></script>
+<script src="js/jquery-3.2.1.min.js"></script>
+<!-- 引入EasyUI -->
+<script type="text/javascript"
+	src="js/jquery-easyui-1.5.3/jquery.easyui.min.js"></script>
+<!-- 引入EasyUI的样式文件-->
+<link rel="stylesheet"
+	href="js/jquery-easyui-1.5.3/themes/default/easyui.css" type="text/css" />
+</head>
+<body>
+<div class="easyui-panel"
+		style="width: 100%; max-width: 1200px; padding: 10px 10px;">
+		<div style="margin-bottom: 20px">
+			<input class="easyui-combobox" name="language" style="width: 30%;"
+				data-options="
+                        url: 'xzqh/getXZQH?code=33&level=3',
+                        method: 'get',
+                        valueField:'xzqhdm',
+                        textField:'xzqhmc',
+                        groupField:'group',
+                        label: '请选择地市',
+                        labelPosition: 'top',
+                        onSelect: function(rec){
+				            showScoreByCity1(rec.xzqhdm,rec.xzqhmc);
+				            showScoreByCity2(rec.xzqhdm,rec.xzqhmc);
+				            showScoreByCity3(rec.xzqhdm,rec.xzqhmc);
+				            showScoreByCity4(rec.xzqhdm,rec.xzqhmc);
+                        }
+                    ">
+		</div>
+
+		<!-- 为ECharts准备具备大小（宽高）的Dom -->
+
+
+		<div id="amain" style="width: 1200px; height: 800px;"></div>
+		<div id="bmain" style="width: 1200px; height: 800px;"></div>
+		<div id="cmain" style="width: 1200px; height: 1400px;"></div>
+		<div id="dmain" style="width: 1200px; height: 800px;"></div>
+		<input type="button" name="name" value="导出" id="export" />
+		<!-- <form id="chartForm" style="display:none" method="post" enctype="multipart/form-data" action="monitor/exportPng"> -->
+		 <form id="chartForm" style="display:none" method="post" action="monitor/exportPng?year=2016&xzqhdm=330102">
+		    <!-- <input id="imageValue1" name="radarCounty64" type="text" maxlength="50000" /> 
+		    <input id="imageValue2" name="fileType" type="text" value=".png" />-->
+		    <input id="imageValue1" name="radar1" type="text" maxlength="50000" />
+		    <input id="imageValue1" name="bar2" type="text" maxlength="50000" />
+		    <input id="imageValue1" name="bar55" type="text" maxlength="50000" />
+		    <input id="imageValue1" name="bar_t" type="text" maxlength="50000" />
+		     <input class="easyui-textbox" name="fileType" style="width:90%" data-options="label:'电话:'"> 
+		     <!-- <input class="easyui-textbox" name="radarCounty64" style="width:90%" data-options="label:'用户名:',required:true"> -->
+		</form>
+		
+
+	</div>
+	<script type="text/javascript">
+	function showScoreByCity1( xzqhdm,xzqhmc) 
+    {  
+    	// 基于准备好的dom，初始化echarts图表
+        var myChart = echarts.init(document.getElementById('amain')); 
+    	var aname = xzqhmc+'一级指标得分比较';
+	    $.get('monitor/getScore2?year=2016&xzqhdm='+xzqhdm).done(function (data){
+	    		
+	    	console.log(data);//前端调试控制台输出数据，看看是否符合要求
+	         
+	        option = {
+	        		title: {
+	           	        //text: '浙江省一级指标得分情况图'
+	           	           left:'center', 
+	           	        	text: aname,
+	    	       	        top:0
+	           	    },
+	           	    
+	       	 tooltip: {},
+	       	legend: {
+	             data: [aname, '目标值','浙江省'],
+	             top:30
+	         },
+	         radar: {
+	             // shape: 'circle',
+	             name: {
+	                 textStyle: {
+	                     color: '#fff',
+	                     backgroundColor: '#999',
+	                     borderRadius: 3,
+	                     padding: [3, 5],
+	                     left:'center'
+	                }
+	             },
+	       	        indicator: [
+	       	           { name: '优先发展（34）', max: 34},
+	       	           { name: '育人为本（16）', max: 16},
+	       	           { name: '促进公平（26）', max: 26},
+	       	           { name: '教育质量（14）', max: 14},
+	       	           { name: '社会认可（10）', max: 10} 
+	       	           ]
+	       	    },
+	       	    series: [{
+	       	        type: 'radar',
+	       	        // areaStyle: {normal: {}},
+	       	        data : data,
+	       	     	itemStyle:{
+	       			normal:{
+	       			label:{
+	       				show:true,
+	       				position:'top',
+	       				
+	       				formatter: function(a){
+	       					console.log(a.dataIndex);
+	       					if(a.dataIndex==1) 
+	       						return '';
+	       					else return a.Number;
+	       					
+	       				}
+	       			}
+	       			}
+	       		}
+	       	    }]
+	       	};
+	        // 为echarts对象加载数据 
+	        myChart.setOption(option); 
+	        window.onresize = myChart.resize;
+	      });
+    }
+	//二级指标
+    function showScoreByCity2( xzqhdm,xzqhmc)
+    {
+    	// 基于准备好的dom，初始化echarts图表
+        var myChart = echarts.init(document.getElementById('bmain')); 
+        var aname = xzqhmc+'二级指标得分比较';
+        $.get('monitor/getAvgScore2?year=2016&xzqhdm='+xzqhdm).done(function (data){
+        	console.log(data);
+        	
+        	var option = {
+        			title: {
+    			 		left:'center',
+    	       	        text: aname,
+    	       	        top:0
+    	       	    },
+        		    tooltip: {
+        		        trigger: 'axis',
+        		        axisPointer: {
+        		            type: 'cross',
+        		            crossStyle: {
+        		                color: '#999'
+        		            }
+        		        }
+        		    },
+        		    legend: {
+        		        data:['得分','目标值'],
+        		        top:30
+        		    },
+        		    grid:{
+	                    x:100,
+	                    y:100,
+	                    x2:100,
+	                    y2:100
+	                },
+        		    xAxis: [
+        		        {
+        		            type: 'category',
+        		            data: ['经费保障','教师保障','资源保障','课程设置','育人环境','教育合力','国际交流与合作','义务教育优质均衡','教育协调发展','弱势群体教育保障','教育发展水平','各类教育质量','教育满意'],
+        		            axisLabel:{  
+        		                interval: 0,
+        		                rotate: 30
+        		            },
+        		            axisPointer: {
+        		                type: 'shadow'
+        		            }
+        		        }
+        		    ],
+        		    yAxis: [
+        		        {
+        		            type: 'value',
+        		            name: '得分',
+        		            min: 0,
+        		            max:  function(value) {
+        		                return Math.ceil(value.max/5)*5;
+        		            },
+        		            interval: 5,
+        		            axisLabel: {
+        		                formatter: '{value}'
+        		            }
+        		        }
+        		    ],
+        		    series: [
+        		        {
+        		            name:'得分',
+        		            type:'bar',
+        		            z:3,
+        		            label: {
+        			            normal: {
+        			                position: 'top',
+        			                show: true
+        			            }
+        			        },
+        		            data:data[0].value
+        		        },
+        		       
+        		        {
+        		            name:'目标值',
+        		            type:'bar',
+        		            barGap: '-100%', // Make series be overlap
+        			        silent: true,
+        			        itemStyle: {
+        			            normal: {
+        			                color: '#eee'
+        			            }
+        			        },
+        			        label: {
+        			            normal: {
+        			                position: 'top',
+        			                show: true,
+        			                color:'#999'
+        			            }
+        			        },
+        		            data:data[1].value
+        		        }
+        		    ]
+        		};
+
+        	 // 为echarts对象加载数据 
+            myChart.setOption(option); 
+            window.onresize = myChart.resize;
+        
+        });
+    }
+	//五十五个监测点
+    function showScoreByCity3( xzqhdm,xzqhmc) 
+    {  
+    	// 基于准备好的dom，初始化echarts图表
+        var myChart = echarts.init(document.getElementById('cmain')); 
+    	var aname = xzqhmc+'五十五个指标得分比较';
+	    $.get('monitor/getCountyIndex?year=2016&xzqhdm='+xzqhdm).done(function (data){
+	    	 
+
+             var monitorname=[];
+             for(var i=0;i<54;i++){
+         		var name =i+1;
+         		monitorname.push(name);
+         	}   
+	    	var option = {
+    			 	title: {
+    			 		left:'center',
+    	       	        text: aname,
+    	       	        top:0
+    	       	    },
+	    		    tooltip: {
+	    		        trigger: 'axis',
+	    		        axisPointer: {
+	    		            type: 'cross',
+	    		            crossStyle: {
+	    		                color: '#999'
+	    		            }
+	    		        }
+	    		    },
+	    		    legend: {
+        		        data:['得分','目标值'],
+        		        top:30
+        		    },
+        		    grid:{
+	                    x:100,
+	                    y:100,
+	                    x2:100,
+	                    y2:100
+	                },
+	    		    yAxis: [
+	    		        {
+	    		            type: 'category',
+	    		            data: monitorname,
+
+	    		            axisPointer: {
+	    		                type: 'shadow'
+	    		            }
+	    		        }
+	    		    ],
+	    		    xAxis: [
+	    		        {
+
+    		            type: 'value',
+    		            name: '得分',
+    		            min: 0,
+    		            max:  function(value) {
+    		                return Math.ceil(value.max/5)*5;
+    		            },
+    		            interval: 5,
+    		            axisLabel: {
+    		                formatter: '{value}'
+    		            }
+    		           }
+	    		    ],
+	    		    series: [
+        		        {
+        		            name:'得分',
+        		            type:'bar',
+        		            z:3,
+        		            label: {
+        			            normal: {
+        			                position: 'top',
+        			                show: true
+        			            }
+        			        },
+        		            data:data[0].value
+        		        },
+        		       
+        		        {
+        		            name:'目标值',
+        		            type:'bar',
+        		            barGap: '-100%', // Make series be overlap
+        			        silent: true,
+        			        itemStyle: {
+        			            normal: {
+        			                color: '#eee'
+        			            }
+        			        },
+        			        label: {
+        			            normal: {
+        			                position: 'top',
+        			                show: true,
+        			                color:'#999'
+        			            }
+        			        },
+        		            data:data[1].value
+        		        }
+        		    ]
+	    		};
+	
+	    	 // 为echarts对象加载数据 
+	        myChart.setOption(option); 
+	    
+	    });
+    }
+    
+
+    function showScoreByCity4( xzqhdm,xzqhmc) 
+    {  
+    	 // 基于准备好的dom，初始化echarts图表
+        var myChart = echarts.init(document.getElementById('dmain')); 
+    	
+    	var name = xzqhmc+'各县区得分';
+    	//var name2 = xzqhmc+'各县区评估分比较'
+	    $.get('monitor/getTotalScore?year=2016&xzqhdm=330100').done(function (data){
+	    	console.log(data);
+	    	var cname=[],mvalue=[];
+	    	for(var i = 0; i < data.length; i++){
+	    		cname.push(data[i].name);
+	    		mvalue.push(data[i].value);
+	    	}
+	    	var option = {
+	    			title: {
+	    				left:'center',
+	           	        text: '杭州市各县/区评估分比较'
+	           	    },
+	    		    tooltip: {
+	    		        trigger: 'axis',
+	    		        axisPointer: {
+	    		            type: 'cross',
+	    		            crossStyle: {
+	    		                color: '#999'
+	    		            }
+	    		        }
+	    		    },
+
+	    		    legend: {
+	    		        data:[name,'目标值'],
+	    		        selectedMode: 'single',
+	    		        top:30
+	    		    },
+	    		    grid:{
+	                    x:100,
+	                    y:100,
+	                    x2:100,
+	                    y2:100
+	                },
+	    		    xAxis: [
+	    		        {
+	    		            type: 'category',
+	    		            data: cname,
+	    		            axisLabel:{  
+	    		                interval: 0,
+	    		                rotate: 30
+	    		            },
+	    		            axisPointer: {
+	    		                type: 'shadow'
+	    		            }
+	    		        }
+	    		    ],
+	    		    yAxis: [
+	    		        {
+	    		            type: 'value',
+	    		            name: '得分',
+	    		            min: 0,
+	    		            max:  function(value) {
+	    		                return Math.ceil(value.max/5)*5;
+	    		            },
+	    		            interval: 5,
+	    		            axisLabel: {
+	    		                formatter: '{value}'
+	    		            }
+	    		        }
+	    		    ],
+	    		    series: [
+	    		        {
+	    		            name:name,
+	    		            type:'bar',
+	    		            label: {
+	    			            normal: {
+	    			                position: 'top',
+	    			                show: true
+	    			            }
+	    			        },
+	    		            data:mvalue
+	    		        }
+	    		    ]
+	    		};
+	
+	    	 // 为echarts对象加载数据 
+	        myChart.setOption(option); 
+	    
+	    });
+    }
+	//导出
+    $('#export').on('click', function () {
+        alert('111');
+        var chartExportUrl = 'monitor/exportPng?year=2016&xzqhdm=330102';
+        var picBase64Info = myChart.getDataURL();//获取echarts图的base64编码，为png格式。
+
+         $('#chartForm').find('input[name="radar1"]').val(picBase64Info);//将编码赋值给输入框   
+         $('#chartForm').find('input[name="bar2"]').val(picBase64Info);//将编码赋值给输入框
+         $('#chartForm').find('input[name="bar55"]').val(picBase64Info);//将编码赋值给输入框
+         $('#chartForm').find('input[name="bar_t"]').val(picBase64Info);//将编码赋值给输入框
+        
+         /* $('#chartForm').submit(); */
+        
+        
+            $('#chartForm').form('submit',{
+                url: chartExportUrl,
+                onSubmit: function(){
+                    return true;
+                	//return $(this).form('validate');
+                },
+                success: function(result){
+                    var result = eval('('+result+')');
+                    if (result.errorMsg){
+                        $.messager.show({
+                            title: 'Error',
+                            msg: result.errorMsg
+                        });
+                    } 
+                }
+            });
+
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <script src="js/echarts.js"></script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 800px;height:600px;"></div>
+    <script type="text/javascript">
+    var uploadedDataURL = "data/zjxzqh.json"; 
+    var myChart = echarts.init(document.getElementById('main'));
+    function showProvince() {
+        var name = 'zj';
+
+        
+        $.get(uploadedDataURL, function(geoJson) {
+            echarts.registerMap(name, geoJson);
+            $.get('monitor/getScore1?year=2016').done(function (data) {
+                // 填入数据
+                console.log(data);
+                var jsondata = data;
+                var titledata = ["婺城区", "滨江区", "嘉善县","泰顺县","瑞安市","下城区","镇海区","宁海县","长兴县","上城区" ];
+                var titledata1 = [],titledata2 = [],titledata3 = [],titledata4 = [];
+                var data0=[];
+                var data1=[];
+                var data2=[];
+                var data3=[];
+                var data4=[];
+                var top10data=[],top10data1=[],top10data2=[],top10data3=[],top10data4=[];
+                for (var i = 0; i < jsondata.length; i++) {
+                		//titledata.push(jsondata[i].name);
+                		var d0 ={
+                				name: jsondata[i].name,
+                		        value: jsondata[i].value_t
+                		};
+                		var d1 = {
+                		        name: jsondata[i].name,
+                		        value: jsondata[i].value_yx
+                		    };
+                		var d2 = {
+                		        name: jsondata[i].name,
+                		        value: jsondata[i].value_yr
+                		    };
+                		var d3 = {
+                		        name: jsondata[i].name,
+                		        value: jsondata[i].value_cj
+                		    };
+                		var d4 = {
+                		        name: jsondata[i].name,
+                		        value: jsondata[i].value_jy
+                		    };
+                		data0.push(d0);
+                		data1.push(d1);
+                		data2.push(d2);
+                		data3.push(d3);
+                		data4.push(d4);
+                }
+                function NumDescSort(a,b){
+                    return a.value-b.value;
+                }
+                data0.sort(NumDescSort);
+                data1.sort(NumDescSort);
+                data2.sort(NumDescSort);
+                data3.sort(NumDescSort);
+                data4.sort(NumDescSort);
+                for(var i=0;i<10;i++){
+                	var d0 = {
+            		        name: jsondata[i].name,
+            		        value: jsondata[i].value_t
+            		    };
+                	top10data.push(d0);
+                	titledata1.push(data1[78+i].name);
+                	top10data1.push(data1[78+i]);
+                	titledata2.push(data2[78+i].name);
+                	top10data2.push(data2[78+i]);
+                	titledata3.push(data3[78+i].name);
+                	top10data3.push(data3[78+i]);
+                	titledata4.push(data4[78+i].name);
+                	top10data4.push(data4[78+i]);
+                }
+                top10data.sort(NumDescSort);
+                top10data1.sort(NumDescSort);
+                top10data2.sort(NumDescSort);
+                top10data3.sort(NumDescSort);
+                top10data4.sort(NumDescSort);
+                console.log(titledata1);
+                console.log(top10data1);
+                console.log(titledata2);
+                console.log(top10data2);
+                console.log(titledata3);
+                 console.log(top10data3);
+                console.log(titledata4);
+                console.log(top10data4);
+            	myChart.setOption(option = {
+                        
+                        title: [{
+                            text: "浙江省教育现代化综合得分",
+                            left: 'center'
+                        },{
+                            text: '综合得分: ',
+                            right: 120,
+                            top: 40,
+                            width: 100,
+                            textStyle: {
+                                color: '#fff',
+                                fontSize: 16
+                            }
+                        },{
+                            text: "优先发展:34 " ,
+                            right: 120,
+                            top: 40,
+                            width: 100,
+                            textStyle: {
+                                color: '#fff',
+                                fontSize: 16
+                            }
+                        },{
+                            text: "育人为本:16 ",
+                            right: 120,
+                            top: 40,
+                            width: 100,
+                            textStyle: {
+                                color: '#fff',
+                                fontSize: 16
+                            }
+                        },{
+                            text: "促进公平:26 ",
+                            right: 120,
+                            top: 40,
+                            width: 100,
+                            textStyle: {
+                                color: '#fff',
+                                fontSize: 16
+                            }
+                        },{
+                            text: "教育质量: 14",
+                            right: 120,
+                            top: 40,
+                            width: 100,
+                            textStyle: {
+                                color: '#fff',
+                                fontSize: 16
+                            }
+                        }],
+                        tooltip: {
+                            trigger: 'item'
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 'left',
+                            data: ['综合得分', '优先发展', '育人为本', '促进公平', '教育质量'],
+                            selectedMode: 'single',
+                        },
+                        visualMap: {
+                            min: 9,
+                            max: 13,
+                            left: 'left',
+                            top: 'bottom',
+                            
+                            text: ['高', '低'], // 文本，默认为数值文本
+                            color: ['#c05050','#e5cf0d','#5ab1ef'],
+                            calculable: true
+                        },
+                         toolbox: {
+                            show: true,
+                            orient: 'vertical',
+                            left: 'right',
+                            top: 'center',
+                            feature: {
+                                    dataView: {readOnly: false},
+                                    restore: {},
+                                    saveAsImage: {}
+                                    }
+                        },
+                        grid: {
+                            right: 40,
+                            top: 100,
+                            bottom: 40,
+                            width: '30%'
+                        },
+                        xAxis: [{
+                            position: 'top',
+                            type: 'value',
+                            boundaryGap: false,
+                            splitLine: {
+                                show: false
+                            },
+                            axisLine: {
+                                show: false
+                            },
+                            axisTick: {
+                                show: false
+                            },
+                        }],
+                        yAxis: [{
+                            type: 'category',
+                            data: titledata4,
+                            axisTick: {
+                                alignWithLabel: true
+                            }
+                        }],
+                        series: [{
+                        		z: 2,
+                            type: 'map',
+                            name: '综合得分',
+                            mapType: name,
+                            left: '10',
+                            right: '40%',
+                            top: 100,
+                            bottom: "5%",
+                            label: {
+                                normal: {
+                                    show: true
+                                },
+                                emphasis: {
+                                    textStyle: {
+                                        color: '#fff'
+                                    }
+                                }
+                            },
+                            itemStyle: {
+                                normal: {
+                                    borderColor: '#389BB7',
+                                    areaColor: '#fff',
+                                },
+                                emphasis: {
+                                    areaColor: '#389BB7',
+                                    borderWidth: 0
+                                }
+                            },
+                            animation: false,                            
+                        	data:data0
+                                
+                        },{
+                        		z: 2,
+                        		name: '优先发展',
+                            type: 'map',
+                            mapType: name,
+                            left: '10',
+                            right: '40%',
+                            top: 100,
+                            bottom: "5%",
+                            label: {
+                                normal: {
+                                    show: true
+                                },
+                                emphasis: {
+                                    textStyle: {
+                                        color: '#fff'
+                                    }
+                                }
+                            },
+                            itemStyle: {
+                                normal: {
+                                    borderColor: '#389BB7',
+                                    areaColor: '#fff',
+                                },
+                                emphasis: {
+                                    areaColor: '#389BB7',
+                                    borderWidth: 0
+                                }
+                            },
+                            animation: false,                            
+                        		data:data1
+                                
+                        },{
+                        		z: 2,
+                        		name: '育人为本',
+                            type: 'map',
+                            mapType: name,
+                            left: '10',
+                            right: '40%',
+                            top: 100,
+                            bottom: "5%",
+                            label: {
+                                normal: {
+                                    show: true
+                                },
+                                emphasis: {
+                                    textStyle: {
+                                        color: '#fff'
+                                    }
+                                }
+                            },
+                            itemStyle: {
+
+                                normal: {
+                                    borderColor: '#389BB7',
+                                    areaColor: '#fff',
+                                },
+                                emphasis: {
+                                    areaColor: '#389BB7',
+                                    borderWidth: 0
+                                }
+                            },
+                            animation: false,                            
+                        		data:data2
+                                
+                        },{
+                        		z: 2,
+                        		name: '促进公平',
+                            type: 'map',
+                            mapType: name,
+                            left: '10',
+                            right: '40%',
+                            top: 100,
+                            bottom: "5%",
+                            label: {
+                                normal: {
+                                    show: true
+                                },
+                                emphasis: {
+                                    textStyle: {
+                                        color: '#fff'
+                                    }
+                                }
+                            },
+                            itemStyle: {
+
+                                normal: {
+                                    borderColor: '#389BB7',
+                                    areaColor: '#fff',
+                                },
+                                emphasis: {
+                                    areaColor: '#389BB7',
+                                    borderWidth: 0
+                                }
+                            },
+                            animation: false,                            
+                        		data:data3
+                                
+                        },{
+                        		z: 2,
+                        		name: '教育质量',
+                            type: 'map',
+                            mapType: name,
+                            left: '10',
+                            right: '40%',
+                            top: 100,
+                            bottom: "5%",
+                            label: {
+                                normal: {
+                                    show: true
+                                },
+                                emphasis: {
+                                    textStyle: {
+                                        color: '#fff'
+                                    }
+                                }
+                            },
+                            itemStyle: {
+
+                                normal: {
+                                    borderColor: '#389BB7',
+                                    areaColor: '#fff',
+                                },
+                                emphasis: {
+                                    areaColor: '#389BB7',
+                                    borderWidth: 0
+                                }
+                            },
+                            animation: false,                            
+                        		data:data4
+                                
+                        }, {
+                        	 name: '综合得分',
+                            z: 1,
+                            type: 'bar',
+                            left: '50%',
+                            right: '5%',
+                            top: 10,
+                            bottom: "5%",
+                            label: {
+                                normal: {
+                                    show: true
+                                },
+                                emphasis: {
+                                    show: true,
+                                }
+                            },
+                            itemStyle: {
+                                emphasis: {
+                                    color: "rgb(254,153,78)"
+                                }
+                            },
+                            data: top10data
+                        }, {
+                         name: '优先发展',
+                         z: 1,
+                         type: 'bar',
+                         left: '50%',
+                         right: '5%',
+                         top: 10,
+                         bottom: "5%",
+                         label: {
+                             normal: {
+                                 show: true
+                             },
+                             emphasis: {
+                                 show: true,
+                             }
+                         },
+                         itemStyle: {
+                             emphasis: {
+                                 color: "rgb(254,153,78)"
+                             }
+                         },
+                         data: top10data1
+                     }, {
+                    	 name: '育人为本',
+                         z: 1,
+                         type: 'bar',
+                         left: '50%',
+                         right: '5%',
+                         top: 10,
+                         bottom: "5%",
+                         label: {
+                             normal: {
+                                 show: true
+                             },
+                             emphasis: {
+                                 show: true,
+                             }
+                         },
+                         itemStyle: {
+                             emphasis: {
+                                 color: "rgb(254,153,78)"
+                             }
+                         },
+                         data: top10data2
+                     }, {
+                    	 name: '促进公平',
+                         z: 1,
+                         type: 'bar',
+                         left: '50%',
+                         right: '5%',
+                         top: 10,
+                         bottom: "5%",
+                         label: {
+                             normal: {
+                                 show: true
+                             },
+                             emphasis: {
+                                 show: true,
+                             }
+                         },
+                         itemStyle: {
+                             emphasis: {
+                                 color: "rgb(254,153,78)"
+                             }
+                         },
+                         data: top10data3
+                     }, {
+                    	 name: '教育质量',
+                         z: 1,
+                         type: 'bar',
+                         left: '50%',
+                         right: '5%',
+                         top: 10,
+                         bottom: "5%",
+                         label: {
+                             normal: {
+                                 show: true
+                             },
+                             emphasis: {
+                                 show: true,
+                             }
+                         },
+                         itemStyle: {
+                             emphasis: {
+                                 color: "rgb(254,153,78)"
+                             }
+                         },
+                         data: top10data4
+                     }],
+                        
+                    });
+            });
+            
+        });
+    }
+
+    var currentIdx = 0;
+
+    showProvince();
+          
+    </script>
+</body>
+</html>

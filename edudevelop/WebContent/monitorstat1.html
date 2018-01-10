@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<!-- 引入 echarts.js -->
+    <script src="js/echarts.js"></script>
+        <script src="js/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 800px;height:600px;"></div>
+    
+    <script type="text/javascript">
+   
+	// 基于准备好的dom，初始化echarts图表
+    var myChart = echarts.init(document.getElementById('main')); 
+    $.get('monitor/getAvgScore1?xzqhdm=330100&year=2016').done(function (data){
+    	
+        console.log(data);//前端调试控制台输出数据，看看是否符合要求
+         
+        option = {
+       	    title: {
+       	        text: '基础雷达图'
+       	    },
+       	    tooltip: {},
+       	    legend: {
+       	        data: ['预算分配（Allocated Budget）', '实际开销（Actual Spending）']
+       	    },
+       	    radar: {
+       	        // shape: 'circle',
+       	        name: {
+       	            textStyle: {
+       	                color: '#fff',
+       	                backgroundColor: '#999',
+       	                borderRadius: 3,
+       	                padding: [3, 5]
+       	           }
+       	        },
+       	        indicator: [
+       	           { name: '销售（sales）', max: 34},
+       	           { name: '管理（Administration）', max: 16},
+       	           { name: '信息技术（Information Techology）', max: 26},
+       	           { name: '客服（Customer Support）', max: 14},
+       	           { name: '研发（Development）', max: 10}        ]
+       	    },
+       	    series: [{
+       	        name: '预算 vs 开销（Budget vs spending）',
+       	        type: 'radar',
+       	        // areaStyle: {normal: {}},
+       	        data : data
+       	    }]
+       	};
+        // 为echarts对象加载数据 
+        myChart.setOption(option); 
+      }); 
+    </script>
+</body>
+</html>
