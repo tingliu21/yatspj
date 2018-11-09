@@ -1,0 +1,41 @@
+<div class="modal-body no-p">
+    <div class="row">
+        <div class="col-xs-12">
+            <section class="panel panel-primary no-b">
+                <header class="panel-heading clearfix brtl brtr">
+                    <div class="overflow-hidden">
+                        <a href="javascript:;" class="h4 show no-m pt5">Evaluate_remark</a>
+                        <small>${obj.id}</small>
+                    </div>
+                </header>
+                <div class="list-group">
+                    <table class="table table-bordered table-striped mg-t datatable">
+                        <tbody>
+                                                        <tr>
+                                <td>评估ID</td><td>${obj.evaluateId}</td>
+                            </tr>
+                                                        <tr>
+                                <td>指标ID</td><td>${obj.indexid}</td>
+                            </tr>
+                                                        <tr>
+                                <td>自打分</td><td>${obj.score_s}</td>
+                            </tr>
+                                                        <tr>
+                                <td>自评价</td><td>${obj.remark_s}</td>
+                            </tr>
+                                                        <tr>
+                                <td>专家打分</td><td>${obj.score_p}</td>
+                            </tr>
+                                                        <tr>
+                                <td>专家评价</td><td>${obj.remark_p}</td>
+                            </tr>
+                                                    </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary btn-block" data-dismiss="modal">知道了</button>
+</div>
