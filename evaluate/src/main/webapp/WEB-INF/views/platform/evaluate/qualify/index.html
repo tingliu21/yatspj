@@ -32,10 +32,10 @@ layout("/layouts/platform.html"){
                 <thead>
                     <tr>
 
-                            <th >观测点</th>
-                            <th >目标值</th>
+                            <th class="col-md-3">观测点</th>
+                            <th class="col-md-2">目标值</th>
                             <th class="col-md-1">权重</th>
-                            <th>实际值</th>
+                            <th class="col-md-1">实际值</th>
                             <th class="col-md-1">是否达标</th>
                             <th>操作</th>
                     </tr>
@@ -121,10 +121,10 @@ layout("/layouts/platform.html"){
                 {
 
                     "render": function (data, type, row) {
-                        html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/qualify/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><i class="ti-plus"></i> 查看</a>';
+                        html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/qualify/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><span class="glyphicon glyphicon-eye-open"></span> 查看</a>';
                         <% if(@shiro.hasPermission("evaluate.self.remark")){%>
                             html+='<div class="btn-group-vertical"><a class="btn btn-danger" href="${base}/platform/evaluate/qualify/edit/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
-                                '   <i class="ti-plus"></i> 评价</a>' +
+                                '   <span class="glyphicon glyphicon-pencil"></span> 评价</a>' +
                                 '</div>';
                         <%}%>
                         return  html;

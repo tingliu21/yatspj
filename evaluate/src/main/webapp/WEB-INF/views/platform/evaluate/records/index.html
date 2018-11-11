@@ -109,9 +109,9 @@ layout("/layouts/platform.html"){
             {
                 "render": function (data, type, row) {
                     if (data=='211') {
-                        return '<i id="disable_' + row.id + '" class="fa  text-success ml5">小学</i>';
+                        return '<i id="disable_' + row.id + '" class="fa">小学</i>';
                     } else if(data=='311'){
-                        return '<i id="disable_' + row.id + '" class="fa text-danger ml5">初中</i>';
+                        return '<i id="disable_' + row.id + '" class="fa">初中</i>';
                     }
                 },
                 "targets": 1
@@ -128,7 +128,7 @@ layout("/layouts/platform.html"){
             },
             {
                 "render": function (data, type, row) {
-                    return '<div class="btn-group tool-button"><a class="btn btn-default" href="${base}/platform/evaluate/qualify/${type!}?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>达标性评估</a>' +
+                    return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/qualify/${type!}?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>达标性评估</a>' +
                         '<a class="btn btn-success" href="${base}/platform/evaluate/remark/${type!}?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>监测评估</a>'+
                         '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
                         '</div>';
