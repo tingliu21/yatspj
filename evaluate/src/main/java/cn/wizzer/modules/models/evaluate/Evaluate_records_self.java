@@ -10,7 +10,7 @@ import java.io.Serializable;
  * Created by liuting on 2018/10/26.
  */
 @Table("evaluate_records")
-public class Evaluate_records extends Model implements Serializable{
+public class Evaluate_records_self extends Model implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
@@ -47,27 +47,14 @@ public class Evaluate_records extends Model implements Serializable{
     @Column
     @Comment("自评进度")
     @ColDefine(type = ColType.FLOAT, width = 8)
-    private double progress_s;
+    private float progress_s;
 
     @Column
     @Comment("自评状态")
     @ColDefine(type = ColType.BOOLEAN)
     private boolean status_s;
 
-    @Column
-    @Comment("评估得分")
-    @ColDefine(type = ColType.FLOAT, width = 8)
-    private double score_p;
 
-    @Column
-    @Comment("评估进度")
-    @ColDefine(type = ColType.FLOAT, width = 8)
-    private double progress_p;
-
-    @Column
-    @Comment("评估状态")
-    @ColDefine(type = ColType.BOOLEAN)
-    private boolean status_p;
 
     public String getId() {
         return id;
@@ -117,11 +104,11 @@ public class Evaluate_records extends Model implements Serializable{
         this.score_s = score_s;
     }
 
-    public double getProgress_s() {
+    public float getProgress_s() {
         return progress_s;
     }
 
-    public void setProgress_s(double progress_s) {
+    public void setProgress_s(float progress_s) {
         this.progress_s = progress_s;
     }
 
@@ -133,28 +120,6 @@ public class Evaluate_records extends Model implements Serializable{
         this.status_s = status_s;
     }
 
-    public double getScore_p() {
-        return score_p;
-    }
 
-    public void setScore_p(double score_p) {
-        this.score_p = score_p;
-    }
-
-    public double getProgress_p() {
-        return progress_p;
-    }
-
-    public void setProgress_p(double progress_p) {
-        this.progress_p = progress_p;
-    }
-
-    public boolean isStatus_p() {
-        return status_p;
-    }
-
-    public void setStatus_p(boolean status_p) {
-        this.status_p = status_p;
-    }
 }
 

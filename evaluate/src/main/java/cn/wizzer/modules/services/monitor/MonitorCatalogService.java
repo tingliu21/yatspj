@@ -58,7 +58,7 @@ public class MonitorCatalogService extends Service<Monitor_catalog> {
         if (!Strings.isEmpty(catalog.getParentId())) {
             int count = count(Cnd.where("parentId", "=", catalog.getParentId()));
             if (count < 1) {
-                dao().execute(Sqls.create("update monitor_catalog set hasChildren=0 where id=@pid").setParam("pid", catalog.getParentId()));
+                dao().execute(Sqls.create("update monitor_catalog set hasChildren=false where id=@pid").setParam("pid", catalog.getParentId()));
             }
         }
     }

@@ -9,12 +9,16 @@ import cn.wizzer.modules.models.evaluate.Evaluate_qualify;
 import cn.wizzer.modules.models.evaluate.Evaluate_records;
 import cn.wizzer.modules.models.evaluate.Evaluate_remark;
 import cn.wizzer.modules.models.monitor.Monitor_index;
+import cn.wizzer.modules.models.sys.Sys_user;
 import cn.wizzer.modules.services.evaluate.EvaluateQualifyService;
 import cn.wizzer.modules.services.evaluate.EvaluateRecordsService;
 import cn.wizzer.modules.services.evaluate.EvaluateRemarkService;
 import cn.wizzer.modules.services.monitor.MonitorIndexService;
 import cn.wizzer.modules.services.sys.SysUnitService;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.ThreadContext;
 import org.nutz.dao.Cnd;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
@@ -42,26 +46,36 @@ public class EvaluateRecordsController {
 	@Inject
 	private EvaluateRemarkService evaluateRemarkService;
 
-	@At("/?")
+	@At("")
 	@Ok("beetl:/platform/evaluate/records/index.html")
 	@RequiresAuthentication
-	public void index(String type, HttpServletRequest req) {
-		req.setAttribute("type", type);
+//	public void index(String type, HttpServletRequest req) {
+//		req.setAttribute("type", type);
+	public void index( HttpServletRequest req) {
+
 	}
 
 	@At
 	@Ok("json:full")
 	@RequiresAuthentication
 	public Object data(@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
-		Cnd cnd = Cnd.NEW();
+
+		//只审核已经提交的
+		Cnd cnd = Cnd.where("status_s","=",true);
+
+
+
     	return evaluateRecordsService.data(length, start, draw, order, columns, cnd, "school");
     }
 
-    @At("/add/?")
+//    @At("/add/?")
+	@At
     @Ok("beetl:/platform/evaluate/records/add.html")
     @RequiresAuthentication
-    public void add(String type,HttpServletRequest req) {
-		req.setAttribute("type", type);
+//    public void add(String type,HttpServletRequest req) {
+//		req.setAttribute("type", type);
+	public void add(HttpServletRequest req) {
+
     }
 
     @At

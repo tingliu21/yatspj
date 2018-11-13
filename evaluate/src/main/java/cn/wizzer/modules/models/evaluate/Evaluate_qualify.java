@@ -47,6 +47,17 @@ public class Evaluate_qualify extends Model implements Serializable {
     @ColDefine(type = ColType.BOOLEAN)
     private Boolean qualify = null;
 
+    @Column
+    @Comment("是否自评完成")
+    @ColDefine(type = ColType.BOOLEAN)
+    private Boolean selfeva = null;
+
+    @Column
+    @Comment("是否审核完成")
+    @ColDefine(type = ColType.BOOLEAN)
+    private Boolean verifyeva = null;
+
+
     public String getId() {
         return id;
     }
@@ -101,5 +112,21 @@ public class Evaluate_qualify extends Model implements Serializable {
 
     public void setQualify(Boolean qualify) {
         this.qualify = qualify;
+    }
+
+    public Boolean getSelfeva() {
+        return selfeva;
+    }
+
+    public void setSelfeva(Boolean selfeva) {
+        this.selfeva = selfeva;
+    }
+
+    public Boolean getVerifyeva() {
+        return verifyeva;
+    }
+
+    public void setVerifyeva(Boolean verifyeva) {
+        this.verifyeva = verifyeva;
     }
 }

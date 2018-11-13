@@ -53,5 +53,6 @@ public class EvaluateQualifyService extends Service<Evaluate_qualify> {
         return null;
 
     }
+
 }
 

@@ -83,6 +83,10 @@ public class Sys_unit extends Model implements Serializable {
     @Comment("有子节点")
     private boolean hasChildren;
     @Column
+    @Comment("是否评估")
+    @ColDefine(type = ColType.BOOLEAN)
+    private boolean evaluate;
+    @Column
     @Comment("学校类别")
     @ColDefine(type = ColType.CHAR, width = 3)
     private String unitType;
@@ -196,5 +200,13 @@ public class Sys_unit extends Model implements Serializable {
 
     public void setUnitType(String unitType) {
         this.unitType = unitType;
+    }
+
+    public boolean isEvaluate() {
+        return evaluate;
+    }
+
+    public void setEvaluate(boolean evaluate) {
+        this.evaluate = evaluate;
     }
 }

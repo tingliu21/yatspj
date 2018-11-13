@@ -6,7 +6,9 @@ import cn.wizzer.common.filter.PrivateFilter;
 import cn.wizzer.common.page.DataTableColumn;
 import cn.wizzer.common.page.DataTableOrder;
 import cn.wizzer.modules.models.evaluate.Evaluate_qualify;
+import cn.wizzer.modules.models.evaluate.Evaluate_records;
 import cn.wizzer.modules.services.evaluate.EvaluateQualifyService;
+import cn.wizzer.modules.services.evaluate.EvaluateRecordsService;
 import cn.wizzer.modules.services.monitor.MonitorIndexService;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -32,9 +34,11 @@ public class EvaluateQualifyController {
 	private EvaluateQualifyService evaluateQualifyService;
 	@Inject
 	private MonitorIndexService monitorIndexService;
+	@Inject
+	private EvaluateRecordsService evaluateRecordsService;
 
-	@At("/?")
-	@Ok("beetl:/platform/evaluate/qualify/index.html")
+	@At({"","/?"})
+	@Ok("beetl:/platform/evaluate/qualify/${req_attr.type}/index.html")
 	@RequiresAuthentication
 	//type取值有2个，self和special
 	public void index(String type,@Param("evaluateId") String evaluateId,@Param("unitType") String unitType,HttpServletRequest req) {
@@ -43,13 +47,16 @@ public class EvaluateQualifyController {
 		req.setAttribute("type", type);
 	}
 
+
 	@At
 	@Ok("json:full")
 	@RequiresAuthentication
 	public Object data(@Param("catalogId") String catalogId,@Param("evaluateId") String evaluateId,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
 		Cnd cnd = Cnd.NEW();
+
 		if (!Strings.isBlank(evaluateId) && !"0".equals(evaluateId)) {
-			cnd.and("evaluateId", "like", "%" + evaluateId + "%").and("catalogId", "like", "%" + catalogId + "%");;
+			cnd.and("evaluateId", "like", "%" + evaluateId + "%").and("catalogId", "like", "%" + catalogId + "%").asc("location");
+
 			return evaluateQualifyService.data(length, start, draw, order, columns, cnd, "index");
 		}
 		return null;
@@ -85,7 +92,7 @@ public class EvaluateQualifyController {
 
     //学校自评页面
 	@At("/selfeva/?")
-	@Ok("beetl:/platform/evaluate/qualify/edit.html")
+	@Ok("beetl:/platform/evaluate/qualify/schooledit.html")
 	@RequiresPermissions("evaluate.self.remark")
 	public Object edit_self(String id) {
 		Evaluate_qualify qualify = evaluateQualifyService.fetch(id);
@@ -106,8 +113,19 @@ public class EvaluateQualifyController {
 			String formula =monitorIndexService.fetch(evaluateQualify.getIndexId()).getFormula();
 			Boolean qualify=evaluateQualifyService.isQualified(evaluateQualify.getPvalue(),formula);
 			evaluateQualify.setQualify(qualify);
+			evaluateQualify.setSelfeva(true);//该指标自评完成
 
 			evaluateQualifyService.updateIgnoreNull(evaluateQualify);
+
+			//修改records记录
+			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateQualify.getEvaluateId());
+			double progress = evaluateRecordsService.getProgress_s(evaluateQualify.getEvaluateId());
+			evaluateRecords.setProgress_s(progress);
+			if(progress==1.0){
+				evaluateRecords.setStatus_s(true);
+			}
+			evaluateRecordsService.updateIgnoreNull(evaluateRecords);
+
 			return Result.success("system.success");
 		} catch (Exception e) {
 			return Result.error("system.error");
@@ -131,8 +149,18 @@ public class EvaluateQualifyController {
 		try {
 			evaluateQualify.setOpBy(Strings.sNull(req.getAttribute("uid")));
 			evaluateQualify.setOpAt((int) (System.currentTimeMillis() / 1000));
-
+			evaluateQualify.setVerifyeva(true);
 			evaluateQualifyService.updateIgnoreNull(evaluateQualify);
+
+			//修改records记录
+			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateQualify.getEvaluateId());
+			double progress = evaluateRecordsService.getProgress_p(evaluateQualify.getEvaluateId());
+			evaluateRecords.setProgress_p(progress);
+			if(progress==1.0){
+				evaluateRecords.setStatus_p(true);
+			}
+			evaluateRecordsService.updateIgnoreNull(evaluateRecords);
+
 			return Result.success("system.success");
 		} catch (Exception e) {
 			return Result.error("system.error");
