@@ -14,6 +14,7 @@
 
                 <input name="id" type="hidden" value="${obj.id}">
                 <input name="indexId" type="hidden" value="${obj.indexId}">
+                    <input name="evaluateId" type="hidden" value="${obj.evaluateId}">
                 <div class="row mb10" style="text-align: center;padding-top: 10px;">
                     <div class="col-lg-12">
 
@@ -31,18 +32,21 @@
                                        placeholder="目标值" value="${obj.index.mvalue}" readonly="true">
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label for="pvalue" class="col-sm-2 control-label">实际值</label>
                             <div class="col-sm-8">
                                 <input type="text" id="pvalue" class="form-control" name="pvalue" data-parsley-required="true"
-                                       placeholder="实际值" value="${obj.pvalue}" >
+                                       placeholder="实际值" value="${obj.pvalue}" readonly="true">
                                 <div align="left" style="width: 350px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
                                     <strong>只出现数字和;符号</strong><br>
                                     <strong>示例：</strong>指标4.生均图书资料、生均学期借阅图数量<br>
-                                      38;9  生均图书资料38册 生均学期借阅图数量9册<br>
+                                    38;9  生均图书资料38册 生均学期借阅图数量9册<br>
                                 </div>
                             </div>
                         </div>
+
+
                         <div class="form-group">
                             <label for="qualify" class="col-sm-2 control-label">是否达标</label>
                             <div class="col-sm-8 switcha">
@@ -52,6 +56,7 @@
                             </div>
 
                         </div>
+
                     </div>
                 </div>
                 <div class="col-lg-3"></div>
