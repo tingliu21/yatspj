@@ -127,7 +127,20 @@ public class EvaluateRecordsSelfController {
 		}
 		return Result.error("system.error");
     }
+	@At({"/submit/?"})
+	@Ok("json")
+	@SLog(tag = "删除Evaluate_records_self", msg = "ID:${args[2].getAttribute('id')}")
+	public Object submit(String id ,HttpServletRequest req) {
+		try {
 
+			evaluateRecordsSelfService.submit(id);
+			req.setAttribute("id", id);
+
+			return Result.success("system.success");
+		} catch (Exception e) {
+			return Result.error("system.error");
+		}
+	}
 	//region 暂时没用，评估记录只有初始化操作和列表操作
 	@At("/edit/?")
     @Ok("beetl:/platform/evaluate/records/edit.html")

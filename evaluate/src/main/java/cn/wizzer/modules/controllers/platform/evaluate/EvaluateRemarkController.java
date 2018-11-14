@@ -89,6 +89,10 @@ public class EvaluateRemarkController {
     @SLog(tag = "修改Evaluate_remark", msg = "ID:${args[0].id}")
     public Object editDo(@Param("..") Evaluate_remark evaluateRemark, HttpServletRequest req) {
 		try {
+			Evaluate_records records = evaluateRecordsService.fetch(evaluateRemark.getEvaluateId());
+			if(records.isStatus_s()){
+				return Result.error("已经提交审核，不能再修改评价了");
+			}
 
 			evaluateRemark.setOpAt((int) (System.currentTimeMillis() / 1000));
 			evaluateRemark.setSelfeva(true);//自评完成
@@ -101,10 +105,10 @@ public class EvaluateRemarkController {
 
 			//统计分数
 			evaluateRecords.setScore_s(evaluateRemarkService.getTotalScore_s(evaluateRemark.getEvaluateId()));
-			//确定是否完成自评
-			if(progress==1.0){
-				evaluateRecords.setStatus_s(true);
-			}
+//			//确定是否完成自评
+//			if(progress==1.0){
+//				evaluateRecords.setStatus_s(true);
+//			}
 			evaluateRecordsService.updateIgnoreNull(evaluateRecords);
 
 			return Result.success("system.success");

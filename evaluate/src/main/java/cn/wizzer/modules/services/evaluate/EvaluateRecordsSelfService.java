@@ -33,5 +33,15 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
 
 
     }
+    /**
+     * 提交评估记录
+     *
+     * @param evaluateId
+     */
+    @Aop(TransAop.READ_COMMITTED)
+    public void submit(String evaluateId){
+
+        dao().execute(Sqls.create("update evaluate_records set selfeva = true where evaluateid=@id ").setParam("id", evaluateId));
+    }
 }
 

@@ -1,5 +1,5 @@
 <form id="editForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
-      action="${base}/platform/evaluate/remark/editDo" method="post">
+      action="${base}/platform/evaluate/remark/deptevaDo" method="post">
 
     <div class="modal-body no-p">
         <div class="row">
@@ -12,6 +12,7 @@
                 </header>
 
                 <input name="id" type="hidden" value="${obj.id}">
+                <input name="evaluateId" type="hidden" value="${obj.evaluateId}">
                 <div class="row mb10">
                     <div class="col-lg-12">
 

@@ -106,6 +106,10 @@ public class EvaluateQualifyController {
 	@SLog(tag = "学校自评达标性指标", msg = "ID:${args[0].id}")
 	public Object editDo_self(@Param("..") Evaluate_qualify evaluateQualify, HttpServletRequest req) {
 		try {
+			Evaluate_records records = evaluateRecordsService.fetch(evaluateQualify.getEvaluateId());
+			if(records.isStatus_s()){
+				return Result.error("已经提交审核，不能再修改评价了");
+			}
 			evaluateQualify.setOpBy(Strings.sNull(req.getAttribute("uid")));
 			evaluateQualify.setOpAt((int) (System.currentTimeMillis() / 1000));
 			//比较实际值与公式，确定是否达标
@@ -121,9 +125,9 @@ public class EvaluateQualifyController {
 			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateQualify.getEvaluateId());
 			double progress = evaluateRecordsService.getProgress_s(evaluateQualify.getEvaluateId());
 			evaluateRecords.setProgress_s(progress);
-			if(progress==1.0){
-				evaluateRecords.setStatus_s(true);
-			}
+//			if(progress==1.0){
+//				evaluateRecords.setStatus_s(true);
+//			}
 			evaluateRecordsService.updateIgnoreNull(evaluateRecords);
 
 			return Result.success("system.success");
