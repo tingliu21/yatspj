@@ -46,13 +46,13 @@ public class EvaluateRecordsController {
 	@Inject
 	private EvaluateRemarkService evaluateRemarkService;
 
-	@At("")
-	@Ok("beetl:/platform/evaluate/records/index.html")
+	@At({"","/?"})
+	@Ok("beetl:/platform/evaluate/records/${req_attr.type}/index.html")
 	@RequiresAuthentication
 //	public void index(String type, HttpServletRequest req) {
 //		req.setAttribute("type", type);
-	public void index( HttpServletRequest req) {
-
+	public void index(String type, HttpServletRequest req) {
+		req.setAttribute("type", type);
 	}
 
 	@At
