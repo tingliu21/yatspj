@@ -9,13 +9,13 @@
     <meta name="keywords" content="nutz,nutzwk">
     <title>${AppName!}</title>
     <link rel="stylesheet" href="${base!}/assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="${base!}/assets/css/font-awesome.css">
+    <!--<link rel="stylesheet" href="${base!}/assets/css/font-awesome.css">-->
     <link rel="stylesheet" href="${base!}/assets/css/themify-icons.css">
     <link rel="stylesheet" href="${base!}/assets/css/animate.min.css">
     <link rel="stylesheet" href="${base!}/assets/css/skins/palette.css">
     <link rel="stylesheet" href="${base!}/assets/css/fonts/font.css">
-    <link rel="stylesheet" href="${base!}/assets/css/main.css">
-    <link rel="stylesheet" href="${base!}/assets/css/login.css">
+    <!--<link rel="stylesheet" href="${base!}/assets/css/main.css">-->
+    <!--<link rel="stylesheet" href="${base!}/assets/css/login.css">-->
     <!--[if lt IE 9]>
     <script src="${base!}/assets/js/html5shiv.js"></script>
     <script src="${base!}/assets/js/respond.min.js"></script>
@@ -25,96 +25,226 @@
     <script src="${base!}/assets/plugins/jquery-1.11.1.min.js"></script>
     <script src="${base!}/assets/js/jquery.pjax.js"></script>
 
-<body>
-<div class="overlay"></div>
-<div class="center-wrapper">
-    <div class="center-content">
-        <div class="row no-m">
-            <div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
-                <section class="panel bg-white no-b fadeIn animated">
-                    <header class="panel-heading no-b text-center" style="font-size:30px;">
-                        ${AppName!}
-                    </header>
-                    <!-- START Language list-->
-                    <!--ul class="nav navbar-nav navbar-right">
-                        <li class="language-dropdown dropdown hidden-xs">
-                            <a href="javascript:;" data-toggle="dropdown" id="language">
-                                <%if(lang==null||lang=="zh_CN"){%>
-                                <img src="${base!}/assets/img/flags/cn.png" class="flag">
-                                <span class="language">中文</span>
-                                <%}else{%>
-                                <img src="${base!}/assets/img/flags/us.png" class="flag">
-                                <span class="language">English</span>
-                                <%}%>
-                                <ul class="dropdown-menu dropdown-menu-right animated fadeInUp">
-                                    <li>
-                                        <a href="?lang=en_US">
-                                            <img src="${base!}/assets/img/flags/us.png" class="flag">
-                                            <span class="language">English</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="?lang=zh_CN">
-                                            <img src="${base!}/assets/img/flags/cn.png" class="flag">
-                                            <span class="language">中文</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                        </li>
-                    </ul-->
-                    <!-- END Language list-->
-                    <div class="p15">
-                        <form id="loginForm" action="${base!}/platform/login/doLogin" data-parsley-validate="" novalidate=""
-                              role="form"
-                              method="post">
-                            <input type="hidden" id="captcha" name="captcha">
+    <!-- bootstrap & fontawesome -->
+    <link rel="stylesheet" href="${base!}/assets/font-awesome/4.2.0/css/font-awesome.min.css" />
+    <!-- text fonts -->
+    <link rel="stylesheet" href="${base!}/assets/fonts/fonts.googleapis.com.css" />
+    <!-- ace styles -->
+    <link rel="stylesheet" href="${base!}/assets/css/ace.min.css" />
+    <!--[if lte IE 9]>
+    <link rel="stylesheet" href="${base!}/assets/css/ace-part2.min.css" />
+    <![endif]-->
+    <link rel="stylesheet" href="${base!}/assets/css/ace-rtl.min.css" />
 
-                            <div class="form-group">
-                                <input type="text" id="username" name="username" value="superadmin" required
-                                       class="form-control input-lg mb25"
-                                       placeholder="${msg['login.username']}">
-                            </div>
-                            <div class="form-group">
-                                <input type="password" id="password" name="password" value="1" required
-                                       class="form-control input-lg mb25"
-                                       placeholder="${msg['login.password']}">
-                            </div>
-                            <p id="tip" class="bg-danger p15" style="display:none"></p>
+    <!--[if lte IE 9]>
+    <link rel="stylesheet" href="${base!}/assets/css/ace-ie.min.css" />
+    <![endif]-->
 
-                            <div class="show">
-                                <button class="btn btn-primary btn-lg btn-block" type="submit"
-                                        data-loading-text="${msg['login.submit']}...">
-                                    ${msg['login.submit']}
-                                </button>
-                            </div>
-                            <div class="login-header"><a href="javascript:;">点击，弹出登录框</a></div>
-                        </form>
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+
+    <!--[if lt IE 9]>
+    <script src="assets/js/html5shiv.min.js"></script>
+    <script src="assets/js/respond.min.js"></script>
+    <![endif]-->
+
+<body class="login-layout">
+
+    <div class="main-container">
+        <div class="main-content">
+            <div class="row">
+                <div class="col-sm-10 col-sm-offset-1">
+                    <div class="login-container">
+                        <div class="center">
+                            <h1>
+                                <span class="white" id="id-text2">${AppName!}</span>
+                            </h1>
+                        </div>
+
+                        <div class="space-6"></div>
+
+                        <div class="position-relative">
+                            <div id="login-box" class="login-box visible widget-box no-border">
+                                <div class="widget-body">
+                                    <div class="widget-main">
+                                        <h4 class="header blue lighter bigger">
+                                            <i class="ace-icon fa fa-coffee green"></i>
+                                            请输入您的信息
+                                        </h4>
+
+                                        <div class="space-6"></div>
+
+                                        <form id="loginForm" action="${base!}/platform/login/doLogin" data-parsley-validate="" novalidate=""
+                                              role="form"
+                                              method="post">
+                                            <input type="hidden" id="captcha" name="captcha">
+
+                                            <div class="form-group">
+                                                <input type="text" id="username" name="username" required
+                                                       class="form-control input-lg mb25"
+                                                       placeholder="${msg['login.username']}">
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="password" id="password" name="password" required
+                                                       class="form-control input-lg mb25"
+                                                       placeholder="${msg['login.password']}">
+                                            </div>
+                                            <p id="tip" class="bg-danger p15" style="display:none"></p>
+
+                                            <div class="show">
+                                                <button class="btn btn-primary btn-lg btn-block" type="submit"
+                                                        data-loading-text="${msg['login.submit']}...">
+                                                    ${msg['login.submit']}
+                                                </button>
+                                            </div>
+
+                                        </form>
+
+
+
+
+                                    </div><!-- /.widget-main -->
+
+                                    <div class="toolbar clearfix">
+                                        <div>
+                                            <a href="#" data-target="#forgot-box" class="forgot-password-link">
+                                                <i class="ace-icon fa fa-arrow-left"></i>
+                                                学校登陆
+                                            </a>
+                                        </div>
+
+                                        <div>
+                                            <a href="#" data-target="#signup-box" class="user-signup-link">
+                                                专家登陆
+                                                <i class="ace-icon fa fa-arrow-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div><!-- /.widget-body -->
+                            </div><!-- /.login-box -->
+
+                            <div id="forgot-box" class="forgot-box widget-box no-border">
+                                <div class="widget-body">
+                                    <div class="widget-main">
+                                        <h4 class="header red lighter bigger">
+                                            <i class="ace-icon fa fa-key"></i>
+                                            学校登陆
+                                        </h4>
+
+                                        <div class="space-6"></div>
+                                        <p>
+                                            请输入您的账号和密码：
+                                        </p>
+
+                                        <form>
+                                            <fieldset>
+                                                <label class="block clearfix">
+														<span class="block input-icon input-icon-right">
+															<input type="text" class="form-control" placeholder="用户名" />
+															<i class="ace-icon fa fa-user"></i>
+														</span>
+                                                </label>
+
+                                                <label class="block clearfix">
+														<span class="block input-icon input-icon-right">
+															<input type="password" class="form-control" placeholder="密码" />
+															<i class="ace-icon fa fa-lock"></i>
+														</span>
+                                                </label>
+
+                                                <div class="space-24"></div>
+
+                                                <div class="clearfix">
+                                                    <but1ton type="button" class="btn-block btn btn-lg btn-danger">
+
+                                                        <span class="bigger-110">登陆</span>
+                                                        <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
+                                                    </but1ton>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div><!-- /.widget-main -->
+
+                                    <div class="toolbar center">
+                                        <a href="#" data-target="#login-box" class="back-to-login-link">
+                                            返回登录
+                                            <i class="ace-icon fa fa-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div><!-- /.widget-body -->
+                            </div><!-- /.forgot-box -->
+
+                            <div id="signup-box" class="signup-box widget-box no-border">
+                                <div class="widget-body">
+                                    <div class="widget-main">
+                                        <h4 class="header green lighter bigger">
+                                            <i class="ace-icon fa fa-key green"></i>
+                                            专家登陆
+                                        </h4>
+
+                                        <div class="space-6"></div>
+                                        <p>请输入您的账号和密码: </p>
+
+                                        <form>
+                                            <fieldset>
+                                                <label class="block clearfix">
+														<span class="block input-icon input-icon-right">
+															<input type="text" class="form-control" placeholder="用户名" />
+															<i class="ace-icon fa fa-user"></i>
+														</span>
+                                                </label>
+
+                                                <label class="block clearfix">
+														<span class="block input-icon input-icon-right">
+															<input type="password" class="form-control" placeholder="密码" />
+															<i class="ace-icon fa fa-lock"></i>
+														</span>
+                                                </label>
+
+                                                <div class="space-24"></div>
+
+                                                <div class="clearfix">
+                                                    <button type="button" class="btn btn-lg btn-block btn-success">
+                                                        <span class="bigger-110">登陆</span>
+
+                                                        <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
+                                                    </button>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+
+                                    <div class="toolbar center">
+                                        <a href="#" data-target="#login-box" class="back-to-login-link">
+                                            <i class="ace-icon fa fa-arrow-left"></i>
+                                            返回登录
+                                        </a>
+                                    </div>
+                                </div><!-- /.widget-body -->
+                            </div><!-- /.signup-box -->
+                        </div><!-- /.position-relative -->
+
+                        <div class="navbar-fixed-top align-right">
+                            <br />
+                            &nbsp;
+                            <a id="btn-login-dark" href="#">Dark</a>
+                            &nbsp;
+                            <span class="blue">/</span>
+                            &nbsp;
+                            <a id="btn-login-blur" href="#">Blur</a>
+                            &nbsp;
+                            <span class="blue">/</span>
+                            &nbsp;
+                            <a id="btn-login-light" href="#">Light</a>
+                            &nbsp; &nbsp; &nbsp;
+                        </div>
                     </div>
-                </section>
-                <p class="text-center text-default">
-                    Copyright &copy;
-                    <span id="year" class="mr5"></span>
-                </p>
-            </div>
-        </div>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.main-content -->
+    </div><!-- /.main-container -->
 
-    </div>
-</div>
-<!--弹出登录窗口-->
-<div class="login">
-    <div class="login-title">登录会员<span><a href="javascript:void(0);" class="close-login">关闭</a></span></div>
-    <div class="login-input-content">
-        <div class="login-input">
-            <label>用&nbsp;户&nbsp;&nbsp;名：</label>
-            <input type="text" placeholder="请输入用户名"  name="info[username1]" id="username1" class="list-input"/>
-        </div>
-        <div class="login-input">
-            <label>登录密码：</label>
-            <input type="password" placeholder="请输入登录密码" name="info[password1]" id="password1" class="list-input"/>
-        </div>
-    </div>
-    <div class="login-button"><a href="javascript:void(0);" id="login-button-submit">登录会员</a></div>
-</div>
+
+<div style="text-align:center;"></div>
 
 <div class="login-bg"></div>
 <!-- 验证码 -->
@@ -192,26 +322,44 @@
             }
         });
         $("#username").focus();
-        $(function () {
-            H_login = {};
-            H_login.openLogin = function(){
-                $('.login-header a').click(function(){
-                    $('.login').show();
-                    $('.login-bg').show();
-                });
-            };
-            H_login.closeLogin = function(){
-                $('.close-login').click(function(){
-                    $('.login').hide();
-                    $('.login-bg').hide();
-                });
-            };
-            H_login.run = function () {
-                this.closeLogin();
-                this.openLogin();
-            };
-            H_login.run();
+
+    });
+
+    jQuery(function($) {
+        $(document).on('click', '.toolbar a[data-target]', function(e) {
+            e.preventDefault();
+            var target = $(this).data('target');
+            $('.widget-box.visible').removeClass('visible');//hide others
+            $(target).addClass('visible');//show target
         });
+    });
+
+
+
+    //you don't need this, just used for changing background
+    jQuery(function($) {
+        $('#btn-login-dark').on('click', function(e) {
+            $('body').attr('class', 'login-layout');
+            $('#id-text2').attr('class', 'white');
+            $('#id-company-text').attr('class', 'blue');
+
+            e.preventDefault();
+        });
+        $('#btn-login-light').on('click', function(e) {
+            $('body').attr('class', 'login-layout light-login');
+            $('#id-text2').attr('class', 'grey');
+            $('#id-company-text').attr('class', 'blue');
+
+            e.preventDefault();
+        });
+        $('#btn-login-blur').on('click', function(e) {
+            $('body').attr('class', 'login-layout blur-login');
+            $('#id-text2').attr('class', 'white');
+            $('#id-company-text').attr('class', 'light-blue');
+
+            e.preventDefault();
+        });
+
     });
 
 

@@ -34,9 +34,12 @@
     <link rel="stylesheet" href="${base!}/assets/css/skins/palette.css" id="skin">
     <% } %>
     <script src="${base!}/assets/plugins/jquery-1.11.1.min.js"></script>
+    <link rel="icon" href="${base!}/assets/img/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="${base!}/assets/img/favicon.ico" type="image/x-icon">
     <script type="text/javascript">
         var base = '${base!}';
     </script>
+
 </head>
 <body>
 <div class="gallery-loader" style="background-color:transparent;">
@@ -69,13 +72,6 @@
                 <div></div>
                 <div></div>
             </a>
-            <!--<a onclick="sublime.changeTheme('palette.4.css')" href="${base!}/assets/css/skins/palette.4.css"
-               class="css_orange cs_color cs_4 <% if('palette.4.css' == @shiro.getPrincipalProperty('loginTheme')){ %>active<% } %>">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-            </a>-->
         </div>
         <div class="options-container">
             <h6>${msg['index.layout']}</h6>
@@ -118,12 +114,6 @@
 
         </ul>
         <ul id="topnav" class="nav navbar-nav hidden-xs">
-            <!--<li>-->
-            <!--<a href="${base!}/sysadmin/home" data-pjax>-->
-            <!--<i class="ti-home"></i>-->
-            <!--<span>首页</span>-->
-            <!--</a>-->
-            <!--</li>-->
             <%
             var secondMenus=@shiro.getPrincipalProperty('secondMenus');
             for(firstMenu in @shiro.getPrincipalProperty('firstMenus')){
@@ -166,43 +156,9 @@
                     </li><% } %>
                 </ul><% } %>
             </li><% }%>
-            <!--<li>
-                <a href="https://github.com/Wizzercn/NutzWk" target="_blank">GitHub</a>
-            </li>
-            <li>
-                <a href="https://www.wizzer.cn" target="_blank">作者博客</a>
-            </li>
-            <li>
-                <a href="https://nutz.cn" target="_blank">Nutz 社区</a>
-            </li>
-            <li>
-                <a href="http://nutzam.com/core/nutz_preface.html" target="_blank">开发文档</a>
-            </li>-->
+
         </ul>
         <ul class="nav navbar-nav navbar-right">
-            <!--通知位置-->
-            <!--li class="language-dropdown dropdown hidden-xs">
-                <a href="javascript:;" data-toggle="dropdown" id="language">
-                    <%if(lang==null||lang=="zh_CN"){%>
-                    <img src="${base!}/assets/img/flags/cn.png" class="flag">
-                    <%}else{%>
-                    <img src="${base!}/assets/img/flags/us.png" class="flag">
-                    <%}%>
-                    <ul class="dropdown-menu dropdown-menu-right animated fadeInUp">
-                        <li>
-                            <a href="javascript:sublime.changeLang('en_US');">
-                                <img src="${base!}/assets/img/flags/us.png" class="flag">
-                                <span class="language">English</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:sublime.changeLang('zh_CN');">
-                                <img src="${base!}/assets/img/flags/cn.png" class="flag">
-                                <span class="language">中文</span>
-                            </a>
-                        </li>
-                    </ul>
-            </li-->
             <li class="off-right">
                 <a href="javascript:;" data-toggle="dropdown">
                     <span class="hidden-xs ml10">${@shiro.getPrincipalProperty('nickname')}</span>
