@@ -99,9 +99,6 @@
 
                                         </form>
 
-
-
-
                                     </div><!-- /.widget-main -->
 
                                     <div class="toolbar clearfix">
@@ -135,33 +132,36 @@
                                             请输入您的账号和密码：
                                         </p>
 
-                                        <form>
-                                            <fieldset>
-                                                <label class="block clearfix">
-														<span class="block input-icon input-icon-right">
-															<input type="text" class="form-control" placeholder="用户名" />
-															<i class="ace-icon fa fa-user"></i>
-														</span>
-                                                </label>
+                                        <form id="schoolLoginForm" action="${base!}/platform/login/doLogin" data-parsley-validate="" novalidate=""
+                                              role="form"
+                                              method="post">
 
-                                                <label class="block clearfix">
-														<span class="block input-icon input-icon-right">
-															<input type="password" class="form-control" placeholder="密码" />
-															<i class="ace-icon fa fa-lock"></i>
-														</span>
-                                                </label>
 
-                                                <div class="space-24"></div>
+                                            <div class="form-group">
+                                                <input type="text" id="schoolusername" name="username" required
+                                                       class="form-control input-lg mb25"
+                                                       placeholder="${msg['login.username']}">
+                                                <i class="ace-icon fa fa-user"></i>
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="password" id="schoolpassword" name="password" required
+                                                       class="form-control input-lg mb25"
+                                                       placeholder="${msg['login.password']}">
+                                                <i class="ace-icon fa fa-lock"></i>
+                                            </div>
+                                            <p id="tip1" class="bg-danger p15" style="display:none"></p>
 
-                                                <div class="clearfix">
-                                                    <but1ton type="button" class="btn-block btn btn-lg btn-danger">
+                                            <div class="show">
+                                                <button class="btn btn-danger btn-lg btn-block" type="submit"
+                                                        data-loading-text="${msg['login.submit']}...">
+                                                    ${msg['login.submit']}
+                                                    <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
+                                                </button>
 
-                                                        <span class="bigger-110">登陆</span>
-                                                        <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
-                                                    </but1ton>
-                                                </div>
-                                            </fieldset>
+                                            </div>
+
                                         </form>
+
                                     </div><!-- /.widget-main -->
 
                                     <div class="toolbar center">
@@ -184,32 +184,34 @@
                                         <div class="space-6"></div>
                                         <p>请输入您的账号和密码: </p>
 
-                                        <form>
-                                            <fieldset>
-                                                <label class="block clearfix">
-														<span class="block input-icon input-icon-right">
-															<input type="text" class="form-control" placeholder="用户名" />
-															<i class="ace-icon fa fa-user"></i>
-														</span>
-                                                </label>
+                                        <form id="specailLoginForm" action="${base!}/platform/login/doLogin" data-parsley-validate="" novalidate=""
+                                              role="form"
+                                              method="post">
+                                            
 
-                                                <label class="block clearfix">
-														<span class="block input-icon input-icon-right">
-															<input type="password" class="form-control" placeholder="密码" />
-															<i class="ace-icon fa fa-lock"></i>
-														</span>
-                                                </label>
+                                            <div class="form-group">
+                                                <input type="text" id="specailusername" name="username" required
+                                                       class="form-control input-lg mb25"
+                                                       placeholder="${msg['login.username']}">
+                                                <i class="ace-icon fa fa-user"></i>
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="password" id="specialpassword" name="password" required
+                                                       class="form-control input-lg mb25"
+                                                       placeholder="${msg['login.password']}">
+                                                <i class="ace-icon fa fa-lock"></i>
+                                            </div>
+                                            <p id="tip2" class="bg-danger p15" style="display:none"></p>
 
-                                                <div class="space-24"></div>
+                                            <div class="show">
+                                                <button class="btn btn-success btn-lg btn-block" type="submit"
+                                                        data-loading-text="${msg['login.submit']}...">
+                                                    ${msg['login.submit']}
+                                                    <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
+                                                </button>
 
-                                                <div class="clearfix">
-                                                    <button type="button" class="btn btn-lg btn-block btn-success">
-                                                        <span class="bigger-110">登陆</span>
+                                            </div>
 
-                                                        <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
-                                                    </button>
-                                                </div>
-                                            </fieldset>
                                         </form>
                                     </div>
 
@@ -302,6 +304,56 @@
                     $('#captcha_img').attr('src', '${base!}/platform/login/captcha?_=' + new Date().getTime());
                     $("#tip").html(data.msg);
                     $("#tip").fadeIn();
+                    form.find("button:submit").text("${msg['login.submit']}");
+                    form.find("button:submit").removeAttr("disabled")
+                }
+            }
+        });
+        $("#schoolLoginForm").ajaxForm({
+            dataType: 'json',
+            beforeSubmit: function (arr, form, options) {
+                form.find("button:submit").text("${msg['login.load']}");
+                form.find("button:submit").attr("disabled", "disabled");
+            },
+            success: function (data, statusText, xhr, form) {
+                if (data.code == 0) {
+                    $("#tip1").hide();
+                    form.find("button:submit").text("${msg['login.success']}");
+                    window.location.href = "${base!}/platform/home";
+                } else if (data.code == 2) {
+                    $("#verifycode").val("");
+                    $("#dialogVeryCode img").attr("src", '${base!}/platform/login/captcha?_=' + new Date().getTime());
+                    return $("#dialogVeryCode").modal({show: true, backdrop: 'static', keyboard: false});
+                } else {
+                    $("#captcha1").val("");
+                    $('#captcha_img').attr('src', '${base!}/platform/login/captcha?_=' + new Date().getTime());
+                    $("#tip1").html(data.msg);
+                    $("#tip1").fadeIn();
+                    form.find("button:submit").text("${msg['login.submit']}");
+                    form.find("button:submit").removeAttr("disabled")
+                }
+            }
+        });
+        $("#specailLoginForm").ajaxForm({
+            dataType: 'json',
+            beforeSubmit: function (arr, form, options) {
+                form.find("button:submit").text("${msg['login.load']}");
+                form.find("button:submit").attr("disabled", "disabled");
+            },
+            success: function (data, statusText, xhr, form) {
+                if (data.code == 0) {
+                    $("#tip2").hide();
+                    form.find("button:submit").text("${msg['login.success']}");
+                    window.location.href = "${base!}/platform/home";
+                } else if (data.code == 2) {
+                    $("#verifycode").val("");
+                    $("#dialogVeryCode img").attr("src", '${base!}/platform/login/captcha?_=' + new Date().getTime());
+                    return $("#dialogVeryCode").modal({show: true, backdrop: 'static', keyboard: false});
+                } else {
+                    $("#captcha2").val("");
+                    $('#captcha_img').attr('src', '${base!}/platform/login/captcha?_=' + new Date().getTime());
+                    $("#tip2").html(data.msg);
+                    $("#tip2").fadeIn();
                     form.find("button:submit").text("${msg['login.submit']}");
                     form.find("button:submit").removeAttr("disabled")
                 }
