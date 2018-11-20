@@ -116,7 +116,7 @@ layout("/layouts/platform.html"){
             "columnDefs": [
                 {
                     "render": function (data, type, row) {
-                        html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><i class="ti-plus"></i> 查看</a>';
+                        html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><span class="glyphicon glyphicon-eye-open"></span> 查看</a>';
                         <% if(@shiro.hasPermission("evaluate.self.remark")){%>
                             html+='<div class="btn-group-vertical"><a class="btn btn-danger" href="${base}/platform/evaluate/remark/selfeva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
                                 '    <span class="glyphicon glyphicon-pencil"></span> 评价</a>' +

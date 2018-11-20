@@ -16,13 +16,13 @@ layout("/layouts/platform.html"){
             <table class="table table-bordered table-striped mg-t datatable">
                 <thead>
                 <tr>
-                    <th>学年</th>
-                    <th>学校类型</th>
-                    <th>学校名称</th>
-                    <th>权重</th>
-                    <th>自评得分</th>
-                    <th>自评进度</th>
-                    <th>自评状态</th>
+                    <th class="col-md-1">学年</th>
+                    <th class="col-md-1">学校类型</th>
+                    <th class="col-md-2">学校名称</th>
+                    <th class="col-md-1">权重</th>
+                    <th class="col-md-1">自评得分</th>
+                    <th class="col-md-1">自评进度</th>
+                    <th class="col-md-1">自评状态</th>
                     <th>操作</th>
                 </tr>
                 </thead>
@@ -143,8 +143,8 @@ layout("/layouts/platform.html"){
                 "render": function (data, type, row) {
                     return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/qualify/self?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>达标性评估</a>' +
                         '<a class="btn btn-success" href="${base}/platform/evaluate/remark/self?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>监测评估</a>'+
+                        '<a class="btn btn-warning" href="javascript:;" onclick="sub(\'' + row.id + '\','+row.progress_s+')">提交审核</a>'+
                         '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
-                        '<a class="btn btn-danger" href="javascript:;" onclick="sub(\'' + row.id + '\','+row.progress_s+')">提交审核</a>'+
                         '</div>';
                 },
                 "targets": 7

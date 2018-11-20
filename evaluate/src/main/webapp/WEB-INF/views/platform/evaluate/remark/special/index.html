@@ -120,7 +120,7 @@ layout("/layouts/platform.html"){
             "columnDefs": [
                 {
                     "render": function (data, type, row) {
-                        html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><i class="ti-plus"></i> 查看</a>';
+                        html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><span class="glyphicon glyphicon-eye-open"></span>查看</a>';
                         //专家考评落实到部门和用户
                         if(row.index.department == '${@shiro.getPrincipalProperty("unitid")}' && row.index.master =='${@shiro.getPrincipalProperty("id")}'){
 
