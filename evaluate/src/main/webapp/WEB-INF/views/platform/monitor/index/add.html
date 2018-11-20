@@ -65,11 +65,37 @@ layout("/layouts/platform.html"){
                             <input type="text" id="weights" class="form-control" name="weights" data-parsley-required="true" placeholder="权重">
                             </div>
                         </div>
+                        <div class="form-group has-feedback">
+                            <label for="parentId" class="col-sm-2 control-label">送审部门</label>
+
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <input id="parentId" type="text" class="form-control" placeholder="选择送审部门" disabled
+                                           data-parsley-required="true"/>
+
+                                    <span class="input-group-btn">
+			                             			<button type="button" class="btn btn-primary" data-toggle="modal"
+                                                            data-target="#dialogSelectParentUnit"><i class="ti-plus"></i>选择
+                                                    </button>
+			                             		</span>
+                                </div>
+                                <input type="hidden" name="department" >
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label for="qualify" class="col-sm-2 control-label">是否达标性指标</label>
                             <div class="col-sm-8 switcha">
                                 <div class="mr15">
                                     <input type="checkbox" id="qualify" name="qualify" class="js-switch-blue"  >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="selfeva" class="col-sm-2 control-label">是否需要自评</label>
+                            <div class="col-sm-8 switcha">
+                                <div class="mr15">
+                                    <input type="checkbox" id="selfeva" name="selfeva" class="js-switch-blue"  >
                                 </div>
                             </div>
                         </div>
@@ -110,7 +136,32 @@ layout("/layouts/platform.html"){
         </div>
     </div>
 </div>
+<!-- 选择上级单位 -->
+<div id="dialogSelectParentUnit" class="modal fade bs-modal-sm" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">选择上级单位</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div id="jsTreeParentUnit" class="demo"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                <button type="button" class="btn btn-primary" onclick="selectParentMenu()">确认选择</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script language="JavaScript">
+
+
+
     function initTreeView() {
         $("#jsTree").jstree({
             plugins: ["wholerow", "json_data"],
@@ -125,6 +176,20 @@ layout("/layouts/platform.html"){
         }).on("dblclick.jstree", function (node) {
             select();
         });
+        $("#jsTreeParentUnit").jstree({
+            plugins: ["wholerow", "json_data"],
+            core: {
+                data: {
+                    dataType: "json",
+                    url: function (node) {
+                        return node.id === "#" ? "${base}/platform/sys/unit/tree" : "${base}/platform/sys/unit/tree?pid=" + node.id
+                    }
+                },
+                multiple: false
+            }
+        }).on("dblclick.jstree", function (node) {
+            selectParentMenu();
+        });
     }
     //选择父菜单
     function select() {
@@ -134,7 +199,14 @@ layout("/layouts/platform.html"){
         $("#addForm input[name='catalogId']").val(node[0].id);
         $("#dialogSelect").modal("hide");
     }
-
+    //选择送审部门菜单
+    function selectParentMenu() {
+        var tree = $.jstree.reference("#jsTreeParentUnit");
+        var node = tree.get_selected(true);
+        $("#addForm #parentId").val(node[0].text);
+        $("#addForm input[name='department']").val(node[0].id);
+        $("#dialogSelectParentUnit").modal("hide");
+    }
     $(document).ready(function () {
         initTreeView()
         $('#addForm').ajaxForm({

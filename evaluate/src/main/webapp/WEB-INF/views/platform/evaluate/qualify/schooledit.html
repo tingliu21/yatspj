@@ -1,19 +1,21 @@
 <form id="editForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
-      action="${base}/platform/evaluate/remark/deptevaDo" method="post">
+      action="${base}/platform/evaluate/qualify/selfevaDo" method="post">
 
     <div class="modal-body no-p">
         <div class="row">
             <div class="col-xs-12">
-            <section class="panel panel-primary no-b">
+                <section class="panel panel-primary no-b">
                 <header class="panel-heading clearfix brtl brtr">
                     <div class="overflow-hidden">
                         <a href="javascript:;" class="h4 show no-m pt5">评价</a>
                     </div>
                 </header>
 
+
                 <input name="id" type="hidden" value="${obj.id}">
-                <input name="evaluateId" type="hidden" value="${obj.evaluateId}">
-                <div class="row mb10">
+                <input name="indexId" type="hidden" value="${obj.indexId}">
+                    <input name="evaluateId" type="hidden" value="${obj.evaluateId}">
+                <div class="row mb10" style="text-align: center;padding-top: 10px;">
                     <div class="col-lg-12">
 
                         <div class="form-group">
@@ -24,41 +26,27 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="mweights" class="col-sm-2 control-label">权重</label>
+                            <label for="mvalue" class="col-sm-2 control-label">目标值</label>
                             <div class="col-sm-8">
-                                <input type="text" id="mweights" class="form-control" name="mweights" data-parsley-required="true"
-                                       placeholder="权重" value="${obj.index.weights}" readonly="true" >
+                                <textarea id="mvalue" name="mvalue" style="width:100%;height:50px;" data-parsley-required="true" readonly="true" >${obj.index.mvalue!}</textarea>
+                                <!--<input type="text" id="mvalue" class="form-control" name="mvalue" data-parsley-required="true"-->
+                                       <!--placeholder="目标值" value="${obj.index.mvalue}" readonly="true">-->
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="score_s" class="col-sm-2 control-label">学校自评得分</label>
-                            <div class="col-sm-8">
-                                <input type="text" id="score_s" class="form-control" name="score_s" data-parsley-required="true"
-                                       placeholder="自打分" value="${obj.score_s}" readonly="true">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="remark_s" class="col-sm-2 control-label">学校自评意见</label>
-                            <div class="col-sm-8">
-                                <textarea id="remark_s" name="remark_s" style="width:100%;height:80px;" data-parsley-required="false" readonly="true">${obj.remark_s!}</textarea>
-                                <!--<input type="text" id="remark_s" class="form-control" name="remark_s" data-parsley-required="true"-->
-                                       <!--placeholder="自评价" value="${obj.remark_s}" >-->
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="score_p" class="col-sm-2 control-label">审核得分</label>
-                            <div class="col-sm-8">
-                                <input type="text" id="score_p" class="form-control" name="score_p" data-parsley-required="true"
-                                       placeholder="专家打分" value="${obj.score_p}" >
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="remark_p" class="col-sm-2 control-label">审核意见</label>
-                            <div class="col-sm-8">
-                                <textarea id="remark_p" name="remark_p" style="width:100%;height:80px;" data-parsley-required="false">${obj.remark_p!}</textarea>
 
+                        <div class="form-group">
+                            <label for="pvalue" class="col-sm-2 control-label">实际值</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="pvalue" class="form-control" name="pvalue" data-parsley-required="true"
+                                       placeholder="实际值" value="${obj.pvalue}" >
+                                <div align="left" style="width: 350px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
+                                    <strong>只出现数字和;符号</strong><br>
+                                    <strong>示例：</strong>指标4.生均图书资料、生均学期借阅图数量<br>
+                                      38;9  生均图书资料38册 生均学期借阅图数量9册<br>
+                                </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
                 <div class="col-lg-3"></div>
@@ -72,8 +60,9 @@
                     </div>
                 </div>
 
-            </section>
+                </section>
 
+            </div>
         </div>
     </div>
     <div class="modal-footer">
@@ -92,6 +81,7 @@
                 if (data.code == 0) {
                     Toast.success(data.msg);
                     $("#dialogEvaluate").modal("hide");
+                    //datatable.ajax.reload();
 //                    setTimeout(function () {
 //                        $("#goback").trigger("click");
 //                    }, 1000);

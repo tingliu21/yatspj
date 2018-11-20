@@ -1,6 +1,8 @@
 package cn.wizzer.modules.models.monitor;
 
 import cn.wizzer.common.base.Model;
+import cn.wizzer.modules.models.sys.Sys_unit;
+import cn.wizzer.modules.models.sys.Sys_user;
 import org.nutz.dao.DB;
 import org.nutz.dao.entity.annotation.*;
 
@@ -69,6 +71,24 @@ public class Monitor_index extends Model implements Serializable {
     @Comment("评分公式")
     @ColDefine(type = ColType.VARCHAR, width = 50)
     private String formula;
+    @Column
+    @Comment("送审部门")
+    @ColDefine(type = ColType.VARCHAR, width = 50)
+    private String department;
+    @One(field = "department")
+    private Sys_unit dept;
+
+    @Column
+    @Comment("是否需要自评")
+    @ColDefine(type = ColType.BOOLEAN)
+    private boolean selfeva;
+
+    @Column
+    @Comment("送审专家")
+    @ColDefine(type = ColType.VARCHAR, width = 50)
+    private String masterid;
+    @One(field = "masterid")
+    private Sys_user master;
 
     public String getId() {
         return id;
@@ -155,5 +175,44 @@ public class Monitor_index extends Model implements Serializable {
 
     public void setFormula(String formula) {
         this.formula = formula;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public boolean isSelfeva() {
+        return selfeva;
+    }
+
+    public void setSelfeva(boolean selfeva) {
+        this.selfeva = selfeva;
+    }
+    public Sys_unit getDept() {
+        return dept;
+    }
+
+    public void setDept(Sys_unit dept) {
+        this.dept = dept;
+    }
+
+    public String getMasterid() {
+        return masterid;
+    }
+
+    public void setMasterid(String masterid) {
+        this.masterid = masterid;
+    }
+
+    public Sys_user getMaster() {
+        return master;
+    }
+
+    public void setMaster(Sys_user master) {
+        this.master = master;
     }
 }

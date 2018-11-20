@@ -5,7 +5,9 @@ import cn.wizzer.common.base.Result;
 import cn.wizzer.common.filter.PrivateFilter;
 import cn.wizzer.common.page.DataTableColumn;
 import cn.wizzer.common.page.DataTableOrder;
+import cn.wizzer.modules.models.evaluate.Evaluate_records;
 import cn.wizzer.modules.models.evaluate.Evaluate_remark;
+import cn.wizzer.modules.services.evaluate.EvaluateRecordsService;
 import cn.wizzer.modules.services.evaluate.EvaluateRemarkService;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.nutz.dao.Cnd;
@@ -26,9 +28,11 @@ public class EvaluateRemarkController {
 	private static final Log log = Logs.get();
 	@Inject
 	private EvaluateRemarkService evaluateRemarkService;
+	@Inject
+	private EvaluateRecordsService evaluateRecordsService;
 
-	@At("/?")
-	@Ok("beetl:/platform/evaluate/remark/index.html")
+	@At({"","/?"})
+	@Ok("beetl:/platform/evaluate/remark/${req_attr.type}/index.html")
 	@RequiresAuthentication
 	//type取值有2个，self和special
 	public void index(String type,@Param("evaluateId") String evaluateId,@Param("unitType") String unitType,HttpServletRequest req) {
@@ -44,7 +48,7 @@ public class EvaluateRemarkController {
 
 		Cnd cnd = Cnd.NEW();
 		if (!Strings.isBlank(evaluateId) && !"0".equals(evaluateId)) {
-			cnd.and("evaluateId", "like", "%" + evaluateId + "%").and("catalogId", "like", "%" + catalogId + "%");;
+			cnd.and("evaluateId", "like", "%" + evaluateId + "%").and("catalogId", "like", "%" + catalogId + "%").asc("location");;
 			return evaluateRemarkService.data(length, start, draw, order, columns, cnd, "index");
 		}
 		return null;
@@ -71,8 +75,8 @@ public class EvaluateRemarkController {
 		}
     }
 	//自评
-    @At("/edit/?")
-    @Ok("beetl:/platform/evaluate/remark/edit.html")
+	@At("/selfeva/?")
+    @Ok("beetl:/platform/evaluate/remark/schooledit.html")
     @RequiresAuthentication
     public Object edit(String id) {
 		Evaluate_remark remark = evaluateRemarkService.fetch(id);
@@ -80,14 +84,33 @@ public class EvaluateRemarkController {
     }
 
 	//自评
-    @At
+	@At("/selfevaDo")
     @Ok("json")
     @SLog(tag = "修改Evaluate_remark", msg = "ID:${args[0].id}")
     public Object editDo(@Param("..") Evaluate_remark evaluateRemark, HttpServletRequest req) {
 		try {
+			Evaluate_records records = evaluateRecordsService.fetch(evaluateRemark.getEvaluateId());
+			if(records.isStatus_s()){
+				return Result.error("已经提交审核，不能再修改评价了");
+			}
 
 			evaluateRemark.setOpAt((int) (System.currentTimeMillis() / 1000));
+			evaluateRemark.setSelfeva(true);//自评完成
 			evaluateRemarkService.updateIgnoreNull(evaluateRemark);
+
+			//修改records记录
+			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateRemark.getEvaluateId());
+			double progress = evaluateRecordsService.getProgress_s(evaluateRemark.getEvaluateId());
+			evaluateRecords.setProgress_s(progress);
+
+			//统计分数
+			evaluateRecords.setScore_s(evaluateRemarkService.getTotalScore_s(evaluateRemark.getEvaluateId()));
+//			//确定是否完成自评
+//			if(progress==1.0){
+//				evaluateRecords.setStatus_s(true);
+//			}
+			evaluateRecordsService.updateIgnoreNull(evaluateRecords);
+
 			return Result.success("system.success");
 		} catch (Exception e) {
 			return Result.error("system.error");
@@ -95,7 +118,7 @@ public class EvaluateRemarkController {
     }
 
 	//部门审核、专家审核
-	@At("/edit/?")
+	@At("/depteva/?")
 	@Ok("beetl:/platform/evaluate/remark/edit.html")
 	@RequiresAuthentication
 	public Object edit_verify(String id) {
@@ -104,14 +127,28 @@ public class EvaluateRemarkController {
 	}
 
 	//部门审核、专家审核
-	@At
+	@At("/deptevaDo")
 	@Ok("json")
 	@SLog(tag = "修改Evaluate_remark", msg = "ID:${args[0].id}")
 	public Object editDo_verify(@Param("..") Evaluate_remark evaluateRemark, HttpServletRequest req) {
 		try {
-
+			evaluateRemark.setOpBy(Strings.sNull(req.getAttribute("uid")));
 			evaluateRemark.setOpAt((int) (System.currentTimeMillis() / 1000));
+			evaluateRemark.setVerifyeva(true);//部门审核完成
 			evaluateRemarkService.updateIgnoreNull(evaluateRemark);
+
+			//修改records记录
+			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateRemark.getEvaluateId());
+			double progress = evaluateRecordsService.getProgress_p(evaluateRemark.getEvaluateId());
+			evaluateRecords.setProgress_p(progress);
+
+			//统计分数
+			evaluateRecords.setScore_p(evaluateRemarkService.getTotalScore_p(evaluateRemark.getEvaluateId()));
+			//确定是否完成自评
+			if(progress==1.0){
+				evaluateRecords.setStatus_p(true);
+			}
+			evaluateRecordsService.updateIgnoreNull(evaluateRecords);
 			return Result.success("system.success");
 		} catch (Exception e) {
 			return Result.error("system.error");

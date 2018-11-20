@@ -53,6 +53,16 @@ public class Evaluate_remark extends Model implements Serializable{
     @ColDefine(type = ColType.VARCHAR, width = 100)
     private String remark_p;
 
+    @Column
+    @Comment("是否自评完成")
+    @ColDefine(type = ColType.BOOLEAN)
+    private Boolean selfeva = null;
+
+    @Column
+    @Comment("是否审核完成")
+    @ColDefine(type = ColType.BOOLEAN)
+    private Boolean verifyeva = null;
+
     public String getId() {
         return id;
     }
@@ -114,5 +124,21 @@ public class Evaluate_remark extends Model implements Serializable{
 
     public void setRemark_p(String remark_p) {
         this.remark_p = remark_p;
+    }
+
+    public Boolean getSelfeva() {
+        return selfeva;
+    }
+
+    public void setSelfeva(Boolean selfeva) {
+        this.selfeva = selfeva;
+    }
+
+    public Boolean getVerifyeva() {
+        return verifyeva;
+    }
+
+    public void setVerifyeva(Boolean verifyeva) {
+        this.verifyeva = verifyeva;
     }
 }

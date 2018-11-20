@@ -119,17 +119,16 @@ layout("/layouts/platform.html"){
             {
                 "render": function (data, type, row) {
                     return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/qualify/?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>达标性评估</a>' +
-                        '<a class="btn btn-success" href="${base}/platform/evaluate/remark/?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>监测评估</a>'+
+                        '<a class="btn btn-success" href="${base}/platform/evaluate/remark/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>监测评估</a>'+
                         '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
+                        '<a class="btn btn-danger" href="${base}/platform/evaluate/opinion/edit/' + row.id + '"  data-toggle="modal" data-target="#dialogDetail">评估意见</a>'+
                         '</div>';
                 },
                 "targets": 7
             }
             ]
         });
-//        datatable.on('click', 'tr', function () {
-//            $(this).toggleClass('selected');
-//        });
+
         $("#searchBtn").on('click', function () {
             datatable.ajax.reload();
         });

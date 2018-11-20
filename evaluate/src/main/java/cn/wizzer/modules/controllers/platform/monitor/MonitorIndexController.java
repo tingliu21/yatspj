@@ -55,7 +55,7 @@ public class MonitorIndexController {
 		if (!Strings.isBlank(name)) {
 			cnd.and("name", "like", "%" + name + "%");
 		}
-    	return monitorIndexService.data(length, start, draw, order, columns, cnd, null);
+    	return monitorIndexService.data(length, start, draw, order, columns, cnd, "dept");
     }
 
     @At
@@ -85,6 +85,7 @@ public class MonitorIndexController {
     @RequiresAuthentication
     public Object edit(String id,@Param("unitType") String unitType,HttpServletRequest req) {
 		Monitor_index index = monitorIndexService.fetch(id);
+		index = monitorIndexService.fetchLinks(index,"dept");
 		req.setAttribute("unitType", unitType);
 		req.setAttribute("id", id);
 		return index;

@@ -1,5 +1,5 @@
 <form id="editForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
-      action="${base}/platform/evaluate/remark/deptevaDo" method="post">
+      action="${base}/platform/evaluate/remark/selfevaDo" method="post">
 
     <div class="modal-body no-p">
         <div class="row">
@@ -31,34 +31,28 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label for="mdetail" class="col-sm-2 control-label">评分细则</label>
+                            <div class="col-sm-8">
+                                <textarea id="mdetail" name="mdetail" style="width:100%;height:80px;" data-parsley-required="false" readonly="true">${obj.index.detail!}</textarea>
+
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label for="score_s" class="col-sm-2 control-label">学校自评得分</label>
                             <div class="col-sm-8">
                                 <input type="text" id="score_s" class="form-control" name="score_s" data-parsley-required="true"
-                                       placeholder="自打分" value="${obj.score_s}" readonly="true">
+                                       placeholder="自打分" value="${obj.score_s}" >
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="remark_s" class="col-sm-2 control-label">学校自评意见</label>
                             <div class="col-sm-8">
-                                <textarea id="remark_s" name="remark_s" style="width:100%;height:80px;" data-parsley-required="false" readonly="true">${obj.remark_s!}</textarea>
+                                <textarea id="remark_s" name="remark_s" style="width:100%;height:80px;" data-parsley-required="false" >${obj.remark_s!}</textarea>
                                 <!--<input type="text" id="remark_s" class="form-control" name="remark_s" data-parsley-required="true"-->
                                        <!--placeholder="自评价" value="${obj.remark_s}" >-->
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="score_p" class="col-sm-2 control-label">审核得分</label>
-                            <div class="col-sm-8">
-                                <input type="text" id="score_p" class="form-control" name="score_p" data-parsley-required="true"
-                                       placeholder="专家打分" value="${obj.score_p}" >
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="remark_p" class="col-sm-2 control-label">审核意见</label>
-                            <div class="col-sm-8">
-                                <textarea id="remark_p" name="remark_p" style="width:100%;height:80px;" data-parsley-required="false">${obj.remark_p!}</textarea>
 
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="col-lg-3"></div>

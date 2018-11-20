@@ -29,16 +29,13 @@ layout("/layouts/platform.html"){
             <table class="table table-bordered table-striped mg-t datatable">
                 <thead>
                     <tr>
-
-                            <th class="col-md-2">观测点</th>
+                        <th class="col-md-1">序号</th>
+                            <th class="col-md-2">三级指标</th>
                             <th class="col-md-1">权重</th>
-
-                            <th class="col-md-2">自评得分</th>
-
-                        <%if(type=='special'){%>
-                            <th class="col-md-2">评估得分</th>
-                        <%}%>
-                            <th>操作</th>
+                            <th class="col-md-5">评分细则</th>
+                            <th class="col-md-1">自评得分</th>
+                            <th class="col-md-1">评估得分</th>
+                            <th class="col-md-3">操作</th>
                     </tr>
                 </thead>
             </table>
@@ -88,7 +85,7 @@ layout("/layouts/platform.html"){
             "processing": false,
             "serverSide": true,
             "select": true,
-            "ordering": true,
+            "ordering": false,
             "language": {
                 "url": "${base}/assets/plugins/datatables/cn.json"
             },
@@ -112,33 +109,33 @@ layout("/layouts/platform.html"){
 //                [0, "desc"]
             ],
             "columns": [
+                {"data": "index.location", "bSortable": false},
                     {"data": "index.name", "bSortable": false},
                     {"data": "index.weights", "bSortable": false},
+                    {"data": "index.detail", "bSortable": false},
                     {"data": "score_s", "bSortable": true},
-                    <%if(type=='special'){%>
-                        {"data": "score_p", "bSortable": true},
-                    <%}%>
+                    {"data": "score_p", "bSortable": true},
+
             ],
             "columnDefs": [
                 {
                     "render": function (data, type, row) {
-//                        return '<div class="btn-group"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">' +
-//                                ' <i class="ti-settings"></i> <span class="ti-angle-down"></span></button><ul class="dropdown-menu" role="menu">' +
-//                                '<li><a href="${base}/platform/evaluate/remark/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail">查看</a></li>' +
-//                                '<li><a href="${base}/platform/evaluate/remark/edit/' + row.id + '" data-pjax>修改</a></li>' +
-//                                '<li class="divider"></li>' +
-//                                '<li><a href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a></li>' +
-//                                '</ul></div>';
-                        return '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><span class="glyphicon glyphicon-eye-open">查看</a>' +
-                            '<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/edit/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
-                            '   <span class="glyphicon glyphicon-pencil"></span> 评价</a>' +
-                            '</div>';
+                        html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><i class="ti-plus"></i> 查看</a>';
+                        if(row.index.department == '${@shiro.getPrincipalProperty("unitid")}'){
+
+                        <% if(@shiro.hasPermission("evaluate.verify.dept.remark")){%>
+                            html+='<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/depteva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
+                                '   <i class="ti-plus"></i> 考评</a>' +
+                                '</div>';
+                        <%}%>
+                        }
+                        return  html;
+
+
                     },
-                    <%if(type=='special'){%>
-                        "targets": 4
-                    <%}else{%>
-                        "targets": 3
-                    <%}%>
+
+                        "targets": 6
+
                 }
             ]
         });
