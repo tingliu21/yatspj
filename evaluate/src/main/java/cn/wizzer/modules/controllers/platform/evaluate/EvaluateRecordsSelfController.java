@@ -124,7 +124,7 @@ public class EvaluateRecordsSelfController {
 					}
 
 					List<Monitor_catalog> monitorCatalogs = monitorCatalogService.query(
-							Cnd.where("unitType", "=", Strings.sBlank(unitType)).and("qualify", "=", true));
+							Cnd.where("unitType", "=", Strings.sBlank(unitType)).and("qualify", "=", true).and("hasChildren", "=", false));
 
 
 					for (Monitor_catalog catalog : monitorCatalogs) {//遍历monitorIndexs

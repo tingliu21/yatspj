@@ -118,7 +118,7 @@ public class EvaluateRecordsController {
 
 					}
 					monitorIndexs = monitorIndexService.query(
-							Cnd.where("unitType", "=", Strings.sBlank(unitType)).and("qualify", "=", true).and("hasChildren", "=", false));
+							Cnd.where("unitType", "=", Strings.sBlank(unitType)).and("qualify", "=", true));
 					for (Monitor_index index : monitorIndexs) {
 						Evaluate_remark remark = new Evaluate_remark();
 						remark.setEvaluateId(records.getId());
@@ -128,7 +128,7 @@ public class EvaluateRecordsController {
 					}
 
 					List<Monitor_catalog> monitorCatalogs = monitorCatalogService.query(
-							Cnd.where("unitType", "=", Strings.sBlank(unitType)).and("qualify", "=", true));
+							Cnd.where("unitType", "=", Strings.sBlank(unitType)).and("qualify", "=", true).and("hasChildren", "=", false));
 
 
 					for (Monitor_catalog catalog : monitorCatalogs) {//遍历monitorIndexs
