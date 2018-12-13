@@ -5,15 +5,15 @@ import cn.wizzer.common.base.Result;
 import cn.wizzer.common.filter.PrivateFilter;
 import cn.wizzer.common.page.DataTableColumn;
 import cn.wizzer.common.page.DataTableOrder;
-import cn.wizzer.modules.models.evaluate.Evaluate_qualify;
-import cn.wizzer.modules.models.evaluate.Evaluate_records;
-import cn.wizzer.modules.models.evaluate.Evaluate_records_self;
-import cn.wizzer.modules.models.evaluate.Evaluate_remark;
+import cn.wizzer.modules.models.evaluate.*;
+import cn.wizzer.modules.models.monitor.Monitor_catalog;
 import cn.wizzer.modules.models.monitor.Monitor_index;
 import cn.wizzer.modules.models.sys.Sys_user;
 import cn.wizzer.modules.services.evaluate.EvaluateQualifyService;
 import cn.wizzer.modules.services.evaluate.EvaluateRecordsSelfService;
 import cn.wizzer.modules.services.evaluate.EvaluateRemarkService;
+import cn.wizzer.modules.services.evaluate.EvaluateSummaryService;
+import cn.wizzer.modules.services.monitor.MonitorCatalogService;
 import cn.wizzer.modules.services.monitor.MonitorIndexService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -39,9 +39,13 @@ public class EvaluateRecordsSelfController {
 	@Inject
 	private MonitorIndexService monitorIndexService;
 	@Inject
+	private MonitorCatalogService monitorCatalogService;
+	@Inject
 	private EvaluateQualifyService evaluateQualifyService;
 	@Inject
 	private EvaluateRemarkService evaluateRemarkService;
+	@Inject
+	private EvaluateSummaryService evaluateSummaryService;
 
 	@At("")
 	@Ok("beetl:/platform/evaluate/records/self/index.html")
@@ -117,6 +121,18 @@ public class EvaluateRecordsSelfController {
 						}
 						//插入监测指标记录
 						evaluateRemarkService.insert(remark);
+					}
+
+					List<Monitor_catalog> monitorCatalogs = monitorCatalogService.query(
+							Cnd.where("unitType", "=", Strings.sBlank(unitType)).and("qualify", "=", true));
+
+
+					for (Monitor_catalog catalog : monitorCatalogs) {//遍历monitorIndexs
+						Evaluate_summary summary = new Evaluate_summary();//新建自评概述表
+						summary.setEvaluateid(records.getId());
+						summary.setCatalogid(catalog.getId());
+						evaluateSummaryService.insert(summary);//插入自评概述
+
 					}
 
 					return Result.success("system.success");
