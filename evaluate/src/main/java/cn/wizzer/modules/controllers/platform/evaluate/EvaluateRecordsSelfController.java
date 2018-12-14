@@ -164,24 +164,37 @@ public class EvaluateRecordsSelfController {
     }
 
 
-    @At({"/delete","/delete/?"})
-    @Ok("json")
-    @SLog(tag = "删除Evaluate_records_self", msg = "ID:${args[2].getAttribute('id')}")
-    public Object delete(String id, @Param("ids") String[] ids ,HttpServletRequest req) {
+//    @At({"/delete","/delete/?"})
+//    @Ok("json")
+//    @SLog(tag = "删除Evaluate_records_self", msg = "ID:${args[2].getAttribute('id')}")
+//    public Object delete(String id, @Param("ids") String[] ids ,HttpServletRequest req) {
+//		try {
+//			if(ids!=null&&ids.length>0){
+//				evaluateRecordsSelfService.delete(ids);
+//    			req.setAttribute("id", org.apache.shiro.util.StringUtils.toString(ids));
+//			}else{
+//				evaluateRecordsSelfService.delete(id);
+//    			req.setAttribute("id", id);
+//			}
+//			return Result.success("system.success");
+//		} catch (Exception e) {
+//			return Result.error("system.error");
+//		}
+//    }
+	@At({"/delete","/delete/?"})
+	@Ok("json")
+	@SLog(tag = "删除Evaluate_records", msg = "ID:${args[2].getAttribute('id')}")
+	public Object delete(String id ,HttpServletRequest req) {
 		try {
-			if(ids!=null&&ids.length>0){
-				evaluateRecordsSelfService.delete(ids);
-    			req.setAttribute("id", org.apache.shiro.util.StringUtils.toString(ids));
-			}else{
-				evaluateRecordsSelfService.delete(id);
-    			req.setAttribute("id", id);
-			}
+
+			evaluateRecordsSelfService.deleteAndChild(id);
+			//req.setAttribute("id", id);
+
 			return Result.success("system.success");
 		} catch (Exception e) {
 			return Result.error("system.error");
 		}
-    }
-
+	}
 
     @At("/detail/?")
     @Ok("beetl:/platform/evaluate/records/detail.html")
