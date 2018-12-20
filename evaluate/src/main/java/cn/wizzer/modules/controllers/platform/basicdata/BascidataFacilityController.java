@@ -52,7 +52,7 @@ public class BascidataFacilityController {
 
     @At
     @Ok("json")
-    @SLog(tag = "新建办学条件", msg = "")
+    @SLog(tag = "新建Bascidata_facility", msg = "")
     public Object addDo(@Param("projectname") String Projectname, @Param("..") Bascidata_facility bascidataFacility, HttpServletRequest req) {
 		try {
 			int i = 0;
