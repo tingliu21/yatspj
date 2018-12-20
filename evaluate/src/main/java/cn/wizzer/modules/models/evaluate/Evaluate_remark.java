@@ -22,8 +22,6 @@ public class Evaluate_remark extends Model implements Serializable{
     @ColDefine(type = ColType.VARCHAR, width = 32)
     private String evaluateId;
 
-
-
     @Column
     @Comment("指标ID")
     @ColDefine(type = ColType.VARCHAR, width = 32)

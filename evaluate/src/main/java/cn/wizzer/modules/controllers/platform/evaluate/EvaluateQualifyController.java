@@ -7,8 +7,10 @@ import cn.wizzer.common.page.DataTableColumn;
 import cn.wizzer.common.page.DataTableOrder;
 import cn.wizzer.modules.models.evaluate.Evaluate_qualify;
 import cn.wizzer.modules.models.evaluate.Evaluate_records;
+import cn.wizzer.modules.models.evaluate.Evaluate_summary;
 import cn.wizzer.modules.services.evaluate.EvaluateQualifyService;
 import cn.wizzer.modules.services.evaluate.EvaluateRecordsService;
+import cn.wizzer.modules.services.evaluate.EvaluateSummaryService;
 import cn.wizzer.modules.services.monitor.MonitorIndexService;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -36,6 +38,8 @@ public class EvaluateQualifyController {
 	private MonitorIndexService monitorIndexService;
 	@Inject
 	private EvaluateRecordsService evaluateRecordsService;
+	@Inject
+	private EvaluateSummaryService evaluateSummaryService;
 
 	@At({"","/?"})
 	@Ok("beetl:/platform/evaluate/qualify/${req_attr.type}/index.html")
@@ -99,6 +103,7 @@ public class EvaluateQualifyController {
 		return evaluateQualifyService.fetchLinks(qualify,"index");
 
 	}
+
 	//学校自评结果提交
 	@At("/selfevaDo")
 	@Ok("json")
@@ -135,6 +140,17 @@ public class EvaluateQualifyController {
 			return Result.error("system.error");
 		}
 	}
+
+	//学校自评概述页面
+	@At("/summary")
+	@Ok("beetl:/platform/evaluate/qualify/summary.html")
+	@RequiresAuthentication
+	public Object edit_selfsum(@Param("evaluateID") String evaluateID,@Param("catalogID") String catalogID,HttpServletRequest req) {
+		List<Evaluate_summary> summary = evaluateSummaryService.query(Cnd.where("evaluateID", "=", evaluateID).and("catalogID", "=", catalogID));
+		return summary.get(0);
+	}
+
+
 	//部门审核页面
 	@At("/depteva/?")
 	@Ok("beetl:/platform/evaluate/qualify/edit.html")
