@@ -19,7 +19,6 @@ layout("/layouts/platform.html"){
         <div class="btn-group tool-button">
            <!--  <% if(@shiro.hasPermission("sys.manager.user.add")){%>有权限<%}%> -->
             <p class="navbar-text"><i class="fa mr5"></i> 基础性指标评估</p>
-            <a class="btn btn-warning navbar-btn" id="btsum" href="${base}/platform/evaluate/qualify/summary/${evaluateId}" data-toggle="modal" data-target="#dialogSelfsum"><i class="glyphicon glyphicon-pencil"></i> 添加自评概述</a>
             <!--<a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/qualify/add" data-pjax><i class="ti-plus"></i> 新建Evaluate_qualify</a>-->
             <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>-->
         </div>
@@ -74,12 +73,6 @@ layout("/layouts/platform.html"){
     </div>
 </div>
 <div id="dialogEvaluate" class="modal fade bs-modal-sm" tabindex="-3" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-        </div>
-    </div>
-</div>
-<div id="dialogSelfsum" class="modal fade bs-modal-sm" tabindex="-3" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
         </div>
@@ -162,7 +155,6 @@ layout("/layouts/platform.html"){
         }).on("select_node.jstree", function (node, selected) {
             var id = selected.selected;
             $("#catalogId").val(id);
-            document.getElementById('btsum').href = "${base}/platform/evaluate/qualify/summary?evaluateID=${evaluateId}&catalogID="+id
             $("#searchForm").find("input[type='text']").val("");
             if (datatable) {
                 $(".cd-panel-content").find("input").val("");
