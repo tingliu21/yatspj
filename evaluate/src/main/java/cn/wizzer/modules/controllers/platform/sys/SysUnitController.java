@@ -132,4 +132,26 @@ public class SysUnitController {
         }
         return tree;
     }
+    @At
+    @Ok("json")
+    @RequiresAuthentication
+    //选出专家
+    public Object specialtree(@Param("pid") String pid) {
+        Cnd cnd = Cnd.NEW();
+        if (Strings.isBlank(pid) || "".equals(pid)){
+            cnd = Cnd.where("aliasname","=","Special");
+        }else{
+            cnd = Cnd.where("parentId", "=", Strings.sBlank(pid));
+        }
+        List<Sys_unit> list = unitService.query(cnd.asc("path"));
+        List<Map<String, Object>> tree = new ArrayList<>();
+        for (Sys_unit unit : list) {
+            Map<String, Object> obj = new HashMap<>();
+            obj.put("id", unit.getId());
+            obj.put("text", unit.getName());
+            obj.put("children", unit.isHasChildren());
+            tree.add(obj);
+        }
+        return tree;
+    }
 }

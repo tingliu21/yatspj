@@ -10,8 +10,9 @@
             <table id="datatable_select" class="table table-bordered table-striped mg-t datatable">
                 <thead>
                 <tr>
-                    <!--<th>ID</th>-->
-                    <th>学校名称</th>
+                    <th>用户名</th>
+
+                    <th>专家名称</th>
             </table>
         </div>
     </div>
@@ -21,26 +22,27 @@
     function initdatatable_select() {
         datatable_select = $('#datatable_select').DataTable({
             "dom": '<"toolbar">frtip',
+
             "searching":false,
             "processing": false,
-            "serverSide": true,
+            "serverSide": false,
             "select": true,
             "ordering": true,
             "language": {
                 "url": "${base}/assets/plugins/datatables/cn.json"
             },
             "ajax": {
-                "url": "${base}/platform/evaluate/records/selectData",
+                "url": "${base}/platform/evaluate/records/selectspecialdata",
                 "type": "post",
                 "data": function (d) {
-                    d.unitType ="${unitType!}";
+                    //d.unitType ="${unitType!}";
 
                 }
             },
             "order": [[0, "desc"]],
             "columns": [
-//                {"data": "id", "bSortable": true},
-                {"data": "name", "bSortable": true}
+                {"data": "loginname", "bSortable": true},
+                {"data": "nickname", "bSortable": true}
             ]
         });
         datatable_select.on('click', 'tr', function () {
@@ -61,20 +63,24 @@
         var chks = datatable_select.rows('.selected').data();
         if (chks.length > 0) {
             var ids = [];
+
             var str='';
+            var iNum = $("#nestable4 .dd-list .dd-item").length;
+            iNum = iNum+1
             $.each(chks, function (i, n) {
+                ids.push(n.id);
                 str+='<li class="dd-item dd3-item" data-id="'+ n.id+'">';
                 str+='<div class="dd-handle dd3-handle">Drag</div>';
-                str+='<div class="dd3-content">'+ n.name+'<i class="fa fa-close pull-right" onclick="delContent(\''+ n.id+'\')"></i> </div>';
+                str+='<div class="dd3-content">'+ n.nickname+'<i id="speno" class="fa pull-right" >专家'+ (iNum+i)+'</i> </div>';
                 str+='</li>';
             });
             $("#dialogSelect").modal("hide");
 
-            $("#nestable3 .dd-list").append(str);
 
-            $("#nestable3").nestable();
+            $("#nestable4 .dd-list").append(str);
+            $("#nestable4").nestable();
         }else{
-            Toast.warning("请先选择学校！");
+            Toast.warning("请先选择专家！");
         }
     }
     $(document).ready(function () {

@@ -1,6 +1,7 @@
 package cn.wizzer.modules.models.monitor;
 
 import cn.wizzer.common.base.Model;
+import cn.wizzer.modules.models.sys.Sys_role;
 import cn.wizzer.modules.models.sys.Sys_unit;
 import cn.wizzer.modules.models.sys.Sys_user;
 import org.nutz.dao.DB;
@@ -84,11 +85,11 @@ public class Monitor_index extends Model implements Serializable {
     private boolean selfeva;
 
     @Column
-    @Comment("送审专家")
+    @Comment("送审专家角色")
     @ColDefine(type = ColType.VARCHAR, width = 50)
-    private String masterid;
-    @One(field = "masterid")
-    private Sys_user master;
+    private String masterrole;
+    @One(field = "masterrole")
+    private Sys_role masterRole;
 
     public String getId() {
         return id;
@@ -200,19 +201,19 @@ public class Monitor_index extends Model implements Serializable {
         this.dept = dept;
     }
 
-    public String getMasterid() {
-        return masterid;
+    public String getMasterrole() {
+        return masterrole;
     }
 
-    public void setMasterid(String masterid) {
-        this.masterid = masterid;
+    public void setMasterrole(String masterrole) {
+        this.masterrole = masterrole;
     }
 
-    public Sys_user getMaster() {
-        return master;
+    public Sys_role getMasterRole() {
+        return masterRole;
     }
 
-    public void setMaster(Sys_user master) {
-        this.master = master;
+    public void setMasterRole(Sys_role masterRole) {
+        this.masterRole = masterRole;
     }
 }

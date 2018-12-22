@@ -2,9 +2,10 @@
 layout("/layouts/platform.html"){
 %>
 <header class="header navbar bg-white shadow">
-    <div class="btn-group tool-button">
-        <a class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/self" data-pjax><i class="ti-angle-left"></i> 返回</a>
-    </div>
+    <p class="navbar-text"><i class="h4 show no-m pt5"></i> 初始化评估数据</p>
+    <!--<div class="btn-group tool-button">-->
+        <!--<a class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/self" data-pjax><i class="ti-angle-left"></i> 返回</a>-->
+    <!--</div>-->
 </header>
 
 <div class="content-wrap">
@@ -13,14 +14,22 @@ layout("/layouts/platform.html"){
             <form id="addForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
                   action="${base}/platform/evaluate/records/addDo" method="post">
                 <input id="schoolIds" name="schoolIds" type="hidden">
+                <input id="specialIds" name="specialIds" type="hidden">
                 <div class="row mb10">
                     <div class="col-lg-12">
                         <div class="form-group">
-                            <label for="year" class="col-sm-2 control-label">学年</label>
+                            <label for="year" class="col-sm-2 control-label">评估学年</label>
                             <div class="col-sm-8">
                             <input type="text" id="year" class="form-control" name="year" data-parsley-required="true" placeholder="学年">
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="taskname" class="col-sm-2 control-label">评估名称</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="taskname" class="form-control" name="taskname" data-parsley-required="true" placeholder="评估名称">
+                            </div>
+                        </div>
+
                         <!--下拉框选择学校-->
                         <!--<div class="form-group">-->
                             <!--<label for="unitType" class="col-sm-2 control-label">学校类型</label>-->
@@ -32,7 +41,22 @@ layout("/layouts/platform.html"){
                                 <!--</select>-->
                             <!--</div>-->
                         <!--</div>-->
+                        <div class="form-group no-b">
+                            <label for="specialIds" class="col-sm-2 control-label">评审专家</label>
 
+                            <div class="col-sm-8">
+                                <div class="btn-group tool-button">
+                                    <a class="btn btn-primary navbar-btn" id="selSpecial"> 选择专家</a>
+                                    <a class="btn btn-danger navbar-btn" id="delSpecial">重置专家</a>
+
+                                </div>
+                                <div class="dd" id="nestable4">
+                                    <ol class="dd-list">
+                                    </ol>
+                                </div>
+                            </div>
+
+                        </div>
                         <div class="form-group">
                             <label for="schoolIds" class="col-sm-2 control-label">学校类型</label>
 
@@ -58,6 +82,7 @@ layout("/layouts/platform.html"){
                             </div>
                         </div>
 
+
                     </div>
                 </div>
                 <div class="col-lg-3"></div>
@@ -82,13 +107,17 @@ layout("/layouts/platform.html"){
         </div>
     </div>
 </div>
+
 <script language="JavaScript">
+
     var unitType;
     $(document).ready(function () {
+
         $("#nestable3").nestable();
-        $('input:radio[name=unitType]').click(function () {
-            $("#nestable3 .dd-list").html("");
-        });
+        $("#nestable4").nestable();
+//        $('input:radio[name=unitType]').click(function () {
+//            $("#nestable3 .dd-list").html("");
+//        });
         $("#dialogSelect").on("hidden.bs.modal", function () {
             $(this).removeData("bs.modal");
         });
@@ -98,7 +127,18 @@ layout("/layouts/platform.html"){
                 remote: "${base}/platform/evaluate/records/select?unitType=" + unitType
             });
         });
-
+        $("#selSpecial").on("click", function () {
+            var unitType = $('input:radio[name=unitType]:checked').val();
+            $("#dialogSelect").modal({
+                remote: "${base}/platform/evaluate/records/selectindex?unitType=" + unitType
+            });
+        });
+        $("#delSpecial").on("click",function () {
+            $("#nestable4 .dd-list .dd-item").each(function () {
+                $(this).remove();
+            })
+            
+        })
         $("#submit").on("click", function () {
             var data = $("#nestable3").nestable('serialize');
             var ids = [];
@@ -110,11 +150,22 @@ layout("/layouts/platform.html"){
             if (ids.length < 1 || ids.indexOf("nestable3") > -1) {
                 Toast.error("请选择内容");
                 return false;
-            } else if (ids.length > 10) {
-                Toast.error("图文消息不能大于10条");
+            }
+
+            $("#schoolIds").val(ids.toString());
+            //专家信息
+            data = $("#nestable4").nestable('serialize');
+            ids = [];
+            if (data) {
+                $.each(data, function (i, n) {
+                    ids.push(n.id);
+                });
+            }
+            if (ids.length != 5) {
+                Toast.error("请选择5位专家");
                 return false;
             }
-            $("#schoolIds").val(ids.toString());
+            $("#specialIds").val(ids.toString());
             $('#addForm').ajaxForm({
                 dataType: 'json',
                 beforeSubmit: function (arr, form, options) {
