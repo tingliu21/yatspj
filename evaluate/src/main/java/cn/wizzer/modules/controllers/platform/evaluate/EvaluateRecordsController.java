@@ -5,34 +5,34 @@ import cn.wizzer.common.base.Result;
 import cn.wizzer.common.filter.PrivateFilter;
 import cn.wizzer.common.page.DataTableColumn;
 import cn.wizzer.common.page.DataTableOrder;
-import cn.wizzer.modules.models.evaluate.Evaluate_qualify;
-import cn.wizzer.modules.models.evaluate.Evaluate_records;
-import cn.wizzer.modules.models.evaluate.Evaluate_remark;
+import cn.wizzer.modules.models.evaluate.*;
 import cn.wizzer.modules.models.monitor.Monitor_index;
 import cn.wizzer.modules.models.monitor.Monitor_catalog;
-import cn.wizzer.modules.models.evaluate.Evaluate_summary;
 import cn.wizzer.modules.models.sys.Sys_user;
-import cn.wizzer.modules.services.evaluate.EvaluateQualifyService;
-import cn.wizzer.modules.services.evaluate.EvaluateRecordsService;
-import cn.wizzer.modules.services.evaluate.EvaluateRemarkService;
-import cn.wizzer.modules.services.evaluate.EvaluateSummaryService;
+import cn.wizzer.modules.services.evaluate.*;
 import cn.wizzer.modules.services.monitor.MonitorCatalogService;
 import cn.wizzer.modules.services.monitor.MonitorIndexService;
 import cn.wizzer.modules.services.sys.SysUnitService;
+import cn.wizzer.modules.services.sys.SysUserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ThreadContext;
+import org.nutz.dao.entity.Record;
 import org.nutz.dao.Cnd;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.lang.Strings;
+import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @IocBean
 @At("/platform/evaluate/records")
@@ -44,6 +44,8 @@ public class EvaluateRecordsController {
 	@Inject
 	private SysUnitService sysUnitService;
 	@Inject
+	private SysUserService sysUserService;
+	@Inject
 	private MonitorIndexService monitorIndexService;
 	@Inject
 	private EvaluateQualifyService evaluateQualifyService;
@@ -53,17 +55,32 @@ public class EvaluateRecordsController {
 	private MonitorCatalogService monitorCatalogService;
 	@Inject
 	private EvaluateSummaryService evaluateSummaryService;
+	@Inject
+	private EvaluateSpecialService evaluateSpecialService;
 
 
-	@At({"","/?"})
-	@Ok("beetl:/platform/evaluate/records/${req_attr.type}/index.html")
-	@RequiresAuthentication
+//	@At({"","/?"})
+//	@Ok("beetl:/platform/evaluate/records/${req_attr.type}/index.html")
+//	@RequiresAuthentication
+////	public void index(String type, HttpServletRequest req) {
+////		req.setAttribute("type", type);
 //	public void index(String type, HttpServletRequest req) {
+//
 //		req.setAttribute("type", type);
-	public void index(String type, HttpServletRequest req) {
-		req.setAttribute("type", type);
-	}
+//	}
+	@At("/special")
+	@Ok("beetl:/platform/evaluate/records/special/index.html")
+	@RequiresAuthentication
+	public void specindex( HttpServletRequest req) {
 
+	}
+	@At("")
+	@Ok("beetl:/platform/evaluate/records/index.html")
+	@RequiresAuthentication
+	public void index( HttpServletRequest req) {
+
+	}
+	//部门审核列表
 	@At
 	@Ok("json:full")
 	@RequiresAuthentication
@@ -72,10 +89,30 @@ public class EvaluateRecordsController {
 		//只审核已经提交的
 		Cnd cnd = Cnd.where("status_s","=",true);
 
-
-
     	return evaluateRecordsService.data(length, start, draw, order, columns, cnd, "school");
     }
+    //获取专家评审列表
+	@At
+	@Ok("json:full")
+	@RequiresPermissions("evaluate.verify.special")
+	public Object specdata(@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
+		//获取专家id
+		Subject subject = SecurityUtils.getSubject();
+		Sys_user user = (Sys_user) subject.getPrincipal();
+		List<Evaluate_special> evaluate_specials = evaluateSpecialService.query(Cnd.where("specialid","=",user.getId()));
+		Set<String> evaluateSet = new HashSet<String>();
+		for(int i =0;i<evaluate_specials.size();i++){
+			evaluateSet.add(evaluate_specials.get(i).getEvaluateId());
+			//set可以去除重复的evaluateid
+		}
+		String[] evaluateids = new String[evaluateSet.size()];
+		//Set-->数组
+		evaluateSet.toArray(evaluateids);
+		//2018-12-21修改，可以先由专家审核,专家只审核自己分配的学校
+		Cnd cnd = Cnd.where("id", "in", evaluateids).and("status_p","=",false);
+
+		return evaluateRecordsService.data(length, start, draw, order, columns, cnd, "school");
+	}
 
 //    @At("/add/?")
 	@At
@@ -90,8 +127,9 @@ public class EvaluateRecordsController {
     @At
     @Ok("json")
     @SLog(tag = "初始化学校评估数据", msg = "")
-    public Object addDo(@Param("year") int year,@Param("unitType") String unitType,@Param("schoolIds") String[] schoolIds, HttpServletRequest req) {
+    public Object addDo(@Param("year") int year,@Param("unitType") String unitType,@Param("schoolIds") String[] schoolIds, @Param("specialIds") String[] specialIds,HttpServletRequest req) {
 		try {
+			List<Record> indexList = monitorIndexService.getSpecialIndex();
 			int totalWeights = monitorIndexService.getTotalWeights(unitType);
 
 			if(schoolIds!=null&&schoolIds.length>0){
@@ -118,7 +156,7 @@ public class EvaluateRecordsController {
 
 					}
 					monitorIndexs = monitorIndexService.query(
-							Cnd.where("unitType", "=", Strings.sBlank(unitType)).and("qualify", "=", true));
+							Cnd.where("unitType", "=", Strings.sBlank(unitType)).and("qualify", "=", false));
 					for (Monitor_index index : monitorIndexs) {
 						Evaluate_remark remark = new Evaluate_remark();
 						remark.setEvaluateId(records.getId());
@@ -136,6 +174,34 @@ public class EvaluateRecordsController {
 						summary.setEvaluateid(records.getId());
 						summary.setCatalogid(catalog.getId());
 						evaluateSummaryService.insert(summary);//插入自评概述
+
+					}
+					if(specialIds!=null&&specialIds.length==5){
+						//分配评审专家
+						for(Record rec : indexList){
+							//给一次评估分配专家
+							Evaluate_special evaluateSpecial = new Evaluate_special();
+							evaluateSpecial.setEvaluateId(records.getId());
+							evaluateSpecial.setIndexId(rec.getString("id"));
+							String strRole = rec.getString("rolecode");
+							if(strRole.equals("special1")){
+								evaluateSpecial.setSpecialId(specialIds[0]);
+
+							}else if(strRole.equals("special2")){
+								evaluateSpecial.setSpecialId(specialIds[1]);
+
+							}else if(strRole.equals("special3")){
+								evaluateSpecial.setSpecialId(specialIds[2]);
+
+							}else if(strRole.equals("special4")){
+								evaluateSpecial.setSpecialId(specialIds[3]);
+
+							}else if(strRole.equals("special5")){
+								evaluateSpecial.setSpecialId(specialIds[4]);
+
+							}
+							evaluateSpecialService.insert(evaluateSpecial);
+						}
 
 					}
 
@@ -231,8 +297,34 @@ public class EvaluateRecordsController {
 		if (!Strings.isBlank(unitType) && !"0".equals(unitType)) {
 			cnd.and("unitType", "=", unitType );
 		}
+
 		return sysUnitService.data(length, start, draw, order, columns, cnd, null);
 
 	}
+	@At("/selectindex")
+	@Ok("beetl:/platform/evaluate/records/selectspecial.html")
+	@RequiresAuthentication
+	public void selectindex(@Param("unitType") String unitType, HttpServletRequest req) {
 
+		req.setAttribute("unitType", unitType);
+	}
+	@At("/selectspecialdata")
+	@Ok("json:full")
+	@RequiresAuthentication
+	public Object selectspecialdata( @Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
+
+		return evaluateRecordsService.getSpecialUser();
+
+	}
+
+	//关联查询始终有问题
+//	@At("/test")
+//	@Ok("json:full")
+//	@RequiresAuthentication
+//	public Object test( @Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
+//		Cnd linkCnd = Cnd.where("id","=","f0fb46024f1944f097c8134325ebf2ac");
+//		return monitorIndexService.data(length,start,draw,order,columns,null,"dept",linkCnd);
+//
+//
+//	}
 }

@@ -7,9 +7,16 @@ import cn.wizzer.common.page.DataTableColumn;
 import cn.wizzer.common.page.DataTableOrder;
 import cn.wizzer.modules.models.evaluate.Evaluate_records;
 import cn.wizzer.modules.models.evaluate.Evaluate_remark;
+import cn.wizzer.modules.models.evaluate.Evaluate_special;
+import cn.wizzer.modules.models.sys.Sys_role;
+import cn.wizzer.modules.models.sys.Sys_user;
 import cn.wizzer.modules.services.evaluate.EvaluateRecordsService;
 import cn.wizzer.modules.services.evaluate.EvaluateRemarkService;
+import cn.wizzer.modules.services.evaluate.EvaluateSpecialService;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.nutz.dao.Cnd;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
@@ -19,7 +26,9 @@ import org.nutz.log.Logs;
 import org.nutz.mvc.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @IocBean
 @At("/platform/evaluate/remark")
@@ -30,15 +39,33 @@ public class EvaluateRemarkController {
 	private EvaluateRemarkService evaluateRemarkService;
 	@Inject
 	private EvaluateRecordsService evaluateRecordsService;
+	@Inject
+	private EvaluateSpecialService evaluateSpecialService;
 
 	@At({"","/?"})
 	@Ok("beetl:/platform/evaluate/remark/${req_attr.type}/index.html")
 	@RequiresAuthentication
 	//type取值有2个，self和special
-	public void index(String type,@Param("evaluateId") String evaluateId,@Param("unitType") String unitType,HttpServletRequest req) {
+	//cType为指标目录类别，1为基础性指标，2为规范性指标，3为发展性指标
+	public void index(String type,@Param("evaluateId") String evaluateId,@Param("unitType") String unitType,@Param("cType") String cType,HttpServletRequest req) {
 		req.setAttribute("evaluateId",evaluateId);
 		req.setAttribute("unitType",unitType);
 		req.setAttribute("type", type);
+		req.setAttribute("cType",cType);
+	}
+	@At({"index_standard","/?/index_standard"})
+	@Ok("beetl:/platform/evaluate/remark/${req_attr.type}/index_standard.html")
+	@RequiresAuthentication
+	public void index_standard(HttpServletRequest req) {
+
+		req.setAttribute("ctype",2);
+	}
+
+	@At
+	@Ok("beetl:/platform/evaluate/remark/${req_attr.type}/index_develop.html")
+	@RequiresAuthentication
+	public void index_develop(HttpServletRequest req) {
+		req.setAttribute("ctype",3);
 	}
 
 	@At
@@ -54,6 +81,47 @@ public class EvaluateRemarkController {
 		return null;
 
     }
+    //专家评估指标，专家可看5个指标，但只能编辑自己负责的
+    @At
+	@Ok("json:full")
+	@RequiresPermissions("evaluate.verify.special")
+	public Object specialdata(@Param("evaluateId") String evaluateId,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns){
+
+		if (!Strings.isBlank(evaluateId) && !"0".equals(evaluateId)) {
+
+			Cnd cnd = Cnd.where("depttype","=","Special");
+			cnd.and("evaluateId", "like", "%" + evaluateId + "%").asc("location");
+
+			return evaluateRemarkService.data(length, start, draw, order, columns, cnd, "index");
+		}
+		return null;
+	}
+	//专家只列出自己负责的指标
+	@At
+	@Ok("json:full")
+	@RequiresAuthentication
+	public Object specialdata_old(@Param("evaluateId") String evaluateId,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns){
+
+		if (!Strings.isBlank(evaluateId) && !"0".equals(evaluateId)) {
+			//获取专家id
+			Subject subject = SecurityUtils.getSubject();
+			Sys_user user = (Sys_user) subject.getPrincipal();
+			List<Evaluate_special> evaluate_specials = evaluateSpecialService.query(Cnd.where("specialid","=",user.getId()).and("evaluateid","=",evaluateId));
+			Set<String> indexSet = new HashSet<String>();
+			for(int i =0;i<evaluate_specials.size();i++){
+				indexSet.add(evaluate_specials.get(i).getIndexId());
+				//set可以去除重复的evaluateid
+			}
+			String[] indexids = new String[indexSet.size()];
+			//Set-->数组
+			indexSet.toArray(indexids);
+			Cnd cnd = Cnd.where("indexid","in",indexids);
+			cnd.and("evaluateId", "like", "%" + evaluateId + "%").asc("location");
+
+			return evaluateRemarkService.data(length, start, draw, order, columns, cnd, "index");
+		}
+		return null;
+	}
 	//暂不新增，通过初始化新增
     @At
     @Ok("beetl:/platform/evaluate/remark/add.html")
@@ -117,7 +185,7 @@ public class EvaluateRemarkController {
 		}
     }
 
-	//部门审核、专家审核
+	//部门审核
 	@At("/depteva/?")
 	@Ok("beetl:/platform/evaluate/remark/edit.html")
 	@RequiresAuthentication
@@ -125,7 +193,14 @@ public class EvaluateRemarkController {
 		Evaluate_remark remark = evaluateRemarkService.fetch(id);
 		return evaluateRemarkService.fetchLinks(remark,"index");
 	}
-
+	//专家审核
+	@At("/speceva/?")
+	@Ok("beetl:/platform/evaluate/remark/special/edit.html")
+	@RequiresAuthentication
+	public Object edit_special(String id) {
+		Evaluate_remark remark = evaluateRemarkService.fetch(id);
+		return evaluateRemarkService.fetchLinks(remark,"index");
+	}
 	//部门审核、专家审核
 	@At("/deptevaDo")
 	@Ok("json")
@@ -180,7 +255,9 @@ public class EvaluateRemarkController {
     @RequiresAuthentication
 	public Object detail(String id) {
 		if (!Strings.isBlank(id)) {
-			return evaluateRemarkService.fetch(id);
+
+			Evaluate_remark remark = evaluateRemarkService.fetch(id);
+			return evaluateRemarkService.fetchLinks(remark,"index");
 
 		}
 		return null;

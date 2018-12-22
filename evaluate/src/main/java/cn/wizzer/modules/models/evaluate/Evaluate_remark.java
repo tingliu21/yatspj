@@ -37,7 +37,7 @@ public class Evaluate_remark extends Model implements Serializable{
 
 
     @Column
-    @Comment("自评价")
+    @Comment("自评理由")
     @ColDefine(type = ColType.VARCHAR, width = 100)
     private String remark_s;
 
@@ -47,9 +47,24 @@ public class Evaluate_remark extends Model implements Serializable{
     private double score_p;
 
     @Column
-    @Comment("专家评价")
+    @Comment("满分/扣分理由")
     @ColDefine(type = ColType.VARCHAR, width = 100)
     private String remark_p;
+
+    @Column
+    @Comment("优势")
+    @ColDefine(type = ColType.TEXT)
+    private String advantage;
+
+    @Column
+    @Comment("不足")
+    @ColDefine(type = ColType.TEXT)
+    private String disadvantage;
+
+    @Column
+    @Comment("建议")
+    @ColDefine(type = ColType.TEXT)
+    private String suggestion;
 
     @Column
     @Comment("是否自评完成")
@@ -60,6 +75,16 @@ public class Evaluate_remark extends Model implements Serializable{
     @Comment("是否审核完成")
     @ColDefine(type = ColType.BOOLEAN)
     private Boolean verifyeva = null;
+
+    @Column
+    @Readonly
+    private String specialid;
+    @Column
+    @Readonly
+    private String department;
+    @Column
+    @Readonly
+    private String depttype;
 
     public String getId() {
         return id;
@@ -138,5 +163,61 @@ public class Evaluate_remark extends Model implements Serializable{
 
     public void setVerifyeva(Boolean verifyeva) {
         this.verifyeva = verifyeva;
+    }
+
+    public String getAdvantage() {
+        return advantage;
+    }
+
+    public void setAdvantage(String advantage) {
+        this.advantage = advantage;
+    }
+
+    public String getDisadvantage() {
+        return disadvantage;
+    }
+
+    public void setDisadvantage(String disadvantage) {
+        this.disadvantage = disadvantage;
+    }
+
+    public String getSuggestion() {
+        return suggestion;
+    }
+
+    public void setSuggestion(String suggestion) {
+        this.suggestion = suggestion;
+    }
+
+    public String getSpecialid() {
+        return specialid;
+    }
+
+    public void setSpecialid(String specialid) {
+        this.specialid = specialid;
+    }
+
+    public String getIndexId() {
+        return indexId;
+    }
+
+    public void setIndexId(String indexId) {
+        this.indexId = indexId;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getDepttype() {
+        return depttype;
+    }
+
+    public void setDepttype(String depttype) {
+        this.depttype = depttype;
     }
 }

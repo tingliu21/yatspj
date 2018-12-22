@@ -1,18 +1,7 @@
 <%
 layout("/layouts/platform.html"){
 %>
-<aside class="sidebar-250 canvas-right bg-default ">
-    <header class="header navbar clearfix bb bg-default pl0 pr0">
-        <p class="navbar-text"><i class="fa fa-sitemap mr5"></i> 指标列表</p>
-    </header>
-    <div class="content-wrap no-p">
-        <div class="wrapper2">
-            <div class="m5">
-                <div id="jsTree"></div>
-            </div>
-        </div>
-    </div>
-</aside>
+
 <section class="content-wrap bg-white">
     <header class="header navbar bg-white shadow">
         <div class="btn-group tool-button">
@@ -96,10 +85,9 @@ layout("/layouts/platform.html"){
                 sublime.closeLoadingbar($(".main-content"));
             },
             "ajax": {
-                "url": "${base}/platform/evaluate/remark/data",
+                "url": "${base}/platform/evaluate/remark/specialdata",
                 "type": "post",
                 "data": function (d) {
-                    d.catalogId = $('#catalogId').val();
                     d.evaluateId = $('#evaluateId').val();
                     d.unitType = $('#unitType').val();
                     //d.nutz = $('#nutz').val();
@@ -122,10 +110,10 @@ layout("/layouts/platform.html"){
                     "render": function (data, type, row) {
                         html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><span class="glyphicon glyphicon-eye-open"></span>查看</a>';
                         //专家考评落实到部门和用户
-                        if(row.index.department == '${@shiro.getPrincipalProperty("unitid")}' && row.index.master =='${@shiro.getPrincipalProperty("id")}'){
+                        if(row.department == '${@shiro.getPrincipalProperty("unitid")}' && row.specialid =='${@shiro.getPrincipalProperty("id")}'){
 
-                        <% if(@shiro.hasPermission("evaluate.verify.dept.remark")){%>
-                            html+='<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/depteva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
+                        <% if(@shiro.hasPermission("evaluate.verify.special.remark")){%>
+                            html+='<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/speceva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
                                 '   <i class="ti-plus"></i> 考评</a>' +
                                 '</div>';
                         <%}%>
@@ -147,37 +135,8 @@ layout("/layouts/platform.html"){
             datatable.ajax.reload();
         });
     }
-    var unitTreeTable;
     var selected = [];
-    function initTreeView() {
-        $("#jsTree").jstree({
-            plugins: ["wholerow"],
-            core: {
-                data: {
-                    url: function (node) {
-                        return node.id === "#" ? "${base}/platform/monitor/catalog/tree/remark?unitType=${unitType}" : "${base}/platform/monitor/catalog/tree/remark?unitType=${unitType}&pid=" + node.id
-                    }
-                },
-                multiple: false
-            }
-        }).on("select_node.jstree", function (node, selected) {
-            var id = selected.selected;
-            $("#catalogId").val(id);
-            $("#searchForm").find("input[type='text']").val("");
-            if (datatable) {
-                $(".cd-panel-content").find("input").val("");
-                datatable.ajax.reload();
-            } else {
-                initDatatable();
-            }
-            //$("#addLink").attr("href","${base}/platform/monitor/index/add?unitType=${unitType}&catalogId="+id);
-        }).on("loaded.jstree", function (node, jstree) {
-            var id = $(node.target).find("li:first").attr("id");
-            if (id) {
-                jstree.instance.select_node(id);
-            }
-        });
-    }
+
     function del(id) {
         var dialog = $("#dialogDelete");
         dialog.modal("show");
@@ -225,7 +184,7 @@ layout("/layouts/platform.html"){
         }
     }
     $(function () {
-        initTreeView();
+
         initDatatable();
         $("#dialogDetail").on("hidden.bs.modal", function () {
             $(this).removeData("bs.modal");

@@ -5,7 +5,7 @@ layout("/layouts/platform.html"){
     <header class="header navbar bg-white shadow">
         <div class="btn-group tool-button">
 
-            <p class="navbar-text"><i class="fa mr5"></i>审核评估</p>
+            <p class="navbar-text"><i class="fa mr5"></i>专家审核评估</p>
 
         </div>
     </header>
@@ -77,7 +77,7 @@ layout("/layouts/platform.html"){
                 sublime.closeLoadingbar($(".main-content"));
             },
             "ajax": {
-                "url": "${base}/platform/evaluate/records/data",
+                "url": "${base}/platform/evaluate/records/specdata",
                 "type": "post",
                 "data": function (d) {
                     //d.nutz = $('#nutz').val();
@@ -118,10 +118,9 @@ layout("/layouts/platform.html"){
             },
             {
                 "render": function (data, type, row) {
-                    return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/qualify/?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>达标性评估</a>' +
-                        '<a class="btn btn-success" href="${base}/platform/evaluate/remark/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>监测评估</a>'+
-                        '<a class="btn btn-warning" href="${base}/platform/evaluate/opinion/edit/' + row.id + '"  data-toggle="modal" data-target="#dialogDetail">评估意见</a>'+
-                        '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
+                    return '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>专家评估</a>'+
+                        '<a class="btn btn-success" href="${base}/platform/evaluate/opinion/edit/' + row.id + '"  data-toggle="modal" data-target="#dialogDetail">评估意见</a>'+
+//                        '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
                         '</div>';
                 },
                 "targets": 7
