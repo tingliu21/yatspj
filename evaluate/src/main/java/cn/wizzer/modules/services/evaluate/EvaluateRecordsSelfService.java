@@ -21,19 +21,19 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
     }
     /**
      * 级联删除评估记录
-     *
+     * 2018-12-23 改为通过数据库设置外键级联删除
      * @param evaluateId
      */
     @Aop(TransAop.READ_COMMITTED)
     public void deleteAndChild(String evaluateId) {
+
         //清空该评估记录
         delete(evaluateId);
-
         //dao().execute(Sqls.create("delete from evaluate_records where path like @path").setParam("path", catalog.getPath() + "%"));
         //清空该评估记录下的所有观测点评分
         dao().execute(Sqls.create("delete from evaluate_qualify where evaluateid=@id ").setParam("id", evaluateId));
         dao().execute(Sqls.create("delete from evaluate_remark where evaluateid=@id ").setParam("id", evaluateId));
-
+        dao().execute(Sqls.create("delete from evaluate_summary where evaluateid=@id").setParam("id",evaluateId));
 
 
     }

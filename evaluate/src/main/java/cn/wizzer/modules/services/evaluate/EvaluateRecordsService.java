@@ -28,7 +28,7 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
     }
     /**
      * 级联删除评估记录
-     *
+     * 2018-12-23 改为通过数据库设置外键级联删除
      * @param evaluateId
      */
     @Aop(TransAop.READ_COMMITTED)

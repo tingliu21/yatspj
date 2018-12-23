@@ -5,8 +5,14 @@ layout("/layouts/platform.html"){
     <header class="header navbar bg-white shadow">
         <div class="btn-group tool-button">
 
-            <p class="navbar-text"><i class="fa mr5"></i>审核评估</p>
+            <p class="navbar-text"><i class="fa mr5"></i>科室审核评估</p>
 
+        </div>
+        <div class="pull-right">
+            <div class="btn-group tool-button">
+                <a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/add" data-pjax><i class="ti-plus"></i>初始化数据</a>
+
+            </div>
         </div>
     </header>
     <div class=panel-body style="padding-top: 50px;">
@@ -119,7 +125,7 @@ layout("/layouts/platform.html"){
                 "render": function (data, type, row) {
                     return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/qualify/?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>达标性评估</a>' +
                         '<a class="btn btn-success" href="${base}/platform/evaluate/remark/?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>监测评估</a>'+
-                        '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
+//                        '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
                         '</div>';
                 },
                 "targets": 7

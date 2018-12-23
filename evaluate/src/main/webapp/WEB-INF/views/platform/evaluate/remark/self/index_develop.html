@@ -4,7 +4,6 @@ layout("/layouts/platform.html"){
 <aside class="sidebar-250 canvas-right bg-default ">
     <header class="header navbar clearfix bb bg-default pl0 pr0">
         <p class="navbar-text"><i class="fa fa-sitemap mr5"></i> 指标列表</p>
-
     </header>
     <div class="content-wrap no-p">
         <div class="wrapper2">
@@ -17,35 +16,23 @@ layout("/layouts/platform.html"){
 <section class="content-wrap bg-white">
     <header class="header navbar bg-white shadow">
         <div class="btn-group tool-button">
-           <!--  <% if(@shiro.hasPermission("sys.manager.user.add")){%>有权限<%}%> -->
-            <p class="navbar-text"><i class="fa fa-chevron-right"></i> 基础性指标评估<i class="fa  fa-chevron-right"></i> ${schoolname}</p>
-            <!--<a class="btn btn-warning navbar-btn" id="btsum" href="${base}/platform/evaluate/qualify/summary" data-toggle="modal" data-target="#dialogSelfsum"><i class="glyphicon glyphicon-pencil"></i> 添加自评概述</a>-->
-            <!--<a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/qualify/add" data-pjax><i class="ti-plus"></i> 新建Evaluate_qualify</a>-->
-            <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>-->
+            <p class="navbar-text"><i class="h4 show no-m pt5"></i> 监测评估</p>
         </div>
-        <div class="pull-right">
-            <div class="btn-group tool-button">
-                <a class="btn btn-warning navbar-btn" id="btsum" href="${base}/platform/evaluate/qualify/summary" data-toggle="modal" data-target="#dialogSelfsum"><i class="glyphicon glyphicon-pencil"></i> 添加自评概述</a>
-
-            </div>
-        </div>
-
     </header>
     <div class=panel-body style="padding-top: 50px;">
+        <input id="catalogId" type="hidden">
+        <input type="hidden" id="evaluateId" name="evaluateId"  value="${evaluateId}">
+        <input type="hidden" id="unitType" name="unitType" value="${unitType}">
         <div class="table-responsive no-border">
-            <input id="catalogId" type="hidden">
-            <input type="hidden" id="evaluateId" name="evaluateId"  value="${evaluateId}">
-            <input type="hidden" id="unitType" name="unitType" value="${unitType}">
             <table class="table table-bordered table-striped mg-t datatable">
                 <thead>
                     <tr>
-                            <th class="col-md-1">序号</th>
-                            <th >三级指标</th>
-                            <th >目标值</th>
-
-                            <th class="col-md-1">实际值</th>
-                            <th class="col-md-1">是否达标</th>
-                            <th>操作</th>
+                        <th class="col-md-1">序号</th>
+                            <th class="col-md-2">三级指标</th>
+                            <th class="col-md-1">权重</th>
+                            <th class="col-md-5">评分细则</th>
+                            <th class="col-md-1">自评得分</th>
+                            <th class="col-md-3">操作</th>
                     </tr>
                 </thead>
             </table>
@@ -86,12 +73,6 @@ layout("/layouts/platform.html"){
         </div>
     </div>
 </div>
-<div id="dialogSelfsum" class="modal fade bs-modal-sm" tabindex="-3" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-        </div>
-    </div>
-</div>
 <script language="JavaScript">
     var datatable;
     function initDatatable() {
@@ -112,7 +93,7 @@ layout("/layouts/platform.html"){
                 sublime.closeLoadingbar($(".main-content"));
             },
             "ajax": {
-                "url": "${base}/platform/evaluate/qualify/data",
+                "url": "${base}/platform/evaluate/remark/data",
                 "type": "post",
                 "data": function (d) {
                     d.catalogId = $('#catalogId').val();
@@ -121,28 +102,30 @@ layout("/layouts/platform.html"){
                     //d.nutz = $('#nutz').val();
                 }
             },
-            "order": [],
+            "order": [
+//                [0, "desc"]
+            ],
             "columns": [
-                    {"data": "index.location", "bSortable": false},
+                {"data": "index.location", "bSortable": false},
                     {"data": "index.name", "bSortable": false},
-                    {"data": "index.mvalue", "bSortable": false},
-                    {"data": "pvalue", "bSortable": true},
-                    {"data": "qualify", "bSortable": true},
+                    {"data": "index.weights", "bSortable": false},
+                    {"data": "index.detail", "bSortable": false},
+                    {"data": "score_s", "bSortable": true},
+
             ],
             "columnDefs": [
                 {
-
                     "render": function (data, type, row) {
-                        html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/qualify/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><span class="glyphicon glyphicon-eye-open"></span> 查看</a>';
+                        html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><span class="glyphicon glyphicon-eye-open"></span> 查看</a>';
                         <% if(@shiro.hasPermission("evaluate.self.remark")){%>
-                            html+='<div class="btn-group-vertical"><a class="btn btn-danger" href="${base}/platform/evaluate/qualify/selfeva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
-                                '   <span class="glyphicon glyphicon-pencil"></span> 评价</a>' +
+                            html+='<div class="btn-group-vertical"><a class="btn btn-danger" href="${base}/platform/evaluate/remark/selfeva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
+                                '    <span class="glyphicon glyphicon-pencil"></span> 评价</a>' +
                                 '</div>';
                         <%}%>
                         return  html;
 
                     },
-                    "targets": 5
+                        "targets": 5
                 }
             ]
         });
@@ -161,7 +144,7 @@ layout("/layouts/platform.html"){
             core: {
                 data: {
                     url: function (node) {
-                        return node.id === "#" ? "${base}/platform/monitor/catalog/tree/qualify?unitType=${unitType}" : "${base}/platform/monitor/catalog/tree/qualify?unitType=${unitType}&pid=" + node.id
+                        return node.id === "#" ? "${base}/platform/monitor/catalog/tree/develop?unitType=${unitType}" : "${base}/platform/monitor/catalog/tree/develop?unitType=${unitType}&pid=" + node.id
                     }
                 },
                 multiple: false
@@ -169,7 +152,6 @@ layout("/layouts/platform.html"){
         }).on("select_node.jstree", function (node, selected) {
             var id = selected.selected;
             $("#catalogId").val(id);
-            document.getElementById('btsum').href = "${base}/platform/evaluate/qualify/summary?evaluateID=${evaluateId}&catalogID="+id
             $("#searchForm").find("input[type='text']").val("");
             if (datatable) {
                 $(".cd-panel-content").find("input").val("");
@@ -185,7 +167,6 @@ layout("/layouts/platform.html"){
             }
         });
     }
-
     function del(id) {
         var dialog = $("#dialogDelete");
         dialog.modal("show");
@@ -193,7 +174,7 @@ layout("/layouts/platform.html"){
         dialog.find("#okDel").bind("click", function (event) {
             var btn = $(this);
             btn.button("loading");
-            $.post("${base}/platform/evaluate/qualify/delete/" + id, {}, function (data) {
+            $.post("${base}/platform/evaluate/remark/delete/" + id, {}, function (data) {
                 if (data.code == 0) {
                     datatable.ajax.reload(null,false);
                 } else {
@@ -218,7 +199,7 @@ layout("/layouts/platform.html"){
             dialog.find("#okDel").bind("click", function (event) {
                 var btn = $(this);
                 btn.button("loading");
-                $.post("${base}/platform/evaluate/qualify/delete", {ids: ids.toString()}, function (data) {
+                $.post("${base}/platform/evaluate/remark/delete", {ids: ids.toString()}, function (data) {
                     if (data.code == 0) {
                         datatable.ajax.reload(null,false);
                     } else {

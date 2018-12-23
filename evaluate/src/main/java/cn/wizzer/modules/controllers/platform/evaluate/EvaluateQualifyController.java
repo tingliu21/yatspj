@@ -46,6 +46,9 @@ public class EvaluateQualifyController {
 	@RequiresAuthentication
 	//type取值有2个，self和special
 	public void index(String type,@Param("evaluateId") String evaluateId,@Param("unitType") String unitType,HttpServletRequest req) {
+		Evaluate_records evaluate = evaluateRecordsService.fetch(evaluateId);
+		evaluate = evaluateRecordsService.fetchLinks(evaluate,"school");
+		req.setAttribute("schoolname",evaluate.getSchool().getName());
 		req.setAttribute("evaluateId",evaluateId);
 		req.setAttribute("unitType",unitType);
 		req.setAttribute("type", type);

@@ -4,9 +4,9 @@ layout("/layouts/platform.html"){
 <section class="content-wrap bg-white">
     <header class="header navbar bg-white shadow">
         <div class="btn-group tool-button">
-            <% if(@shiro.hasPermission("evaluate.init")){%>
+            <% if(@shiro.hasPermission("evaluate.records.add")){%>
             <a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/add" data-pjax><i class="ti-plus"></i>初始化数据</a>
-            <%}else if(@shiro.hasPermission("evaluate.self.init")){%>
+            <%}else if(@shiro.hasPermission("evaluate.records.self.add")){%>
             <a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/self/add" data-toggle="modal" data-target="#dialogDetail"><i class="ti-plus"></i>申报评估</a>
             <%}%>
         </div>

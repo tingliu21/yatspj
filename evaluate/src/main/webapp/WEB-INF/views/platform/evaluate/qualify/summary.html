@@ -18,8 +18,8 @@
 
                             <div class="form-group">
                                 <label for="summary" class="col-sm-2 control-label">自评概述</label>
-                                <div class="col-sm-8">
-                                    <textarea id="summary" name="summary" style="width:100%;height:50px;" data-parsley-required="true">${obj.summary}</textarea>
+                                <div class="col-sm-9">
+                                    <textarea id="summary" name="summary" style="width:100%;height:200px;" data-parsley-required="true">${obj.summary}</textarea>
                                 </div>
                             </div>
 
@@ -47,7 +47,7 @@
             success: function (data, statusText, xhr, form) {
                 if (data.code == 0) {
                     Toast.success(data.msg);
-                    $("#dialogEvaluate").modal("hide");
+                    $("#dialogSelfsum").modal("hide");
                     //datatable.ajax.reload();
 //                    setTimeout(function () {
 //                        $("#goback").trigger("click");

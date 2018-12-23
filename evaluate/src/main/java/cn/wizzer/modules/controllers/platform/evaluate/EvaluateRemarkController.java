@@ -56,15 +56,20 @@ public class EvaluateRemarkController {
 	@At({"index_standard","/?/index_standard"})
 	@Ok("beetl:/platform/evaluate/remark/${req_attr.type}/index_standard.html")
 	@RequiresAuthentication
-	public void index_standard(HttpServletRequest req) {
-
-		req.setAttribute("ctype",2);
+	public void index_standard(String type,@Param("evaluateId") String evaluateId,@Param("unitType") String unitType,@Param("cType") String cType,HttpServletRequest req) {
+		req.setAttribute("evaluateId",evaluateId);
+		req.setAttribute("unitType",unitType);
+		req.setAttribute("type", type);
+		req.setAttribute("ctype",cType);
 	}
 
-	@At
+	@At({"index_develop","/?/index_develop"})
 	@Ok("beetl:/platform/evaluate/remark/${req_attr.type}/index_develop.html")
 	@RequiresAuthentication
-	public void index_develop(HttpServletRequest req) {
+	public void index_develop(String type,@Param("evaluateId") String evaluateId,@Param("unitType") String unitType,@Param("cType") String cType,HttpServletRequest req) {
+		req.setAttribute("evaluateId",evaluateId);
+		req.setAttribute("unitType",unitType);
+		req.setAttribute("type", type);
 		req.setAttribute("ctype",3);
 	}
 

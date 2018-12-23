@@ -58,6 +58,11 @@ public class Monitor_catalog extends Model implements Serializable{
     @Comment("是否达标性指标")
     @ColDefine(type = ColType.BOOLEAN)
     private boolean qualify;
+    @Column
+    @Comment("指标类型")
+    @ColDefine(type=ColType.CHAR,width = 1)
+    private String type;
+
     public String getId() {
         return id;
     }
@@ -127,5 +132,13 @@ public class Monitor_catalog extends Model implements Serializable{
 
     public void setQualify(boolean qualify) {
         this.qualify = qualify;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -137,8 +137,10 @@ public class MonitorCatalogController {
 		Cnd cnd = Cnd.where("parentId", "=", Strings.sBlank(pid)).and("unitType","=",unitType);
 		if("qualify".equals(evatype)){
 			cnd = cnd.and("qualify","=",true);
-		}else if("remark".equals(evatype)){
-			cnd = cnd.and("qualify","=",false);
+		}else if("standard".equals(evatype)){
+			cnd = cnd.and("ctype","=",'2');
+		}else if("develop".equals(evatype)){
+			cnd = cnd.and("ctype","=",'3');
 		}
 
 

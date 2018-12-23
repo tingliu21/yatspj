@@ -8,6 +8,7 @@ import cn.wizzer.common.page.DataTableOrder;
 import cn.wizzer.modules.models.evaluate.*;
 import cn.wizzer.modules.models.monitor.Monitor_index;
 import cn.wizzer.modules.models.monitor.Monitor_catalog;
+import cn.wizzer.modules.models.sys.Sys_unit;
 import cn.wizzer.modules.models.sys.Sys_user;
 import cn.wizzer.modules.services.evaluate.*;
 import cn.wizzer.modules.services.monitor.MonitorCatalogService;
@@ -127,14 +128,18 @@ public class EvaluateRecordsController {
     @At
     @Ok("json")
     @SLog(tag = "初始化学校评估数据", msg = "")
-    public Object addDo(@Param("year") int year,@Param("unitType") String unitType,@Param("schoolIds") String[] schoolIds, @Param("specialIds") String[] specialIds,HttpServletRequest req) {
+    public Object addDo(@Param("year") int year,@Param("schoolIds") String[] schoolIds, @Param("specialIds") String[] specialIds,HttpServletRequest req) {
 		try {
 			List<Record> indexList = monitorIndexService.getSpecialIndex();
-			int totalWeights = monitorIndexService.getTotalWeights(unitType);
 
 			if(schoolIds!=null&&schoolIds.length>0){
 
 				for (String schoolid : schoolIds) {
+					//获取学校类别
+					Sys_unit school = sysUnitService.fetch(schoolid);
+					String unitType =school.getUnitType();
+					int totalWeights = monitorIndexService.getTotalWeights(unitType);
+
 					Evaluate_records records = new Evaluate_records();
 					records.setYear(year);
 					records.setSchoolId(schoolid);
@@ -150,7 +155,7 @@ public class EvaluateRecordsController {
 						qualify.setEvaluateId(records.getId());
 						qualify.setIndexId(index.getId());
 
-						//插入达标行评估记录
+						//插入达标性评估记录
 						evaluateQualifyService.insert(qualify);
 
 
@@ -261,8 +266,9 @@ public class EvaluateRecordsController {
 	@SLog(tag = "删除Evaluate_records", msg = "ID:${args[2].getAttribute('id')}")
 	public Object delete(String id ,HttpServletRequest req) {
 		try {
-
-				evaluateRecordsService.deleteAndChild(id);
+				//通过级联删除其他外键表记录
+				evaluateRecordsService.delete(id);
+				//evaluateRecordsService.deleteAndChild(id);
 				//req.setAttribute("id", id);
 
 			return Result.success("system.success");

@@ -67,22 +67,22 @@ public class EvaluateRecordsSelfController {
 	@At
 	@Ok("beetl:/platform/evaluate/records/self/index_basic.html")
 	@RequiresAuthentication
-	public void index_basic() {
-
+	public void index_basic(HttpServletRequest req) {
+		req.setAttribute("ctype",1);
 	}
 
 	@At
 	@Ok("beetl:/platform/evaluate/records/self/index_standard.html")
 	@RequiresAuthentication
-	public void index_standard() {
-
+	public void index_standard(HttpServletRequest req) {
+		req.setAttribute("ctype",2);
 	}
 
 	@At
 	@Ok("beetl:/platform/evaluate/records/self/index_develop.html")
 	@RequiresAuthentication
-	public void index_develop() {
-
+	public void index_develop(HttpServletRequest req) {
+		req.setAttribute("ctype",3);
 	}
 
 	@At
@@ -237,7 +237,7 @@ public class EvaluateRecordsSelfController {
 
 	@At({"/delete","/delete/?"})
 	@Ok("json")
-	@SLog(tag = "删除Evaluate_records_self", msg = "ID:${args[2].getAttribute('id')}")
+	@SLog(tag = "删除Evaluate_records_self", msg = "ID:")
 	public Object delete(String id ,HttpServletRequest req) {
 		try {
 			evaluateRecordsSelfService.deleteAndChild(id);
