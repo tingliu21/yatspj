@@ -10,6 +10,7 @@ import org.nutz.ioc.aop.Aop;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+
 import java.util.List;
 
 @IocBean(args = {"refer:dao"})
@@ -21,19 +22,18 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
     }
     /**
      * 级联删除评估记录
-     * 2018-12-23 改为通过数据库设置外键级联删除
+     *
      * @param evaluateId
      */
     @Aop(TransAop.READ_COMMITTED)
     public void deleteAndChild(String evaluateId) {
-
         //清空该评估记录
         delete(evaluateId);
+
         //dao().execute(Sqls.create("delete from evaluate_records where path like @path").setParam("path", catalog.getPath() + "%"));
         //清空该评估记录下的所有观测点评分
         dao().execute(Sqls.create("delete from evaluate_qualify where evaluateid=@id ").setParam("id", evaluateId));
         dao().execute(Sqls.create("delete from evaluate_remark where evaluateid=@id ").setParam("id", evaluateId));
-        dao().execute(Sqls.create("delete from evaluate_summary where evaluateid=@id").setParam("id",evaluateId));
 
 
     }
@@ -47,6 +47,7 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
 
         dao().execute(Sqls.create("update evaluate_records set selfeva = true where evaluateid=@id ").setParam("id", evaluateId));
     }
+
     public List<Record> getUnitInfo(String evalId) {
         return list(Sqls.create("select t1.name as unitname, t1.address as address, t1.website as website, t1.telephone as telephone, t1.email as email from sys_unit t1 join evaluate_records t2 on t1.id=t2.schoolid where t2.id=@id").setParam("id", evalId));
 
@@ -67,6 +68,5 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
     public List<Record> getScaleData(String evalId) {
         return list(Sqls.create("select t1.grade,t1.planenrollnum,t1.actualenrollnum, t1.classnum,t1.averagenum,t1.instruction from bascidata_scale t1 join evaluate_records t2 on t1.schoolid=t2.schoolid and t1.year=t2.year where t2.id=@id").setParam("id", evalId));
     }
-
 }
 

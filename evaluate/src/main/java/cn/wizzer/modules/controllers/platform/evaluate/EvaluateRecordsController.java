@@ -5,6 +5,7 @@ import cn.wizzer.common.base.Result;
 import cn.wizzer.common.filter.PrivateFilter;
 import cn.wizzer.common.page.DataTableColumn;
 import cn.wizzer.common.page.DataTableOrder;
+import cn.wizzer.common.util.XwpfUtil;
 import cn.wizzer.modules.models.evaluate.*;
 import cn.wizzer.modules.models.monitor.Monitor_index;
 import cn.wizzer.modules.models.monitor.Monitor_catalog;
@@ -31,9 +32,13 @@ import org.nutz.log.Logs;
 import org.nutz.mvc.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.net.URLEncoder;
+import java.util.*;
 
 @IocBean
 @At("/platform/evaluate/records")
@@ -333,4 +338,67 @@ public class EvaluateRecordsController {
 //
 //
 //	}
+	@At("/special/download/?")
+	@Ok("void")
+	@RequiresAuthentication
+	public Object spec_download(String id, HttpServletResponse resp) {
+		if (!Strings.isBlank(id)) {
+			Map<String,Object> wordDataMap = packageObject(id);
+			XwpfUtil xwpfUtil = new XwpfUtil();
+			//读入word模板
+			InputStream is = getClass().getClassLoader().getResourceAsStream("template/SpecialEvaluate.docx");
+			try {
+				String filename = "拱墅区现代优质学校专家评估表.docx";
+				filename = URLEncoder.encode(filename, "UTF-8");
+
+				xwpfUtil.exportWord(wordDataMap,is,resp,filename);
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		return null;
+	}
+
+	/**
+	 * 组装word文档中需要显示数据的集合
+	 * @return
+	 */
+	public Map<String, Object> packageObject(String evalId) {
+		Map<String,Object> wordDataMap = new HashMap<String,Object>();
+		Map<String, Object> parametersMap = new HashMap<String, Object>();
+
+
+
+		Evaluate_records evaluate = evaluateRecordsService.fetch(evalId);
+		evaluate = evaluateRecordsService.fetchLinks(evaluate,"school");
+		parametersMap.put("unitname", evaluate.getSchool().getName());
+
+		List<Evaluate_remark> remarklist = evaluateRemarkService.query(Cnd.where("depttype","=","Special").and("evaluateId", "=", evalId ));
+
+		for (Evaluate_remark remark : remarklist) {
+			int location = remark.getLocation();
+			double score_p = remark.getScore_p();
+			String advantage = remark.getAdvantage();
+			String disadvantae = remark.getDisadvantage();
+			String suggestion = remark.getSuggestion();
+
+			parametersMap.put("p_i" + location, formatDouble(score_p));
+			parametersMap.put("p_advantage" + location, advantage);
+			parametersMap.put("p_disadvantage" + location, disadvantae);
+			parametersMap.put("p_suggestion" + location, suggestion);
+
+		}
+		wordDataMap.put("parametersMap", parametersMap);
+		return wordDataMap;
+	}
+	public String formatDouble(double d) {
+		BigDecimal bg = new BigDecimal(d).setScale(1, RoundingMode.UP);
+		double num = bg.doubleValue();
+		if (Math.round(num) - num == 0) {
+			return String.valueOf((long) num);
+		}
+		return String.valueOf(num);
+	}
 }
