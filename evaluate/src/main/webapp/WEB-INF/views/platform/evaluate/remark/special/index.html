@@ -110,9 +110,9 @@ layout("/layouts/platform.html"){
                     "render": function (data, type, row) {
                         html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><span class="glyphicon glyphicon-eye-open"></span>查看</a>';
                         //专家考评落实到部门和用户
-                        if(row.department == '${@shiro.getPrincipalProperty("unitid")}' && row.specialid =='${@shiro.getPrincipalProperty("id")}'){
+                        if(row.department == '${@shiro.getPrincipalProperty("unitid")}'){
 
-                        <% if(@shiro.hasPermission("evaluate.verify.special.remark")){%>
+                        <% if(@shiro.hasPermission("evaluate.verify.special.mark")||row.specialid =='${@shiro.getPrincipalProperty("id")}'){%>
                             html+='<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/speceva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
                                 '   <i class="ti-plus"></i> 考评</a>' +
                                 '</div>';
