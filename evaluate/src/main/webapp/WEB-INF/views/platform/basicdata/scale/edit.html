@@ -1,0 +1,114 @@
+<%
+layout("/layouts/platform.html"){
+%>
+<header class="header navbar bg-white shadow">
+    <div class="btn-group tool-button">
+        <a class="btn btn-primary navbar-btn" href="${base}/platform/basicdata/scale" id="goback" data-pjax><i class="ti-angle-left"></i> 返回</a>
+    </div>
+</header>
+
+<div class="content-wrap">
+    <div class="wrapper" style="min-height:500px;">
+        <section class="panel panel-form">
+            <form id="editForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
+                  action="${base}/platform/basicdata/scale/editDo" method="post">
+                <input name="id" type="hidden" value="${obj.id}">
+                <div class="row mb10">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label for="grade" class="col-sm-2 control-label">年级</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="grade" class="form-control" name="grade" data-parsley-required="true"
+                                       placeholder="年级" value="${obj.grade}" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="planenrollnum" class="col-sm-2 control-label">计划招生数</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="planenrollnum" class="form-control" name="planenrollnum" data-parsley-required="true"
+                                       placeholder="计划招生数" value="${obj.planenrollnum}" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="actualenrollnum" class="col-sm-2 control-label">实际学生数</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="actualenrollnum" class="form-control" name="actualenrollnum" data-parsley-required="true"
+                                       placeholder="实际学生数" value="${obj.actualenrollnum}" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="classnum" class="col-sm-2 control-label">班级数</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="classnum" class="form-control" name="classnum" data-parsley-required="true"
+                                       placeholder="班级数" value="${obj.classnum}" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="averagenum" class="col-sm-2 control-label">班均人数</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="averagenum" class="form-control" name="averagenum" data-parsley-required="true"
+                                       placeholder="班均人数" value="${obj.averagenum}" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="instruction" class="col-sm-2 control-label">需要说明的情况</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="instruction" class="form-control" name="instruction" data-parsley-required="true"
+                                       placeholder="需要说明的情况" value="${obj.instruction}" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="year" class="col-sm-2 control-label">年份</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="year" class="form-control" name="year" data-parsley-required="true"
+                                       placeholder="年份" value="${obj.year}" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="schoolID" class="col-sm-2 control-label">学校ID</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="schoolID" class="form-control" name="schoolID" data-parsley-required="true"
+                                       placeholder="学校ID" value="${obj.schoolID}" >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3"></div>
+                <div class="col-lg-6">
+                    <div class="form-group text-center">
+                        <label></label>
+
+                        <div>
+                            <button class="btn btn-primary btn-block btn-lg btn-parsley" data-loading-text="正在提交...">提 交</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+    </div>
+</div>
+<script language="JavaScript">
+    $(document).ready(function () {
+        $('#editForm').ajaxForm({
+            dataType: 'json',
+            beforeSubmit: function (arr, form, options) {
+                form.find("button:submit").button("loading");
+            },
+            success: function (data, statusText, xhr, form) {
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+                    setTimeout(function () {
+                        $("#goback").trigger("click");
+                    }, 1000);
+                } else {
+                    Toast.error(data.msg);
+                }
+                form.find("button:submit").button("reset");
+            }
+        });
+    });
+</script>
+
+
+<%}%>
