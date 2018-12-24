@@ -85,6 +85,9 @@ public class Evaluate_remark extends Model implements Serializable{
     @Column
     @Readonly
     private String depttype;
+    @Column
+    @Readonly
+    private int location;
 
     public String getId() {
         return id;
@@ -219,5 +222,13 @@ public class Evaluate_remark extends Model implements Serializable{
 
     public void setDepttype(String depttype) {
         this.depttype = depttype;
+    }
+
+    public int getLocation() {
+        return location;
+    }
+
+    public void setLocation(int location) {
+        this.location = location;
     }
 }
