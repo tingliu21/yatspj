@@ -121,9 +121,7 @@ layout("/layouts/platform.html"){
                     return '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>专家评估</a>'+
                         '<a class="btn btn-success" href="${base}/platform/evaluate/opinion/edit/' + row.id + '"  data-toggle="modal" data-target="#dialogDetail">评估意见</a>'+
 //                        '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
-                        '<a class="btn btn-primary" href="${base}/platform/evaluate/records/special/download/' + row.id + '" data-pjax>导出评估表</a>' +
                         '</div>';
-
                 },
                 "targets": 7
             }
