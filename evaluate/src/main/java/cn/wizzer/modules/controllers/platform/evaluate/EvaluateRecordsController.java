@@ -135,7 +135,7 @@ public class EvaluateRecordsController {
     @SLog(tag = "初始化学校评估数据", msg = "")
     public Object addDo(@Param("year") int year,@Param("schoolIds") String[] schoolIds, @Param("specialIds") String[] specialIds,HttpServletRequest req) {
 		try {
-			List<Record> indexList = monitorIndexService.getSpecialIndex();
+
 
 			if(schoolIds!=null&&schoolIds.length>0){
 
@@ -187,6 +187,7 @@ public class EvaluateRecordsController {
 
 					}
 					if(specialIds!=null&&specialIds.length==5){
+						List<Record> indexList = monitorIndexService.getSpecialIndex(unitType);
 						//分配评审专家
 						for(Record rec : indexList){
 							//给一次评估分配专家
@@ -194,19 +195,19 @@ public class EvaluateRecordsController {
 							evaluateSpecial.setEvaluateId(records.getId());
 							evaluateSpecial.setIndexId(rec.getString("id"));
 							String strRole = rec.getString("rolecode");
-							if(strRole.equals("special1")){
+							if(strRole.equals("specialLeader")){
 								evaluateSpecial.setSpecialId(specialIds[0]);
 
-							}else if(strRole.equals("special2")){
+							}else if(strRole.equals("special1")){
 								evaluateSpecial.setSpecialId(specialIds[1]);
 
-							}else if(strRole.equals("special3")){
+							}else if(strRole.equals("special2")){
 								evaluateSpecial.setSpecialId(specialIds[2]);
 
-							}else if(strRole.equals("special4")){
+							}else if(strRole.equals("special3")){
 								evaluateSpecial.setSpecialId(specialIds[3]);
 
-							}else if(strRole.equals("special5")){
+							}else if(strRole.equals("special4")){
 								evaluateSpecial.setSpecialId(specialIds[4]);
 
 							}

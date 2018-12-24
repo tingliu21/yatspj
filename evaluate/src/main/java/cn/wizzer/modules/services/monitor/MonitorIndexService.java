@@ -25,8 +25,8 @@ public class MonitorIndexService extends Service<Monitor_index> {
         return count(sql);
     }
     //获取专家审核指标
-    public List<Record> getSpecialIndex(){
-        Sql sql = Sqls.create("select index.id, sys_role.code as rolecode from monitor_index as index inner join sys_role on sys_role.id = index.masterrole inner join sys_unit on sys_unit.id = index.department where sys_unit.aliasname='Special'");
+    public List<Record> getSpecialIndex(String unittype){
+        Sql sql = Sqls.create("select index.id, sys_role.code as rolecode from monitor_index as index inner join sys_role on sys_role.id = index.masterrole inner join sys_unit on sys_unit.id = index.department where sys_unit.aliasname='Special' and monitor_index.unittype=@unittype").setParam("unittype", unittype);
         List<Record> indexlist = list(sql);
         return  indexlist;
 
