@@ -48,6 +48,9 @@ public class EvaluateRemarkController {
 	//type取值有2个，self和special
 	//cType为指标目录类别，1为基础性指标，2为规范性指标，3为发展性指标
 	public void index(String type,@Param("evaluateId") String evaluateId,@Param("unitType") String unitType,@Param("cType") String cType,HttpServletRequest req) {
+		Evaluate_records evaluate = evaluateRecordsService.fetch(evaluateId);
+		evaluate = evaluateRecordsService.fetchLinks(evaluate,"school");
+		req.setAttribute("schoolname",evaluate.getSchool().getName());
 		req.setAttribute("evaluateId",evaluateId);
 		req.setAttribute("unitType",unitType);
 		req.setAttribute("type", type);

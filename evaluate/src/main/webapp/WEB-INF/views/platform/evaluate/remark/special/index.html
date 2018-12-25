@@ -5,7 +5,7 @@ layout("/layouts/platform.html"){
 <section class="content-wrap bg-white">
     <header class="header navbar bg-white shadow">
         <div class="btn-group tool-button">
-            <p class="navbar-text"><i class="h4 show no-m pt5"></i> 监测评估</p>
+            <p class="navbar-text"><i class="fa fa-chevron-right"></i>监测评估<i class="fa  fa-chevron-right"></i>${schoolname}</p>
             <!--<a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/remark/add" data-pjax><i class="ti-plus"></i> 新建Evaluate_remark</a>-->
             <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>-->
         </div>
@@ -110,7 +110,8 @@ layout("/layouts/platform.html"){
                     "render": function (data, type, row) {
                         html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><span class="glyphicon glyphicon-eye-open"></span>查看</a>';
                         //专家考评落实到部门和用户
-                        if(row.department == '${@shiro.getPrincipalProperty("unitid")}'){
+                        if(row.department == '${@shiro.getPrincipalProperty("unitid")}'&&row.specialid =='${@shiro.getPrincipalProperty("id")}'){
+
 
                             if(row.specialid =='${@shiro.getPrincipalProperty("id")}') {
                                 html += '<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/speceva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
@@ -124,6 +125,7 @@ layout("/layouts/platform.html"){
                                         '</div>';
                                 <%}%>
                             }
+
                         }
                         return  html;
 
