@@ -93,7 +93,7 @@ public class EvaluateRecordsController {
 	public Object data(@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
 
 		//只审核已经提交的
-		Cnd cnd = Cnd.where("status_s","=",true);
+		Cnd cnd = Cnd.NEW();
 
     	return evaluateRecordsService.data(length, start, draw, order, columns, cnd, "school");
     }
@@ -247,6 +247,33 @@ public class EvaluateRecordsController {
 			return Result.error("system.error");
 		}
     }
+
+
+	@At({"/locked/?"})
+	@Ok("json")
+	@SLog(tag = "锁定评估", msg = "ID:${args[2].getAttribute('id')}")
+	public Object locked(String id ,HttpServletRequest req) {
+		try {
+			Evaluate_records records = evaluateRecordsService.fetch(id);
+			evaluateRecordsService.update(org.nutz.dao.Chain.make("locked", true), Cnd.where("id", "=", id));
+			return Result.success("system.success");
+		} catch (Exception e) {
+			return Result.error("system.error");
+		}
+	}
+
+	@At({"/unlocked/?"})
+	@Ok("json")
+	@SLog(tag = "解锁评估", msg = "ID:${args[2].getAttribute('id')}")
+	public Object unlocked(String id ,HttpServletRequest req) {
+		try {
+			Evaluate_records records = evaluateRecordsService.fetch(id);
+			evaluateRecordsService.update(org.nutz.dao.Chain.make("locked", false), Cnd.where("id", "=", id));
+			return Result.success("system.success");
+		} catch (Exception e) {
+			return Result.error("system.error");
+		}
+	}
 
 
 //    @At({"/delete","/delete/?"})
