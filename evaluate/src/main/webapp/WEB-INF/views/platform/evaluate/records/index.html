@@ -27,13 +27,16 @@ layout("/layouts/platform.html"){
                             <th class="col-md-1">评估得分</th>
                             <th class="col-md-1">评估进度</th>
                             <th class="col-md-1">评估状态</th>
+                            <th class="col-md-1">锁定状态</th>
                             <th>操作</th>
+                            <th>锁定/解锁</th>
                     </tr>
                 </thead>
             </table>
         </div>
     </div>
 </section>
+
 <div id="dialogDelete" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -94,10 +97,10 @@ layout("/layouts/platform.html"){
                     {"data": "school.unitType", "bSortable": true},
                     {"data": "school.name", "bSortable": true},
                     {"data": "weights", "bSortable": true},
-
                     {"data": "score_p", "bSortable": true},
                     {"data": "progress_p", "bSortable": true},
                     {"data": "status_p", "bSortable": true},
+                    {"data": "locked", "bSortable": true},
 
             ],
             "columnDefs": [
@@ -128,7 +131,29 @@ layout("/layouts/platform.html"){
 //                        '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
                         '</div>';
                 },
+                "targets": 8
+            },
+            {
+                "render": function (data, type, row) {
+                    return '<div class="btn-group"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">' +
+                        ' <i class="ti-settings"></i> <span class="ti-angle-down"></span></button><ul class="dropdown-menu" role="menu">' +
+                        '<li><a href="javascript:;" onclick="locked(\'' + row.id + '\')">锁定</a></li>' +
+                        '<li><a href="javascript:;" onclick="unlocked(\'' + row.id + '\')">解锁</a></li>' +
+                        '</ul></div>';
+                },
+                "targets": 9
+
+            },
+            {
+                "render": function (data, type, row) {
+                    if (!data) {
+                        return '<i id="locked_' + row.id + '" class="fa fa-circle text-success ml5"></i>';
+                    } else {
+                        return '<i id="locked_' + row.id + '" class="fa fa-circle text-danger ml5"></i>';
+                    }
+                },
                 "targets": 7
+
             }
             ]
         });
@@ -139,6 +164,28 @@ layout("/layouts/platform.html"){
             datatable.ajax.reload();
         });
     }
+    function locked(id) {
+        $.post("${base}/platform/evaluate/records/locked/" + id, {}, function (data) {
+            if (data.code == 0) {
+                $("#locked_" + id).attr("class", "fa fa-circle text-danger ml5");
+            } else {
+                Toast.error(data.msg);
+            }
+        }, "json");
+
+    }
+
+    function unlocked(id) {
+        $.post("${base}/platform/evaluate/records/unlocked/" + id, {}, function (data) {
+            if (data.code == 0) {
+                $("#locked_" + id).attr("class", "fa fa-circle text-success ml5");
+            } else {
+                Toast.error(data.msg);
+            }
+        }, "json");
+
+    }
+
     function del(id) {
         var dialog = $("#dialogDelete");
         dialog.modal("show");
@@ -146,7 +193,7 @@ layout("/layouts/platform.html"){
         dialog.find("#okDel").bind("click", function (event) {
             var btn = $(this);
             btn.button("loading");
-            $.post("${base}/platform/evaluate/records/delete/" + id, {}, function (data) {
+            $.post("${base}/platform/evaluate/records/locked/" + id, {}, function (data) {
                 if (data.code == 0) {
                     datatable.ajax.reload(null,false);
                 } else {
