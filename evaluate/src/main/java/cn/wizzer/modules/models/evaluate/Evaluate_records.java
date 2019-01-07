@@ -68,12 +68,16 @@ public class Evaluate_records extends Model implements Serializable{
     @Comment("评估状态")
     @ColDefine(type = ColType.BOOLEAN)
     private boolean status_p;
+
     @Column
     @Comment("评估任务")
     @ColDefine(type = ColType.VARCHAR, width = 20)
     private String taskname;
 
-
+    @Column
+    @Comment("评估状态")
+    @ColDefine(type = ColType.BOOLEAN)
+    private boolean locked;
 
     public String getId() {
         return id;
@@ -163,5 +167,20 @@ public class Evaluate_records extends Model implements Serializable{
         this.status_p = status_p;
     }
 
+    public String getTaskname() {
+        return taskname;
+    }
+
+    public void setTaskname(String taskname) {
+        this.taskname = taskname;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
 }
 
