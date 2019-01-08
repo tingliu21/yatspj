@@ -102,20 +102,25 @@ public class EvaluateRecordsController {
 	@Ok("json:full")
 	@RequiresPermissions("evaluate.verify.special")
 	public Object specdata(@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
+		Cnd cnd = Cnd.NEW();
 		//获取专家id
 		Subject subject = SecurityUtils.getSubject();
 		Sys_user user = (Sys_user) subject.getPrincipal();
-		List<Evaluate_special> evaluate_specials = evaluateSpecialService.query(Cnd.where("specialid","=",user.getId()));
-		Set<String> evaluateSet = new HashSet<String>();
-		for(int i =0;i<evaluate_specials.size();i++){
-			evaluateSet.add(evaluate_specials.get(i).getEvaluateId());
-			//set可以去除重复的evaluateid
+		//2019-01-08 超级专家可以审核所有的学校
+		if(!subject.isPermitted("evaluate.verify.special.all")) {
+			List<Evaluate_special> evaluate_specials = evaluateSpecialService.query(Cnd.where("specialid", "=", user.getId()));
+			Set<String> evaluateSet = new HashSet<String>();
+			for (int i = 0; i < evaluate_specials.size(); i++) {
+				evaluateSet.add(evaluate_specials.get(i).getEvaluateId());
+				//set可以去除重复的evaluateid
+			}
+			String[] evaluateids = new String[evaluateSet.size()];
+			//Set-->数组
+			evaluateSet.toArray(evaluateids);
+			//2018-12-21修改，可以先由专家审核,专家只审核自己分配的学校
+			cnd = Cnd.where("id", "in", evaluateids).and("status_p", "=", false);
 		}
-		String[] evaluateids = new String[evaluateSet.size()];
-		//Set-->数组
-		evaluateSet.toArray(evaluateids);
-		//2018-12-21修改，可以先由专家审核,专家只审核自己分配的学校
-		Cnd cnd = Cnd.where("id", "in", evaluateids).and("status_p","=",false);
+
 
 		return evaluateRecordsService.data(length, start, draw, order, columns, cnd, "school");
 	}
