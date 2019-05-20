@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: ojdbc6:ojdbc6:ojdbc6">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/ojdbc6/ojdbc6/ojdbc6/ojdbc6-ojdbc6.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/ojdbc6/ojdbc6/ojdbc6/ojdbc6-ojdbc6-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/ojdbc6/ojdbc6/ojdbc6/ojdbc6-ojdbc6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

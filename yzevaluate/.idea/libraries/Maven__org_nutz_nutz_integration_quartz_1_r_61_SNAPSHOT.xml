@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.nutz:nutz-integration-quartz:1.r.61-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/nutz/nutz-integration-quartz/1.r.61-SNAPSHOT/nutz-integration-quartz-1.r.61-20170419.114835-165.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/nutz/nutz-integration-quartz/1.r.61-SNAPSHOT/nutz-integration-quartz-1.r.61-20170419.114835-165-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/nutz/nutz-integration-quartz/1.r.61-SNAPSHOT/nutz-integration-quartz-1.r.61-20170419.114835-165-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

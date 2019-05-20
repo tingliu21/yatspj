@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.nutz:nutzwx:1.r.61-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/nutz/nutzwx/1.r.61-SNAPSHOT/nutzwx-1.r.61-20170417.102746-37.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/nutz/nutzwx/1.r.61-SNAPSHOT/nutzwx-1.r.61-20170417.102746-37-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/nutz/nutzwx/1.r.61-SNAPSHOT/nutzwx-1.r.61-20170417.102746-37-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

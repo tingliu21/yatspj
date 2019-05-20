@@ -1,0 +1,126 @@
+<form id="editForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
+      action="${base}/platform/evaluate/remark/deptevaDo" method="post">
+
+    <div class="modal-body no-p">
+        <div class="row">
+            <div class="col-xs-12">
+            <section class="panel panel-primary no-b">
+                <header class="panel-heading clearfix brtl brtr">
+                    <div class="overflow-hidden">
+                        <a href="javascript:;" class="h4 show no-m pt5">评价</a>
+                    </div>
+                </header>
+
+                <input name="id" type="hidden" value="${obj.id}">
+                <input name="evaluateId" type="hidden" value="${obj.evaluateId}">
+                <div class="row mb10">
+                    <div class="col-lg-12">
+
+                        <div class="form-group">
+                            <label for="mname" class="col-sm-2 control-label">指标名称</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="mname" class="form-control" name="mname" data-parsley-required="true"
+                                       placeholder="指标名称" value="${obj.index.name}" readonly="true" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="mweights" class="col-sm-2 control-label">权重</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="mweights" class="form-control" name="mweights" data-parsley-required="true"
+                                       placeholder="权重" value="${obj.index.weights}" readonly="true" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="score_s" class="col-sm-2 control-label">自评得分</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="score_s" class="form-control" name="score_s" data-parsley-required="true"
+                                       placeholder="自打分" value="${obj.score_s}" readonly="true">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="remark_s" class="col-sm-2 control-label">自评理由</label>
+                            <div class="col-sm-8">
+                                <textarea id="remark_s" name="remark_s" style="width:100%;height:80px;" data-parsley-required="false" readonly="true">${obj.remark_s!}</textarea>
+                                <!--<input type="text" id="remark_s" class="form-control" name="remark_s" data-parsley-required="true"-->
+                                       <!--placeholder="自评价" value="${obj.remark_s}" >-->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="score_p" class="col-sm-2 control-label">审核得分</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="score_p" class="form-control" name="score_p" data-parsley-required="true"
+                                       placeholder="专家打分" value="${obj.score_p}" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="remark_p" class="col-sm-2 control-label">审核意见</label>
+                            <div class="col-sm-8">
+                                <textarea id="remark_p" name="remark_p" style="width:100%;height:80px;" data-parsley-required="false">${obj.remark_p!}</textarea>
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="advantage" class="col-sm-2 control-label">优势</label>
+                            <div class="col-sm-8">
+                                <textarea id="advantage" name="advantage" style="width:100%;height:80px;" data-parsley-required="false">${obj.advantage!}</textarea>
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="disadvantage" class="col-sm-2 control-label">不足</label>
+                            <div class="col-sm-8">
+                                <textarea id="disadvantage" name="disadvantage" style="width:100%;height:80px;" data-parsley-required="false">${obj.disadvantage!}</textarea>
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="suggestion" class="col-sm-2 control-label">建议</label>
+                            <div class="col-sm-8">
+                                <textarea id="suggestion" name="suggestion" style="width:100%;height:80px;" data-parsley-required="false">${obj.suggestion!}</textarea>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3"></div>
+                <div class="col-lg-6">
+                    <div class="form-group text-center">
+                        <label></label>
+
+                        <!--<div>-->
+                            <!--<button class="btn btn-primary btn-block btn-lg btn-parsley" data-loading-text="正在提交...">提 交</button>-->
+                        <!--</div>-->
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+        <button id="ok" type="submit" class="btn btn-primary " data-loading-text="正在提交...">确 定</button>
+    </div>
+</form>
+<script language="JavaScript">
+    $(document).ready(function () {
+        $('#editForm').ajaxForm({
+            dataType: 'json',
+            beforeSubmit: function (arr, form, options) {
+                form.find("button:submit").button("loading");
+            },
+            success: function (data, statusText, xhr, form) {
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+                    $("#dialogEvaluate").modal("hide");
+//                    setTimeout(function () {
+//                        $("#goback").trigger("click");
+//                    }, 1000);
+                } else {
+                    Toast.error(data.msg);
+                }
+                form.find("button:submit").button("reset");
+            }
+        });
+    });
+</script>
