@@ -14,34 +14,52 @@ layout("/layouts/platform.html"){
                   action="${base}/platform/evaluate/custom/addDo" method="post">
                 <div class="row mb10">
                     <div class="col-lg-12">
-                        <div class="form-group">
+                        <!--<div class="form-group">
                             <label for="evaluateId" class="col-sm-2 control-label">评估ID</label>
                             <div class="col-sm-8">
                             <input type="text" id="evaluateId" class="form-control" name="evaluateId" data-parsley-required="true" placeholder="评估ID">
                             </div>
+                        </div>-->
+                        <!--
+                        <div class="form-group">
+                            <label for="location" class="col-sm-2 control-label">指标序号</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="location" class="form-control" name="location" data-parsley-required="true" placeholder="指标序号">
+                            </div>
+                        </div>-->
+
+                        <div class="form-group">
+                        <label for="indexname" class="col-sm-2 control-label">指标类型</label>
+                        <div class="col-sm-8">
+                        <select class="form-control" name="indexname" id="indexname">
+                        <option value="校园建设">校园建设</option>
+                        <option value="课程改革">课程改革</option>
+                            <option value="教师发展">教师发展</option>
+                            <option value="学生成长">学生成长</option>
+                            <option value="特色打造">特点打造</option>
+                            <option value="国际交流">国际交流</option>
+                        </select>
+                            <div style="width: 400px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
+                                <strong>提示：</strong>下拉框选择指标<br>
+                            </div>
+                        </div>
                         </div>
                         <div class="form-group">
-                            <label for="indexname" class="col-sm-2 control-label">指标</label>
+                            <label for="data" class="col-sm-2 control-label">具体发展性目标（任务)</label>
                             <div class="col-sm-8">
-                            <input type="text" id="indexname" class="form-control" name="indexname" data-parsley-required="true" placeholder="指标">
+                                <textarea id="data" name="data" class="form-control" style="width:100%;height:60px;" placeholder="具体发展性目标（任务)"></textarea>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="taskname" class="col-sm-2 control-label">具体发展性目标（任务)</label>
+                            <label for="data" class="col-sm-2 control-label">达成标志</label>
                             <div class="col-sm-8">
-                            <input type="text" id="taskname" class="form-control" name="taskname" data-parsley-required="true" placeholder="具体发展性目标（任务)">
+                                <textarea id="data" name="data" class="form-control" style="width:100%;height:60px;" placeholder="达成标志"></textarea>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="taskdetail" class="col-sm-2 control-label">达成标志</label>
+                            <label for="data" class="col-sm-2 control-label">原有基础自我分析</label>
                             <div class="col-sm-8">
-                            <input type="text" id="taskdetail" class="form-control" name="taskdetail" data-parsley-required="true" placeholder="达成标志">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="analysis_s" class="col-sm-2 control-label">原有基础自我分析</label>
-                            <div class="col-sm-8">
-                            <input type="text" id="analysis_s" class="form-control" name="analysis_s" data-parsley-required="true" placeholder="原有基础自我分析">
+                                <textarea id="data" name="data" class="form-control" style="width:100%;height:60px;" placeholder="原有基础自我分析"></textarea>
                             </div>
                         </div>
                         <div class="form-group">
@@ -56,7 +74,7 @@ layout("/layouts/platform.html"){
                             <input type="text" id="score_s" class="form-control" name="score_s" data-parsley-required="true" placeholder="自打分">
                             </div>
                         </div>
-                        <div class="form-group">
+                        <!--<div class="form-group">
                             <label for="score_p" class="col-sm-2 control-label">督评分</label>
                             <div class="col-sm-8">
                             <input type="text" id="score_p" class="form-control" name="score_p" data-parsley-required="true" placeholder="督评分">
@@ -73,13 +91,8 @@ layout("/layouts/platform.html"){
                             <div class="col-sm-8">
                             <input type="text" id="verifyeva" class="form-control" name="verifyeva" data-parsley-required="true" placeholder="是否审核完成">
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="location" class="col-sm-2 control-label">指标序号</label>
-                            <div class="col-sm-8">
-                            <input type="text" id="location" class="form-control" name="location" data-parsley-required="true" placeholder="指标序号">
-                            </div>
-                        </div>
+                        </div>-->
+
                     </div>
                 </div>
                 <div class="col-lg-3"></div>
