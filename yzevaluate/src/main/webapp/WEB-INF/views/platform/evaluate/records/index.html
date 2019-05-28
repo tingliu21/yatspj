@@ -13,6 +13,9 @@ layout("/layouts/platform.html"){
                 <a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/add" data-pjax><i class="ti-plus"></i>初始化数据</a>
 
             </div>
+            <button class="btn btn-primary navbar-btn" onclick="sublime.toggleFilter('.cd-panel')"><i
+                    class="fa fa-sliders"></i> 筛选
+            </button>
         </div>
     </header>
     <div class=panel-body style="padding-top: 50px;">
@@ -34,9 +37,27 @@ layout("/layouts/platform.html"){
                 </thead>
             </table>
         </div>
+
     </div>
 </section>
-
+<div class="cd-panel from-right">
+    <header class="cd-panel-header">
+        <h4>高级筛选</h4>
+    </header>
+    <div class="cd-panel-container">
+        <div class="cd-panel-content shadow">
+            <div class="form-group">
+                <label for="year">评估学年</label>
+                <input type="text" id="year" name="year" onclick="this.value=''" class="form-control" placeholder="评估学年">
+            </div>
+            <div class="form-group">
+                <label for="taskname">评估名称</label>
+                <input type="text" id="taskname" name="taskname" onclick="this.value=''" class="form-control" placeholder="评估名称">
+            </div>
+            <button id="searchBtn" type="button" class="btn btn-default">查询</button>
+        </div>
+    </div>
+</div>
 <div id="dialogDelete" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -89,6 +110,8 @@ layout("/layouts/platform.html"){
                 "type": "post",
                 "data": function (d) {
                     //d.nutz = $('#nutz').val();
+                    d.year = $('#year').val();
+                    d.taskname=$('#taskname').val();
                 }
             },
             "order": [[0, "desc"]],

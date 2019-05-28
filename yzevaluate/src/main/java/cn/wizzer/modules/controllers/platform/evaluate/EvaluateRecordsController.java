@@ -90,11 +90,16 @@ public class EvaluateRecordsController {
 	@At
 	@Ok("json:full")
 	@RequiresAuthentication
-	public Object data(@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
+	public Object data(@Param("year") int year, @Param("taskname") String taskname,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
 
 		//只审核已经提交的
 		Cnd cnd = Cnd.NEW();
-
+		if (year!=0) {
+			cnd.and("year", "=",  year );
+		}
+		if (!Strings.isBlank(taskname)) {
+			cnd.and("taskname", "like", "%" + taskname + "%");
+		}
     	return evaluateRecordsService.data(length, start, draw, order, columns, cnd, "school");
     }
     //获取专家评审列表
@@ -138,7 +143,7 @@ public class EvaluateRecordsController {
     @At
     @Ok("json")
     @SLog(tag = "初始化学校评估数据", msg = "")
-    public Object addDo(@Param("year") int year,@Param("schoolIds") String[] schoolIds, @Param("specialIds") String[] specialIds,HttpServletRequest req) {
+    public Object addDo(@Param("year") int year,@Param("taskname")String taskname,@Param("schoolIds") String[] schoolIds, @Param("specialIds") String[] specialIds,HttpServletRequest req) {
 		try {
 
 
@@ -152,8 +157,10 @@ public class EvaluateRecordsController {
 
 					Evaluate_records records = new Evaluate_records();
 					records.setYear(year);
+					records.setTaskname(taskname);
 					records.setSchoolId(schoolid);
 					records.setWeights(totalWeights);
+
 					//插入评估记录
 					records = evaluateRecordsService.insert(records);
 					List<Monitor_index> monitorIndexs = monitorIndexService.query(
