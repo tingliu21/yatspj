@@ -1,6 +1,7 @@
 package cn.wizzer.modules.models.monitor;
 
 import cn.wizzer.common.base.Model;
+import org.nutz.dao.DB;
 import org.nutz.dao.entity.annotation.*;
 
 import java.io.Serializable;
@@ -58,6 +59,13 @@ public class Monitor_catalog extends Model implements Serializable{
     @Comment("是否达标性指标")
     @ColDefine(type = ColType.BOOLEAN)
     private boolean qualify;
+    @Column
+    @Comment("排序字段")
+    @Prev({
+            @SQL(db= DB.MYSQL,value = "SELECT IFNULL(MAX(location),0)+1 FROM monitor_catalog"),
+            @SQL(db= DB.ORACLE,value = "SELECT COALESCE(MAX(location),0)+1 FROM monitor_catalog")
+    })
+    private Integer location;
     @Column
     @Comment("指标类型")
     @ColDefine(type=ColType.CHAR,width = 1)
@@ -132,6 +140,13 @@ public class Monitor_catalog extends Model implements Serializable{
 
     public void setQualify(boolean qualify) {
         this.qualify = qualify;
+    }
+    public Integer getLocation() {
+        return location;
+    }
+
+    public void setLocation(Integer location) {
+        this.location = location;
     }
 
     public String getType() {
