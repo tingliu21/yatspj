@@ -135,13 +135,14 @@ public class MonitorCatalogController {
 	@RequiresAuthentication
 	public Object tree(String evatype,@Param("unitType") String unitType,@Param("pid") String pid) {
 		Cnd cnd = Cnd.where("parentId", "=", Strings.sBlank(pid)).and("unitType","=",unitType);
-		if("qualify".equals(evatype)){
+		//不再对基础性指标进行区分 2019-5-28
+		/*if("qualify".equals(evatype)){
 			cnd = cnd.and("qualify","=",true);
 		}else if("standard".equals(evatype)){
 			cnd = cnd.and("ctype","=",'2');
 		}else if("develop".equals(evatype)){
 			cnd = cnd.and("ctype","=",'3');
-		}
+		}*/
 
 
 		List<Monitor_catalog> list = monitorCatalogService.query(cnd.asc("path"));
