@@ -76,6 +76,19 @@ public class EvaluateCustomController {
     public Object addDo(@Param("..") Evaluate_custom evaluateCustom, HttpServletRequest req) {
 		try {
 			evaluateCustomService.insert(evaluateCustom);
+
+			//修改records记录
+			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateCustom.getEvaluateId());
+			double progress = evaluateRecordsService.getProgress_s(evaluateCustom.getEvaluateId());
+			evaluateRecords.setProgress_s(progress);
+
+			//统计分数
+			evaluateRecords.setScore_s(evaluateCustomService.getTotalScore_s(evaluateCustom.getEvaluateId()));
+//			//确定是否完成自评
+//			if(progress==1.0){
+//				evaluateRecords.setStatus_s(true);
+//			}
+			evaluateRecordsService.updateIgnoreNull(evaluateRecords);
 			return Result.success("system.success");
 		} catch (Exception e) {
 			return Result.error("system.error");
@@ -95,14 +108,55 @@ public class EvaluateCustomController {
     public Object editDo(@Param("..") Evaluate_custom evaluateCustom, HttpServletRequest req) {
 		try {
 
+			evaluateCustom.setOpBy(Strings.sNull(req.getAttribute("uid")));
 			evaluateCustom.setOpAt((int) (System.currentTimeMillis() / 1000));
+			evaluateCustom.setSelfeva(true);//学校自评完成
 			evaluateCustomService.updateIgnoreNull(evaluateCustom);
+			//修改records记录
+			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateCustom.getEvaluateId());
+			double progress = evaluateRecordsService.getProgress_s(evaluateCustom.getEvaluateId());
+			evaluateRecords.setProgress_s(progress);
+
+			//统计分数
+			evaluateRecords.setScore_s(evaluateCustomService.getTotalScore_s(evaluateCustom.getEvaluateId()));
+//			//确定是否完成自评
+//			if(progress==1.0){
+//				evaluateRecords.setStatus_s(true);
+//			}
+			evaluateRecordsService.updateIgnoreNull(evaluateRecords);
 			return Result.success("system.success");
 		} catch (Exception e) {
 			return Result.error("system.error");
 		}
     }
+	//部门审核、专家审核
+	@At("/deptevaDo")
+	@Ok("json")
+	@SLog(tag = "修改Evaluate_remark", msg = "ID:${args[0].id}")
+	public Object editDo_verify(@Param("..") Evaluate_custom evaluateCustom, HttpServletRequest req) {
+		try {
+			evaluateCustom.setOpBy(Strings.sNull(req.getAttribute("uid")));
+			evaluateCustom.setOpAt((int) (System.currentTimeMillis() / 1000));
+			evaluateCustom.setVerifyeva(true);//部门审核完成
+			evaluateCustomService.updateIgnoreNull(evaluateCustom);
 
+			//修改records记录
+			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateCustom.getEvaluateId());
+			double progress = evaluateRecordsService.getProgress_p(evaluateCustom.getEvaluateId());
+			evaluateRecords.setProgress_p(progress);
+
+			//统计分数
+			evaluateRecords.setScore_p(evaluateCustomService.getTotalScore_p(evaluateCustom.getEvaluateId()));
+			//确定是否完成自评
+			if(progress==1.0){
+				evaluateRecords.setStatus_p(true);
+			}
+			evaluateRecordsService.updateIgnoreNull(evaluateRecords);
+			return Result.success("system.success");
+		} catch (Exception e) {
+			return Result.error("system.error");
+		}
+	}
 
     @At({"/delete","/delete/?"})
     @Ok("json")
