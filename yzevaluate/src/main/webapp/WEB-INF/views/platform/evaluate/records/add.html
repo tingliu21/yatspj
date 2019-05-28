@@ -162,10 +162,10 @@ layout("/layouts/platform.html"){
                     ids.push(n.id);
                 });
             }
-            if (ids.length != 5) {
+           /* if (ids.length != 5) {
                 Toast.error("请选择5位专家");
                 return false;
-            }
+            }*/
             $("#specialIds").val(ids.toString());
             $('#addForm').ajaxForm({
                 dataType: 'json',
