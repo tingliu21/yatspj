@@ -6,7 +6,9 @@ import cn.wizzer.common.filter.PrivateFilter;
 import cn.wizzer.common.page.DataTableColumn;
 import cn.wizzer.common.page.DataTableOrder;
 import cn.wizzer.modules.models.evaluate.Evaluate_custom;
+import cn.wizzer.modules.models.evaluate.Evaluate_records;
 import cn.wizzer.modules.services.evaluate.EvaluateCustomService;
+import cn.wizzer.modules.services.evaluate.EvaluateRecordsService;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.nutz.dao.Cnd;
 import org.nutz.ioc.loader.annotation.Inject;
@@ -26,6 +28,8 @@ public class EvaluateCustomController {
 	private static final Log log = Logs.get();
 	@Inject
 	private EvaluateCustomService evaluateCustomService;
+	@Inject
+	private EvaluateRecordsService evaluateRecordsService;
 
 	@At("")
 	@Ok("beetl:/platform/evaluate/custom/index.html")
@@ -33,13 +37,30 @@ public class EvaluateCustomController {
 	public void index() {
 
 	}
+	@At({"","/?"})
+	@Ok("beetl:/platform/evaluate/custom/${req_attr.type}/index.html")
+	@RequiresAuthentication
+	//type取值有2个，self和special
+	public void index(String type,@Param("evaluateId") String evaluateId,@Param("unitType") String unitType,HttpServletRequest req) {
+		Evaluate_records evaluate = evaluateRecordsService.fetch(evaluateId);
+		evaluate = evaluateRecordsService.fetchLinks(evaluate,"school");
+		req.setAttribute("schoolname",evaluate.getSchool().getName());
+		req.setAttribute("evaluateId",evaluateId);
+		req.setAttribute("unitType",unitType);
+		req.setAttribute("type", type);
 
+	}
 	@At
 	@Ok("json:full")
 	@RequiresAuthentication
-	public Object data(@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
+	public Object data(@Param("evaluateId") String evaluateId,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
 		Cnd cnd = Cnd.NEW();
-    	return evaluateCustomService.data(length, start, draw, order, columns, cnd, null);
+		if (!Strings.isBlank(evaluateId) && !"0".equals(evaluateId)) {
+			cnd.and("evaluateId", "like", "%" + evaluateId + "%").asc("location");;
+    		return evaluateCustomService.data(length, start, draw, order, columns, cnd, null);
+
+		}
+		return null;
     }
 
     @At
