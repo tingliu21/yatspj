@@ -31,12 +31,12 @@ public class EvaluateCustomController {
 	@Inject
 	private EvaluateRecordsService evaluateRecordsService;
 
-	@At("")
+/*	@At("")
 	@Ok("beetl:/platform/evaluate/custom/index.html")
 	@RequiresAuthentication
 	public void index() {
 
-	}
+	}*/
 	@At({"","/?"})
 	@Ok("beetl:/platform/evaluate/custom/${req_attr.type}/index.html")
 	@RequiresAuthentication
@@ -86,7 +86,7 @@ public class EvaluateCustomController {
 			evaluateRecords.setProgress_s(progress);
 
 			//统计分数
-			evaluateRecords.setScore_s(evaluateCustomService.getTotalScore_s(evaluateCustom.getEvaluateId()));
+			evaluateRecords.setScore_s(evaluateRecordsService.getTotalScore_s(evaluateCustom.getEvaluateId()));
 //			//确定是否完成自评
 //			if(progress==1.0){
 //				evaluateRecords.setStatus_s(true);
@@ -98,6 +98,7 @@ public class EvaluateCustomController {
 		}
     }
 
+    //自评
     @At("/edit/?")
     @Ok("beetl:/platform/evaluate/custom/edit.html")
     @RequiresAuthentication
@@ -121,7 +122,7 @@ public class EvaluateCustomController {
 			evaluateRecords.setProgress_s(progress);
 
 			//统计分数
-			evaluateRecords.setScore_s(evaluateCustomService.getTotalScore_s(evaluateCustom.getEvaluateId()));
+			evaluateRecords.setScore_s(evaluateRecordsService.getTotalScore_s(evaluateCustom.getEvaluateId()));
 //			//确定是否完成自评
 //			if(progress==1.0){
 //				evaluateRecords.setStatus_s(true);
@@ -132,6 +133,14 @@ public class EvaluateCustomController {
 			return Result.error("system.error");
 		}
     }
+	//专家审核
+	@At("/speceva/?")
+	@Ok("beetl:/platform/evaluate/custom/special/edit.html")
+	@RequiresAuthentication
+	public Object edit_special(String id) {
+		Evaluate_custom remark = evaluateCustomService.fetch(id);
+		return remark;
+	}
 	//部门审核、专家审核
 	@At("/deptevaDo")
 	@Ok("json")
@@ -149,7 +158,7 @@ public class EvaluateCustomController {
 			evaluateRecords.setProgress_p(progress);
 
 			//统计分数
-			evaluateRecords.setScore_p(evaluateCustomService.getTotalScore_p(evaluateCustom.getEvaluateId()));
+			evaluateRecords.setScore_p(evaluateRecordsService.getTotalScore_p(evaluateCustom.getEvaluateId()));
 			//确定是否完成自评
 			if(progress==1.0){
 				evaluateRecords.setStatus_p(true);

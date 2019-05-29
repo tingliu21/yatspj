@@ -24,9 +24,9 @@ layout("/layouts/platform.html"){
                             <!--<th>自打分</th>-->
                             <th>督评分</th>
                             <!--<th>是否自评完成</th>-->
-                            <th>是否审核完成</th>
-                            <!--<th>指标序号</th>
-                            <th>操作</th>-->
+                            <!--<th>是否审核完成</th>-->
+                            <!--<th>指标序号</th>-->
+                            <th>操作</th>
                     </tr>
                 </thead>
             </table>
@@ -61,6 +61,12 @@ layout("/layouts/platform.html"){
         </div>
     </div>
 </div>
+<div id="dialogEvaluate" class="modal fade bs-modal-sm" tabindex="-3" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
 <script language="JavaScript">
     var datatable;
     function initDatatable() {
@@ -85,34 +91,43 @@ layout("/layouts/platform.html"){
                 "type": "post",
                 "data": function (d) {
                     //d.nutz = $('#nutz').val();
+                    d.evaluateId = $('#evaluateId').val();
+                    d.unitType = $('#unitType').val();
                 }
             },
             "order": [[0, "desc"]],
             "columns": [
-                    {"data": "evaluateId", "bSortable": true},
+
                     {"data": "indexname", "bSortable": true},
                     {"data": "taskname", "bSortable": true},
                     {"data": "taskdetail", "bSortable": true},
                     {"data": "analysis_s", "bSortable": true},
                     {"data": "weights", "bSortable": true},
-                    {"data": "score_s", "bSortable": true},
+
                     {"data": "score_p", "bSortable": true},
-                    {"data": "selfeva", "bSortable": true},
-                    {"data": "verifyeva", "bSortable": true},
-                    {"data": "location", "bSortable": true},
+
+
+
             ],
             "columnDefs": [
                 {
                     "render": function (data, type, row) {
-                        return '<div class="btn-group"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">' +
-                                ' <i class="ti-settings"></i> <span class="ti-angle-down"></span></button><ul class="dropdown-menu" role="menu">' +
-                                '<li><a href="${base}/platform/evaluate/custom/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail">查看</a></li>' +
-                                '<li><a href="${base}/platform/evaluate/custom/edit/' + row.id + '" data-pjax>修改</a></li>' +
-                                '<li class="divider"></li>' +
-                                '<li><a href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a></li>' +
-                                '</ul></div>';
+                        html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/custom/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><span class="glyphicon glyphicon-eye-open"></span> 查看</a>';
+
+                        html+='<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/custom/speceva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
+                            '    <span class="glyphicon glyphicon-pencil"></span> 评价</a>' +
+                            '</div>';
+                        return  html;
+
+//                        return '<div class="btn-group"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">' +
+//                                ' <i class="ti-settings"></i> <span class="ti-angle-down"></span></button><ul class="dropdown-menu" role="menu">' +
+//                                '<li><a href="${base}/platform/evaluate/custom/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail">查看</a></li>' +
+//                                '<li><a href="${base}/platform/evaluate/custom/speceva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">修改</a></li>' +
+//                                '<li class="divider"></li>' +
+//                                '<li><a href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a></li>' +
+//                                '</ul></div>';
                     },
-                    "targets": 11
+                    "targets": 6
                 }
             ]
         });
@@ -173,6 +188,10 @@ layout("/layouts/platform.html"){
         initDatatable();
         $("#dialogDetail").on("hidden.bs.modal", function () {
             $(this).removeData("bs.modal");
+        });
+        $("#dialogEvaluate").on("hidden.bs.modal", function () {
+            $(this).removeData("bs.modal");
+            datatable.ajax.reload();
         });
     });
 </script>
