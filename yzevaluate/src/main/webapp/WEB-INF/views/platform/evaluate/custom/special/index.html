@@ -4,7 +4,7 @@ layout("/layouts/platform.html"){
 <section class="content-wrap bg-white">
     <header class="header navbar bg-white shadow">
         <div class="btn-group tool-button">
-            <a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/custom/add" data-pjax><i class="ti-plus"></i> 新建Evaluate_custom</a>
+            <a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/custom/add?evaluateId=${evaluateId}" data-pjax><i class="ti-plus"></i> 新建Evaluate_custom</a>
             <button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>
         </div>
     </header>
@@ -15,7 +15,7 @@ layout("/layouts/platform.html"){
             <table class="table table-bordered table-striped mg-t datatable">
                 <thead>
                     <tr>
-                            <<!--th>评估ID</th>-->
+                            <!--th>评估ID</th>-->
                             <th>指标</th>
                             <th>具体发展性目标（任务)</th>
                             <th>达成标志</th>

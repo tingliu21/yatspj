@@ -37,6 +37,7 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
         //清空该评估记录下的所有观测点评分
         dao().execute(Sqls.create("delete from evaluate_qualify where evaluateid=@id ").setParam("id", evaluateId));
         dao().execute(Sqls.create("delete from evaluate_remark where evaluateid=@id ").setParam("id", evaluateId));
+        dao().execute(Sqls.create("delete from evaluate_custom where evaluateid=@id ").setParam("id", evaluateId));
         dao().execute(Sqls.create("delete from evaluate_summary where evaluateid=@id")).setParam("id",evaluateId);
         //清空该评估记录
         delete(evaluateId);
@@ -48,20 +49,25 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
         Sql sql = Sqls.create("select count(indexid) from evaluate_remark where evaluateid = @eid").setParam("eid", evaluateId);
         int iTotalIndex_q = count(Sqls.create("select count(indexid) from evaluate_qualify where evaluateid = @eid").setParam("eid", evaluateId));
         int iTotalIndex_r = count(Sqls.create("select count(indexid) from evaluate_remark where evaluateid = @eid").setParam("eid", evaluateId));
+        int iTotalIndex_c = count(Sqls.create("select count(indexname) from evaluate_custom where evaluateid = @eid").setParam("eid", evaluateId));
         int iQualifyIndex = count(Sqls.create("select count(indexid) from evaluate_qualify where evaluateid = @eid and selfeva=@eva").setParam("eid", evaluateId).setParam("eva",true));
+        int iCustomIndex = count(Sqls.create("select count(indexname) from evaluate_custom where evaluateid = @eid and selfeva=@eva").setParam("eid", evaluateId).setParam("eva",true));
         int iRemarkIndex = count(Sqls.create("select count(indexid) from evaluate_remark where evaluateid = @eid and selfeva=@eva").setParam("eid", evaluateId).setParam("eva",true));
 
-        return (double)(iQualifyIndex+iRemarkIndex)/(iTotalIndex_q+iTotalIndex_r);
+        return (double)(iQualifyIndex+iRemarkIndex+iCustomIndex)/(iTotalIndex_q+iTotalIndex_r+iTotalIndex_c);
     }
 
     public double getProgress_p(String evaluateId){
         Sql sql = Sqls.create("select count(indexid) from evaluate_remark where evaluateid = @eid").setParam("eid", evaluateId);
         int iTotalIndex_q = count(Sqls.create("select count(indexid) from evaluate_qualify where evaluateid = @eid").setParam("eid", evaluateId));
         int iTotalIndex_r = count(Sqls.create("select count(indexid) from evaluate_remark where evaluateid = @eid").setParam("eid", evaluateId));
+        int iTotalIndex_c = count(Sqls.create("select count(indexname) from evaluate_custom where evaluateid = @eid").setParam("eid", evaluateId));
+
         int iQualifyIndex = count(Sqls.create("select count(indexid) from evaluate_qualify where evaluateid = @eid and verifyeva=@eva").setParam("eid", evaluateId).setParam("eva",true));
         int iRemarkIndex = count(Sqls.create("select count(indexid) from evaluate_remark where evaluateid = @eid and verifyeva=@eva").setParam("eid", evaluateId).setParam("eva",true));
+        int iCustomIndex = count(Sqls.create("select count(indexname) from evaluate_custom where evaluateid = @eid and verifyeva=@eva").setParam("eid", evaluateId).setParam("eva",true));
 
-        return (double)(iQualifyIndex+iRemarkIndex)/(iTotalIndex_q+iTotalIndex_r);
+        return (double)(iQualifyIndex+iRemarkIndex+iCustomIndex)/(iTotalIndex_q+iTotalIndex_r+iTotalIndex_c);
     }
     public NutMap getSpecialUser(){
         NutMap re = new NutMap();
@@ -69,6 +75,21 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
         re.put("data", records);
         re.put("recordsTotal", records.size());
         return re;
+
+    }
+    //获得评估的自评总得分
+    public double getTotalScore_s(String evaluateId){
+
+        double score_r = score(Sqls.create("select sum(score_s) from evaluate_remark where evaluateid = @eid").setParam("eid", evaluateId));
+        double score_c = score(Sqls.create("select sum(score_s) from evaluate_custom where evaluateid = @eid").setParam("eid", evaluateId));
+        return score_r+score_c;
+    }
+    //获得评估的审核评估总得分
+    public double getTotalScore_p(String evaluateId){
+        double score_r = score(Sqls.create("select sum(score_p) from evaluate_remark where evaluateid = @eid").setParam("eid", evaluateId));
+        double score_c = score(Sqls.create("select sum(score_p) from evaluate_custom where evaluateid = @eid").setParam("eid", evaluateId));
+        return score_r+score_c;
+
 
     }
 

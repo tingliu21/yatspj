@@ -4,10 +4,10 @@
     <div class="modal-body no-p">
         <div class="row">
             <div class="col-xs-12">
-                <section class="panel panel-form">
+                <section class="panel panel-primary no-b">
                     <header class="panel-heading clearfix brtl brtr">
                         <div class="overflow-hidden">
-                            <a href="javascript:;" class="h4 show no-m pt5">发展性指标(任务)自评</a>
+                            <a href="javascript:;" class="h4 show no-m pt5">发展性指标(任务)考评</a>
                         </div>
                     </header>
                 <input name="id" type="hidden" value="${obj.id}">
@@ -31,52 +31,52 @@
                         <div class="form-group">
                             <label for="indexname" class="col-sm-2 control-label">指标</label>
                             <div class="col-sm-8">
-                                <input type="text" id="indexname" class="form-control" name="indexname" data-parsley-required="true"
-                                       placeholder="指标" value="${obj.indexname}" >
+                                <input type="text" id="indexname" class="form-control" name="indexname"
+                                       placeholder="指标" value="${obj.indexname}" readonly="true" >
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="taskname" class="col-sm-2 control-label">具体发展性目标（任务)</label>
                             <div class="col-sm-8">
-                                <input type="text" id="taskname" class="form-control" name="taskname" data-parsley-required="true"
-                                       placeholder="具体发展性目标（任务)" value="${obj.taskname}" >
+                                <input type="text" id="taskname" class="form-control" name="taskname"
+                                       placeholder="具体发展性目标（任务)" value="${obj.taskname}" readonly="true">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="taskdetail" class="col-sm-2 control-label">达成标志</label>
                             <div class="col-sm-8">
-                                <input type="text" id="taskdetail" class="form-control" name="taskdetail" data-parsley-required="true"
-                                       placeholder="达成标志" value="${obj.taskdetail}" >
+                                <input type="text" id="taskdetail" class="form-control" name="taskdetail"
+                                       placeholder="达成标志" value="${obj.taskdetail}" readonly="true">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="analysis_s" class="col-sm-2 control-label">原有基础自我分析</label>
                             <div class="col-sm-8">
-                                <input type="text" id="analysis_s" class="form-control" name="analysis_s" data-parsley-required="true"
-                                       placeholder="原有基础自我分析" value="${obj.analysis_s}" >
+                                <input type="text" id="analysis_s" class="form-control" name="analysis_s"
+                                       placeholder="原有基础自我分析" value="${obj.analysis_s}" readonly="true">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="weights" class="col-sm-2 control-label">分值</label>
                             <div class="col-sm-8">
-                                <input type="text" id="weights" class="form-control" name="weights" data-parsley-required="true"
-                                       placeholder="分值" value="${obj.weights}" >
+                                <input type="text" id="weights" class="form-control" name="weights"
+                                       placeholder="分值" value="${obj.weights}" readonly="true">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="score_s" class="col-sm-2 control-label">自打分</label>
                             <div class="col-sm-8">
-                                <input type="text" id="score_s" class="form-control" name="score_s" data-parsley-required="true"
-                                       placeholder="自打分" value="${obj.score_s}" >
+                                <input type="text" id="score_s" class="form-control" name="score_s"
+                                       placeholder="自打分" value="${obj.score_s}" readonly="true">
                             </div>
                         </div>
-                        <!--<div class="form-group">-->
-                            <!--<label for="score_p" class="col-sm-2 control-label">督评分</label>-->
-                            <!--<div class="col-sm-8">-->
-                                <!--<input type="text" id="score_p" class="form-control" name="score_p" data-parsley-required="true"-->
-                                       <!--placeholder="督评分" value="${obj.score_p}" >-->
-                            <!--</div>-->
-                        <!--</div>-->
+                        <div class="form-group">
+                            <label for="score_p" class="col-sm-2 control-label">督评分</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="score_p" class="form-control" name="score_p" data-parsley-required="true"
+                                       placeholder="督评分" value="${obj.score_p}" >
+                            </div>
+                        </div>
                         <!--<div class="form-group">-->
                             <!--<label for="selfeva" class="col-sm-2 control-label">是否自评完成</label>-->
                             <!--<div class="col-sm-8">-->

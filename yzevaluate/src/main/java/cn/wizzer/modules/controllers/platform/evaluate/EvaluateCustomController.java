@@ -66,8 +66,8 @@ public class EvaluateCustomController {
     @At
     @Ok("beetl:/platform/evaluate/custom/add.html")
     @RequiresAuthentication
-    public void add() {
-
+    public void add(@Param("evaluateId") String evaluateId, HttpServletRequest req) {
+		req.setAttribute("evaluateId",evaluateId);
     }
 
     @At
@@ -75,6 +75,9 @@ public class EvaluateCustomController {
     @SLog(tag = "新建Evaluate_custom", msg = "")
     public Object addDo(@Param("..") Evaluate_custom evaluateCustom, HttpServletRequest req) {
 		try {
+			evaluateCustom.setOpBy(Strings.sNull(req.getAttribute("uid")));
+			evaluateCustom.setOpAt((int) (System.currentTimeMillis() / 1000));
+			evaluateCustom.setSelfeva(true);//学校自评完成
 			evaluateCustomService.insert(evaluateCustom);
 
 			//修改records记录

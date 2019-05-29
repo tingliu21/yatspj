@@ -180,7 +180,7 @@ public class EvaluateRemarkController {
 			evaluateRecords.setProgress_s(progress);
 
 			//统计分数
-			evaluateRecords.setScore_s(evaluateRemarkService.getTotalScore_s(evaluateRemark.getEvaluateId()));
+			evaluateRecords.setScore_s(evaluateRecordsService.getTotalScore_s(evaluateRemark.getEvaluateId()));
 //			//确定是否完成自评
 //			if(progress==1.0){
 //				evaluateRecords.setStatus_s(true);
@@ -226,7 +226,7 @@ public class EvaluateRemarkController {
 			evaluateRecords.setProgress_p(progress);
 
 			//统计分数
-			evaluateRecords.setScore_p(evaluateRemarkService.getTotalScore_p(evaluateRemark.getEvaluateId()));
+			evaluateRecords.setScore_p(evaluateRecordsService.getTotalScore_p(evaluateRemark.getEvaluateId()));
 			//确定是否完成自评
 			if(progress==1.0){
 				evaluateRecords.setStatus_p(true);

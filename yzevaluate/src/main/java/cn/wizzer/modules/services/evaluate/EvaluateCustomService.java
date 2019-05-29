@@ -15,15 +15,15 @@ public class EvaluateCustomService extends Service<Evaluate_custom> {
     public EvaluateCustomService(Dao dao) {
     	super(dao);
     }
-    //获得评估的自评总得分
-    public double getTotalScore_s(String evaluateId){
-        Sql sql = Sqls.create("select sum(score_s) from evaluate_custom where evaluateid = @eid").setParam("eid", evaluateId);
-        return score(sql);
-    }
-    //获得评估的审核评估总得分
-    public double getTotalScore_p(String evaluateId){
-        Sql sql = Sqls.create("select sum(score_p) from evaluate_custom where evaluateid = @eid").setParam("eid", evaluateId);
-        return score(sql);
-    }
+//    //获得评估的自评总得分
+//    public double getTotalScore_s(String evaluateId){
+//        Sql sql = Sqls.create("select sum(score_s) from evaluate_custom where evaluateid = @eid").setParam("eid", evaluateId);
+//        return score(sql);
+//    }
+//    //获得评估的审核评估总得分
+//    public double getTotalScore_p(String evaluateId){
+//        Sql sql = Sqls.create("select sum(score_p) from evaluate_custom where evaluateid = @eid").setParam("eid", evaluateId);
+//        return score(sql);
+//    }
 }
 
