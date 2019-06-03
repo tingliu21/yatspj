@@ -16,7 +16,7 @@
                 <li><a href="${base}/platform/monitor/catalog/edit/${o.id!}" data-pjax>修改</a></li>
                 <li><a href="javascript:;" onclick="del('${o.id!}')">删除</a></li>
                 <li class="divider"></li>
-                <li><a href="${base}/platform/monitor/catalog/add?pid=${o.id!}" data-pjax>添加下级指标</a></li>
+                <li><a href="${base}/platform/monitor/catalog/add?pid=${o.id!}&unitType=${o.unitType!}" data-pjax>添加下级指标</a></li>
             </ul>
         </div>
     </td>

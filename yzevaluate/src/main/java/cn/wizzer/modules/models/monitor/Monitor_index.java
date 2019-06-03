@@ -35,8 +35,8 @@ public class Monitor_index extends Model implements Serializable {
 
     @Column
     @Comment("权重")
-    @ColDefine(type = ColType.INT, width = 3)
-    private Integer weights;
+    @ColDefine(type = ColType.FLOAT, width = 3)
+    private double weights;
 
     @Column
     @Comment("是否达标性指标")
@@ -115,11 +115,11 @@ public class Monitor_index extends Model implements Serializable {
         this.mvalue = mvalue;
     }
 
-    public Integer getWeights() {
+    public double getWeights() {
         return weights;
     }
 
-    public void setWeights(Integer weights) {
+    public void setWeights(double weights) {
         this.weights = weights;
     }
 
