@@ -148,7 +148,6 @@ public class EvaluateRecordsController {
 
 
 			if(schoolIds!=null&&schoolIds.length>0){
-
 				for (String schoolid : schoolIds) {
 					//获取学校类别
 					Sys_unit school = sysUnitService.fetch(schoolid);
@@ -164,21 +163,8 @@ public class EvaluateRecordsController {
 					//插入评估记录
 					records = evaluateRecordsService.insert(records);
 					List<Monitor_index> monitorIndexs = monitorIndexService.query(
-							Cnd.where("unitType", "=", Strings.sBlank(unitType)).and("qualify", "=", true));
+							Cnd.where("unitType", "=", Strings.sBlank(unitType)));
 
-
-					for (Monitor_index index : monitorIndexs) {
-						Evaluate_qualify qualify = new Evaluate_qualify();
-						qualify.setEvaluateId(records.getId());
-						qualify.setIndexId(index.getId());
-
-						//插入达标性评估记录
-						evaluateQualifyService.insert(qualify);
-
-
-					}
-					monitorIndexs = monitorIndexService.query(
-							Cnd.where("unitType", "=", Strings.sBlank(unitType)).and("qualify", "=", false));
 					for (Monitor_index index : monitorIndexs) {
 						Evaluate_remark remark = new Evaluate_remark();
 						remark.setEvaluateId(records.getId());
@@ -187,8 +173,11 @@ public class EvaluateRecordsController {
 						evaluateRemarkService.insert(remark);
 					}
 
-					List<Monitor_catalog> monitorCatalogs = monitorCatalogService.query(
-							Cnd.where("unitType", "=", Strings.sBlank(unitType)).and("qualify", "=", true).and("hasChildren", "=", false));
+					//学校自评概述是否要填，原来基础性指标是要填写的，这里先不填
+					/*List<Monitor_catalog> monitorCatalogs = monitorCatalogService.query(
+							Cnd.where("unitType", "=", Strings.sBlank(unitType))
+									.and("qualify", "=", true)
+									.and("hasChildren", "=", false));
 
 
 					for (Monitor_catalog catalog : monitorCatalogs) {//遍历monitorIndexs
@@ -197,7 +186,7 @@ public class EvaluateRecordsController {
 						summary.setCatalogid(catalog.getId());
 						evaluateSummaryService.insert(summary);//插入自评概述
 
-					}
+					}*/
 					if(specialIds!=null&&specialIds.length==5){
 						List<Record> indexList = monitorIndexService.getSpecialIndex(unitType);
 						//分配评审专家

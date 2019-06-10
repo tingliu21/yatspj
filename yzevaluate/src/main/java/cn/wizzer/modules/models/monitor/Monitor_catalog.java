@@ -71,6 +71,11 @@ public class Monitor_catalog extends Model implements Serializable{
     @ColDefine(type=ColType.CHAR,width = 1)
     private String type;
 
+    @Column
+    @Comment("指标等级")
+    @ColDefine(type=ColType.INT)
+    private int level;
+
     public String getId() {
         return id;
     }
@@ -155,5 +160,13 @@ public class Monitor_catalog extends Model implements Serializable{
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 }

@@ -13,6 +13,7 @@ import java.io.Serializable;
  * Created by liuting on 2018/10/23.
  */
 @Table("monitor_index")
+@View("monitor_index_view")
 public class Monitor_index extends Model implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -90,6 +91,17 @@ public class Monitor_index extends Model implements Serializable {
     private String masterrole;
     @One(field = "masterrole")
     private Sys_role masterRole;
+
+    @Column
+    @Readonly
+    private String deptname;
+    @Column
+    @Readonly
+    private String indexname;
+    @Column
+    @Readonly
+    private int indexno;
+
 
     public String getId() {
         return id;
@@ -215,5 +227,29 @@ public class Monitor_index extends Model implements Serializable {
 
     public void setMasterRole(Sys_role masterRole) {
         this.masterRole = masterRole;
+    }
+
+    public String getDeptname() {
+        return deptname;
+    }
+
+    public void setDeptname(String deptname) {
+        this.deptname = deptname;
+    }
+
+    public String getIndexname() {
+        return indexname;
+    }
+
+    public void setIndexname(String indexname) {
+        this.indexname = indexname;
+    }
+
+    public int getIndexno() {
+        return indexno;
+    }
+
+    public void setIndexno(int indexno) {
+        this.indexno = indexno;
     }
 }

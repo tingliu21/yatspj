@@ -88,6 +88,9 @@ public class Evaluate_remark extends Model implements Serializable{
     @Column
     @Readonly
     private int location;
+    @Column
+    @Readonly
+    private String indexname;
 
     public String getId() {
         return id;
@@ -229,5 +232,12 @@ public class Evaluate_remark extends Model implements Serializable{
 
     public void setLocation(int location) {
         this.location = location;
+    }
+    public String getIndexname() {
+        return indexname;
+    }
+
+    public void setIndexname(String indexname) {
+        this.indexname = indexname;
     }
 }

@@ -8,11 +8,13 @@ import cn.wizzer.common.page.DataTableOrder;
 import cn.wizzer.modules.models.evaluate.Evaluate_records;
 import cn.wizzer.modules.models.evaluate.Evaluate_remark;
 import cn.wizzer.modules.models.evaluate.Evaluate_special;
+import cn.wizzer.modules.models.monitor.Monitor_catalog;
 import cn.wizzer.modules.models.sys.Sys_role;
 import cn.wizzer.modules.models.sys.Sys_user;
 import cn.wizzer.modules.services.evaluate.EvaluateRecordsService;
 import cn.wizzer.modules.services.evaluate.EvaluateRemarkService;
 import cn.wizzer.modules.services.evaluate.EvaluateSpecialService;
+import cn.wizzer.modules.services.monitor.MonitorCatalogService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -26,6 +28,7 @@ import org.nutz.log.Logs;
 import org.nutz.mvc.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +44,8 @@ public class EvaluateRemarkController {
 	private EvaluateRecordsService evaluateRecordsService;
 	@Inject
 	private EvaluateSpecialService evaluateSpecialService;
+	@Inject
+	private MonitorCatalogService monitorCatalogService;
 
 	@At({"","/?"})
 	@Ok("beetl:/platform/evaluate/remark/${req_attr.type}/index.html")
@@ -83,7 +88,16 @@ public class EvaluateRemarkController {
 
 		Cnd cnd = Cnd.NEW();
 		if (!Strings.isBlank(evaluateId) && !"0".equals(evaluateId)) {
-			cnd.and("evaluateId", "like", "%" + evaluateId + "%").and("catalogId", "like", "%" + catalogId + "%").asc("location");;
+			List<String> strids = new ArrayList<>();
+			//先获取2级指标下的所有3级指标
+			List<Monitor_catalog> catalogs = monitorCatalogService.query(Cnd.where("parentId", "=", catalogId));
+			for (Monitor_catalog catalog:catalogs) {
+				if (catalog.getLevel()==3){
+					strids.add(catalog.getId());
+				}
+			}
+			strids.add(catalogId);
+			cnd.and("evaluateId", "like", "%" + evaluateId + "%").and("catalogId", "in", strids).asc("location");;
 			return evaluateRemarkService.data(length, start, draw, order, columns, cnd, "index");
 		}
 		return null;
@@ -163,8 +177,9 @@ public class EvaluateRemarkController {
 	@At("/selfevaDo")
     @Ok("json")
     @SLog(tag = "修改Evaluate_remark", msg = "ID:${args[0].id}")
-    public Object editDo(@Param("..") Evaluate_remark evaluateRemark, HttpServletRequest req) {
+    public Object editDo(@Param("..") Evaluate_remark evaluateRemark,@Param("picurls") String[] picurls, HttpServletRequest req) {
 		try {
+
 			Evaluate_records records = evaluateRecordsService.fetch(evaluateRemark.getEvaluateId());
 			if(records.isStatus_s()){
 				return Result.error("已经提交审核，不能再修改评价了");
@@ -173,6 +188,8 @@ public class EvaluateRemarkController {
 			evaluateRemark.setOpAt((int) (System.currentTimeMillis() / 1000));
 			evaluateRemark.setSelfeva(true);//自评完成
 			evaluateRemarkService.updateIgnoreNull(evaluateRemark);
+
+			//上传附件，暂时没写好 2019-6-10 Liut
 
 			//修改records记录
 			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateRemark.getEvaluateId());

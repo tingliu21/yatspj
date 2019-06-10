@@ -156,6 +156,24 @@ public class MonitorCatalogController {
 		}
 		return tree;
 	}
+	@At({"/tree2","/tree2/?"})
+	@Ok("json")
+	@RequiresAuthentication
+	//仅列出2级指标 add by Liut 2019-6-10
+	public Object tree2(String evatype,@Param("unitType") String unitType,@Param("pid") String pid) {
+		Cnd cnd = Cnd.where("parentId", "=", Strings.sBlank(pid)).and("unitType","=",unitType).and("level","<",3);
+
+		List<Monitor_catalog> list = monitorCatalogService.query(cnd.asc("path"));
+		List<Map<String, Object>> tree = new ArrayList<>();
+		for (Monitor_catalog catalog : list) {
+			Map<String, Object> obj = new HashMap<>();
+			obj.put("id", catalog.getId());
+			obj.put("text", catalog.getName());
+			obj.put("children", catalog.isHasChildren());
+			tree.add(obj);
+		}
+		return tree;
+	}
 	@At("/child/?")
 	@Ok("beetl:/platform/monitor/catalog/child.html")
 	@RequiresAuthentication

@@ -33,13 +33,14 @@ layout("/layouts/platform.html"){
                 <thead>
                 <tr>
                     <th class="col-md-1">序号</th>
-                    <th class="col-md-2 pd-l-lg">评分要点</th>
+                    <th class="col-md-1">指标名称</th>
+                    <th class="col-md-4">评分要点</th>
                     <!--<th class="col-md-2">目标值</th>-->
-                    <th class="col-md-3">评分细则</th>
+                    <th class="col-md-2">评分细则</th>
                     <th class="col-md-1">权重</th>
                     <th class="col-md-1">是否需要自评</th>
-                    <th class="col-md-2">评测部门</th>
-                    <th class="col-md-2">操作</th>
+                    <th class="col-md-1">评测部门</th>
+                    <th class="col-md-1">操作</th>
                 </tr>
                 </thead>
             </table>
@@ -121,14 +122,15 @@ layout("/layouts/platform.html"){
             },
             "order": [[0, "asc"]],
             "columns": [
-                {"data": "location", "bSortable": true},
+                {"data": "indexno", "bSortable": true},
+                {"data":"indexname","bSortable":true},
                 {"data": "name", "bSortable": true},
                 /*{"data": "mvalue", "bSortable": true},*/
                 {"data": "detail", "bSortable": true},
                 {"data": "weights", "bSortable": true},
                 /*{"data": "qualify", "bSortable": true},*/
                 {"data": "selfeva", "bSortable": true},
-                {"data": "dept.name", "bSortable": false}
+                {"data": "deptname", "bSortable": false}
             ],
             "columnDefs": [
                 {
@@ -139,7 +141,7 @@ layout("/layouts/platform.html"){
                             return '<i class="fa text-success ml5">是</i>';
                         }
                     },
-                    "targets": 4
+                    "targets": 5
                 },
                 {
                     "render": function (data, type, row) {
@@ -150,7 +152,7 @@ layout("/layouts/platform.html"){
                             return '';
                         }
                     },
-                    "targets": 5
+                    "targets": 6
                 },
                 {
 
@@ -161,7 +163,7 @@ layout("/layouts/platform.html"){
                             '<li><a href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a></li>' +
                             '</ul></div>';
                     },
-                    "targets": 6
+                    "targets": 7
                 }
             ]
         });

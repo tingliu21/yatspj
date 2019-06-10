@@ -34,7 +34,12 @@ public class MonitorCatalogService extends Service<Monitor_catalog> {
             Monitor_catalog pp = this.fetch(pid);
             path = pp.getPath();
         } else pid = "";
-        catalog.setPath(getSubPath("monitor_catalog", "path", path));
+        path = getSubPath("monitor_catalog", "path", path);
+        catalog.setPath(path);
+        //获取第几级指标
+
+        int level = path.length()/4;
+        catalog.setLevel(level);
         catalog.setUnitType(unittype);
         catalog.setParentId(pid);
         dao().insert(catalog);

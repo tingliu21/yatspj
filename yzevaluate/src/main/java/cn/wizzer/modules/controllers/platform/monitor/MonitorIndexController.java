@@ -50,7 +50,17 @@ public class MonitorIndexController {
 	public Object data(@Param("catalogId") String catalogId, @Param("name") String name,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
 		Cnd cnd = Cnd.NEW();
 		if (!Strings.isBlank(catalogId) && !"0".equals(catalogId)) {
-			cnd.and("catalogId", "like", "%" + catalogId + "%");
+
+			List<String> strids = new ArrayList<>();
+			//先获取2级指标下的所有3级指标
+			List<Monitor_catalog> catalogs = monitorCatalogService.query(Cnd.where("parentId", "=", catalogId));
+			for (Monitor_catalog catalog:catalogs) {
+				if (catalog.getLevel()==3){
+					strids.add(catalog.getId());
+				}
+			}
+			strids.add(catalogId);
+			cnd.and("catalogId", "in", strids);
 		}
 		if (!Strings.isBlank(name)) {
 			cnd.and("name", "like", "%" + name + "%");

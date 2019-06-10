@@ -30,12 +30,13 @@ layout("/layouts/platform.html"){
                 <thead>
                     <tr>
                         <th class="col-md-1">序号</th>
-                            <th class="col-md-2">三级指标</th>
+                            <th class="col-md-1">三级指标</th>
+                            <th class="col-md-4">评分要点</th>
                             <th class="col-md-1">权重</th>
-                            <th class="col-md-5">评分细则</th>
+                            <th class="col-md-2">评分细则</th>
                             <th class="col-md-1">自评得分</th>
                             <th class="col-md-1">评估得分</th>
-                            <th class="col-md-3">操作</th>
+                            <th class="col-md-2">操作</th>
                     </tr>
                 </thead>
             </table>
@@ -109,7 +110,8 @@ layout("/layouts/platform.html"){
 //                [0, "desc"]
             ],
             "columns": [
-                {"data": "index.location", "bSortable": false},
+                {"data": "location", "bSortable": false},
+                {"data": "indexname", "bSortable": false},
                     {"data": "index.name", "bSortable": false},
                     {"data": "index.weights", "bSortable": false},
                     {"data": "index.detail", "bSortable": false},
@@ -134,7 +136,7 @@ layout("/layouts/platform.html"){
 
                     },
 
-                        "targets": 6
+                        "targets": 7
 
                 }
             ]
