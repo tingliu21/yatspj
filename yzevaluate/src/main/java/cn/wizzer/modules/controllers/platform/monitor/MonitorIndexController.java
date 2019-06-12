@@ -52,13 +52,14 @@ public class MonitorIndexController {
 		if (!Strings.isBlank(catalogId) && !"0".equals(catalogId)) {
 
 			List<String> strids = new ArrayList<>();
-			//先获取2级指标下的所有3级指标
+			//暂不获取  2019-6-12
+			/*//先获取2级指标下的所有3级指标
 			List<Monitor_catalog> catalogs = monitorCatalogService.query(Cnd.where("parentId", "=", catalogId));
 			for (Monitor_catalog catalog:catalogs) {
 				if (catalog.getLevel()==3){
 					strids.add(catalog.getId());
 				}
-			}
+			}*/
 			strids.add(catalogId);
 			cnd.and("catalogId", "in", strids);
 		}

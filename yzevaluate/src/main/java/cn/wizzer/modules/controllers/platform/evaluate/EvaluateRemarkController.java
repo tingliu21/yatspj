@@ -89,13 +89,14 @@ public class EvaluateRemarkController {
 		Cnd cnd = Cnd.NEW();
 		if (!Strings.isBlank(evaluateId) && !"0".equals(evaluateId)) {
 			List<String> strids = new ArrayList<>();
-			//先获取2级指标下的所有3级指标
+			//暂不获取 2019-6-12
+			/*//先获取2级指标下的所有3级指标
 			List<Monitor_catalog> catalogs = monitorCatalogService.query(Cnd.where("parentId", "=", catalogId));
 			for (Monitor_catalog catalog:catalogs) {
 				if (catalog.getLevel()==3){
 					strids.add(catalog.getId());
 				}
-			}
+			}*/
 			strids.add(catalogId);
 			cnd.and("evaluateId", "like", "%" + evaluateId + "%").and("catalogId", "in", strids).asc("location");;
 			return evaluateRemarkService.data(length, start, draw, order, columns, cnd, "index");
@@ -107,12 +108,22 @@ public class EvaluateRemarkController {
     @At
 	@Ok("json:full")
 	@RequiresPermissions("evaluate.verify.special")
-	public Object specialdata(@Param("evaluateId") String evaluateId,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns){
+	public Object specialdata(@Param("catalogId") String catalogId,@Param("evaluateId") String evaluateId,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns){
 
+		Cnd cnd = Cnd.where("depttype","=","Special");
 		if (!Strings.isBlank(evaluateId) && !"0".equals(evaluateId)) {
 
-			Cnd cnd = Cnd.where("depttype","=","Special");
-			cnd.and("evaluateId", "like", "%" + evaluateId + "%").asc("location");
+			List<String> strids = new ArrayList<>();
+			//暂不获取
+			/*//先获取2级指标下的所有3级指标
+			List<Monitor_catalog> catalogs = monitorCatalogService.query(Cnd.where("parentId", "=", catalogId));
+			for (Monitor_catalog catalog:catalogs) {
+				if (catalog.getLevel()==3){
+					strids.add(catalog.getId());
+				}
+			}*/
+			strids.add(catalogId);
+			cnd.and("evaluateId", "like", "%" + evaluateId + "%").and("catalogId", "in", strids).asc("location");
 
 			return evaluateRemarkService.data(length, start, draw, order, columns, cnd, "index");
 		}

@@ -1,11 +1,22 @@
 <%
 layout("/layouts/platform.html"){
 %>
-
+<aside class="sidebar-250 canvas-right bg-default ">
+    <header class="header navbar clearfix bb bg-default pl0 pr0">
+        <p class="navbar-text"><i class="fa fa-sitemap mr5"></i> 指标列表</p>
+    </header>
+    <div class="content-wrap no-p">
+        <div class="wrapper2">
+            <div class="m5">
+                <div id="jsTree"></div>
+            </div>
+        </div>
+    </div>
+</aside>
 <section class="content-wrap bg-white">
     <header class="header navbar bg-white shadow">
         <div class="btn-group tool-button">
-            <p class="navbar-text"><i class="fa fa-chevron-right"></i>监测评估<i class="fa  fa-chevron-right"></i>${schoolname}</p>
+            <p class="navbar-text"><i class="fa fa-chevron-right"></i>现场评估<i class="fa  fa-chevron-right"></i>${schoolname}</p>
             <!--<a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/remark/add" data-pjax><i class="ti-plus"></i> 新建Evaluate_remark</a>-->
             <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>-->
         </div>
@@ -88,6 +99,7 @@ layout("/layouts/platform.html"){
                 "url": "${base}/platform/evaluate/remark/specialdata",
                 "type": "post",
                 "data": function (d) {
+                    d.catalogId = $('#catalogId').val();
                     d.evaluateId = $('#evaluateId').val();
                     d.unitType = $('#unitType').val();
                     //d.nutz = $('#nutz').val();
@@ -151,55 +163,37 @@ layout("/layouts/platform.html"){
         });
     }
     var selected = [];
-
-    function del(id) {
-        var dialog = $("#dialogDelete");
-        dialog.modal("show");
-        dialog.find("#okDel").unbind("click");
-        dialog.find("#okDel").bind("click", function (event) {
-            var btn = $(this);
-            btn.button("loading");
-            $.post("${base}/platform/evaluate/remark/delete/" + id, {}, function (data) {
-                if (data.code == 0) {
-                    datatable.ajax.reload(null,false);
-                } else {
-                    Toast.error(data.msg);
-                }
-                //重置按钮状态，关闭提示框
-                btn.button("reset");
-                dialog.modal("hide");
-            }, "json");
+    function initTreeView() {
+        $("#jsTree").jstree({
+            plugins: ["wholerow"],
+            core: {
+                data: {
+                    url: function (node) {
+                        return node.id === "#" ? "${base}/platform/monitor/catalog/tree/remark?unitType=${unitType}" : "${base}/platform/monitor/catalog/tree/remark?unitType=${unitType}&pid=" + node.id
+                    }
+                },
+                multiple: false
+            }
+        }).on("select_node.jstree", function (node, selected) {
+            var id = selected.selected;
+            $("#catalogId").val(id);
+            $("#searchForm").find("input[type='text']").val("");
+            if (datatable) {
+                $(".cd-panel-content").find("input").val("");
+                datatable.ajax.reload();
+            } else {
+                initDatatable();
+            }
+        }).on("loaded.jstree", function (node, jstree) {
+            var id = $(node.target).find("li:first").attr("id");
+            if (id) {
+                jstree.instance.select_node(id);
+            }
         });
     }
-    function delCheck() {
-        var chks = datatable.rows('.selected').data();
-        if (chks.length > 0) {
-            var ids = [];
-            $.each(datatable.rows('.selected').data(), function (i, n) {
-                ids.push(n.id);
-            });
-            var dialog = $("#dialogDelete");
-            dialog.modal("show");
-            dialog.find("#okDel").unbind("click");
-            dialog.find("#okDel").bind("click", function (event) {
-                var btn = $(this);
-                btn.button("loading");
-                $.post("${base}/platform/evaluate/remark/delete", {ids: ids.toString()}, function (data) {
-                    if (data.code == 0) {
-                        datatable.ajax.reload(null,false);
-                    } else {
-                        Toast.error(data.msg);
-                    }
-                    btn.button("reset");
-                    dialog.modal("hide");
-                }, "json");
-            });
-        } else {
-            Toast.warning("请先选择要删除的项！");
-        }
-    }
-    $(function () {
 
+    $(function () {
+        initTreeView();
         initDatatable();
         $("#dialogDetail").on("hidden.bs.modal", function () {
             $(this).removeData("bs.modal");

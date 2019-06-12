@@ -29,7 +29,6 @@ layout("/layouts/platform.html"){
                     <tr>
                         <th class="col-md-1">序号</th>
                         <th class="col-md-1">三级指标</th>
-                        <th class="col-md-4">评分要点</th>
                             <th class="col-md-1">权重</th>
                             <th class="col-md-2">评分细则</th>
                             <th class="col-md-1">自评得分</th>
@@ -109,7 +108,6 @@ layout("/layouts/platform.html"){
             "columns": [
                 {"data": "location", "bSortable": false},
                 {"data": "indexname", "bSortable": false},
-                    {"data": "index.name", "bSortable": false},
                     {"data": "index.weights", "bSortable": false},
                     {"data": "index.detail", "bSortable": false},
                     {"data": "score_s", "bSortable": true},
@@ -127,7 +125,7 @@ layout("/layouts/platform.html"){
                         return  html;
 
                     },
-                        "targets": 6
+                        "targets": 5
                 }
             ]
         });

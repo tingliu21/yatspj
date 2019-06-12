@@ -5,8 +5,13 @@ layout("/layouts/platform.html"){
     <header class="header navbar bg-white shadow">
         <div class="btn-group tool-button">
 
-            <p class="navbar-text"><i class="fa mr5"></i>科室审核评估</p>
+            <p class="navbar-text"><i class="fa mr5"></i>专家审核评估</p>
 
+        </div>
+        <div class="pull-right">
+            <button class="btn btn-primary navbar-btn" onclick="sublime.toggleFilter('.cd-panel')"><i
+                    class="fa fa-sliders"></i> 筛选
+            </button>
         </div>
     </header>
     <div class=panel-body style="padding-top: 50px;">
@@ -30,6 +35,24 @@ layout("/layouts/platform.html"){
         </div>
     </div>
 </section>
+<div class="cd-panel from-right">
+    <header class="cd-panel-header">
+        <h4>高级筛选</h4>
+    </header>
+    <div class="cd-panel-container">
+        <div class="cd-panel-content shadow">
+            <div class="form-group">
+                <label for="year">评估学年</label>
+                <input type="text" id="year" name="year" onclick="this.value=''" class="form-control" placeholder="评估学年">
+            </div>
+            <div class="form-group">
+                <label for="taskname">评估名称</label>
+                <input type="text" id="taskname" name="taskname" onclick="this.value=''" class="form-control" placeholder="评估名称">
+            </div>
+            <button id="searchBtn" type="button" class="btn btn-default">查询</button>
+        </div>
+    </div>
+</div>
 <div id="dialogDelete" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -122,7 +145,7 @@ layout("/layouts/platform.html"){
             },
             {
                 "render": function (data, type, row) {
-                    return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/remark/?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>基础性指标</a>' +
+                    return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/remark/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>基础性指标</a>' +
                         '<a class="btn btn-success" href="${base}/platform/evaluate/custom/?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>发展性指标</a>'+
 //                        '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
                         '</div>';
