@@ -50,15 +50,21 @@
                             <div class="col-sm-8">
                                 <input type="text" id="score_p" class="form-control" name="score_p" data-parsley-required="true"
                                        placeholder="专家打分" value="${obj.score_p}" >
+                                <div style="width: 400px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
+                                    <strong>提示：</strong>扣分按照0.1分为单位。<br>
+                                </div>
                             </div>
                         </div>
-                        <!--<div class="form-group">-->
-                            <!--<label for="remark_p" class="col-sm-2 control-label">审核意见</label>-->
-                            <!--<div class="col-sm-8">-->
-                                <!--<textarea id="remark_p" name="remark_p" style="width:100%;height:80px;" data-parsley-required="false">${obj.remark_p!}</textarea>-->
-
-                            <!--</div>-->
-                        <!--</div>-->
+                        <div class="form-group">
+                            <label for="remark_p" class="col-sm-2 control-label">审核意见</label>
+                            <div class="col-sm-8">
+                                <textarea id="remark_p" name="remark_p" style="width:100%;height:80px;" data-parsley-required="false">${obj.remark_p!}</textarea>
+                                <div style="width: 400px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
+                                    <strong>提示：</strong>每项指标必须分小项写明扣分原因。例如，因***扣**分。
+                                    <br>
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label for="advantage" class="col-sm-2 control-label">优势</label>
                             <div class="col-sm-8">
