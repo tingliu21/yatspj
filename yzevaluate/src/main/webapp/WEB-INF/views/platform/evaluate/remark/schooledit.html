@@ -17,35 +17,35 @@
                     <div class="col-lg-12">
 
                         <div class="form-group">
-                            <label for="mname" class="col-sm-2 control-label">指标名称</label>
+                            <label for="mname" class="col-sm-3 control-label">指标名称</label>
                             <div class="col-sm-8">
                                 <input type="text" id="mname" class="form-control" name="mname" data-parsley-required="true"
                                        placeholder="指标名称" value="${obj.index.name}" readonly="true" >
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="mweights" class="col-sm-2 control-label">权重</label>
+                            <label for="mweights" class="col-sm-3 control-label">权重</label>
                             <div class="col-sm-8">
                                 <input type="text" id="mweights" class="form-control" name="mweights" data-parsley-required="true"
                                        placeholder="权重" value="${obj.index.weights}" readonly="true" >
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="mdetail" class="col-sm-2 control-label">评分细则</label>
+                            <label for="mdetail" class="col-sm-3 control-label">评分细则</label>
                             <div class="col-sm-8">
                                 <textarea id="mdetail" name="mdetail" style="width:100%;height:80px;" data-parsley-required="false" readonly="true">${obj.index.detail!}</textarea>
 
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="score_s" class="col-sm-2 control-label">学校自评得分</label>
+                            <label for="score_s" class="col-sm-3 control-label">学校自评得分</label>
                             <div class="col-sm-8">
                                 <input type="text" id="score_s" class="form-control" name="score_s" data-parsley-required="true"
                                        placeholder="自打分" value="${obj.score_s}" >
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="remark_s" class="col-sm-2 control-label">学校自评意见</label>
+                            <label for="remark_s" class="col-sm-3 control-label">学校自评意见</label>
                             <div class="col-sm-8">
                                 <textarea id="remark_s" name="remark_s" style="width:100%;height:80px;" data-parsley-required="false" >${obj.remark_s!}</textarea>
                                 <!--<input type="text" id="remark_s" class="form-control" name="remark_s" data-parsley-required="true"-->
@@ -53,16 +53,26 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="picurls" class="col-sm-2 control-label">附件材料</label>
+                            <label for="apurls" class="col-sm-3 control-label">附件材料</label>
 
                             <div class="col-sm-8">
+                                <div style="width: 400px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
+                                    <strong>提示：</strong>可最多上传10个文件，单个文件不超过2M（上传类型：文档、表格、压缩包、图片等）。
+                                    <br>
+                                </div>
                                 <div id="queue"></div>
                                 <div>
                                     <input id="file_upload" name="file_upload" type="file" multiple="false">
                                 </div>
-                                <div id="img" style="padding: 5px;">
+
+                                <div class="dd" id="nestable1">
+                                    <ol class="dd-list">
+                                    </ol>
                                 </div>
-                                <input type="hidden" id="picurls" name="picurls" value="" >
+
+                                <input type="hidden" id="apurls" name="apurls" value="" >
+                                <input type="hidden" id="apnames" name="apnames" value="" >
+
                             </div>
                         </div>
 
@@ -89,7 +99,8 @@
     </div>
 </form>
 <script language="JavaScript">
-    var urls = [];
+    var apurls = [];
+    var apnames=[];
     $(document).ready(function () {
         $('#file_upload').uploadifive({
             'auto': true,
@@ -97,9 +108,9 @@
             'width': '100%',
             'height': '35',
             'buttonText': '请选择附件材料',
-            'fileType': 'image/jpg,image/jpeg,image/png',
-            'fileSizeLimit': 1024,
-            'queueSizeLimit': 5,
+            'fileType': false,
+            'fileSizeLimit': 2048,
+            'queueSizeLimit': 10,
             'formData': {},
             'queueID': 'queue',
             'uploadScript': '${base}/open/file/upload/image',
@@ -108,8 +119,15 @@
                 if (data.code == 0) {
                     Toast.success(data.msg);
 
-                    $("#img").append("<a href='" + data.data + "' style='width:150px;height:95px;'>" +data.data+"</a>");
-                    urls.push(data.data);
+                    var str='';
+                    str+='<li class="dd-item dd3-item dd-nodrag" data-id="'+ data.data+'">';
+                    str+='<a href=\'' + data.data + '\'>'+file.name+'</a>';
+                    str+='</li>';
+                    $("#nestable1 .dd-list").append(str);
+                    $("#nestable1").nestable();
+
+                    apurls.push(data.data);
+                    apnames.push(file.name);
 
                 } else {
                     clearFile();
@@ -128,8 +146,7 @@
         });
         $("#submit").on("click", function () {
 
-            $("#picurls").val(urls.toString());
-            alert(uls.toString());
+
             $('#editForm').ajaxForm({
                 dataType: 'json',
                 beforeSubmit: function (arr, form, options) {
