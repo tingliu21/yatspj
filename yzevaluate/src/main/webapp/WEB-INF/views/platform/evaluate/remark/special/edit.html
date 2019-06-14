@@ -51,7 +51,7 @@
                                 <input type="text" id="score_p" class="form-control" name="score_p" data-parsley-required="true"
                                        placeholder="专家打分" value="${obj.score_p}" >
                                 <div style="width: 400px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
-                                    <strong>提示：</strong>扣分按照0.1分为单位。<br>
+                                    <strong>提示：</strong>扣分以0.1分为单位（分数是0.1的倍数）。<br>
                                 </div>
                             </div>
                         </div>
@@ -60,7 +60,7 @@
                             <div class="col-sm-8">
                                 <textarea id="remark_p" name="remark_p" style="width:100%;height:80px;" data-parsley-required="false">${obj.remark_p!}</textarea>
                                 <div style="width: 400px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
-                                    <strong>提示：</strong>每项指标必须分小项写明扣分原因。例如，因***扣**分。
+                                    <strong>提示：</strong>每项指标必须分小项写明扣分原因，例如指标1中第1条因***扣***分。
                                     <br>
                                 </div>
                             </div>

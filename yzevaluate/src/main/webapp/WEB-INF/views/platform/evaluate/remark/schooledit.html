@@ -42,6 +42,10 @@
                             <div class="col-sm-8">
                                 <input type="text" id="score_s" class="form-control" name="score_s" data-parsley-required="true"
                                        placeholder="自打分" value="${obj.score_s}" >
+                                <div style="width: 400px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
+                                    <strong>提示：</strong>打分以0.1分为单位（分数是0.1的倍数）。
+                                    <br>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">
@@ -50,16 +54,17 @@
                                 <textarea id="remark_s" name="remark_s" style="width:100%;height:80px;" data-parsley-required="false" >${obj.remark_s!}</textarea>
                                 <!--<input type="text" id="remark_s" class="form-control" name="remark_s" data-parsley-required="true"-->
                                        <!--placeholder="自评价" value="${obj.remark_s}" >-->
+                                <div style="width: 400px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
+                                    <strong>提示：</strong>每项指标必须分小项写明得分原因，例如指标1中第1条因***得***分。
+                                    <br>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="apurls" class="col-sm-3 control-label">附件材料</label>
 
                             <div class="col-sm-8">
-                                <div style="width: 400px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
-                                    <strong>提示：</strong>可最多上传10个文件，单个文件不超过2M（上传类型：文档、表格、压缩包、图片等）。
-                                    <br>
-                                </div>
+
                                 <div id="queue"></div>
                                 <div>
                                     <input id="file_upload" name="file_upload" type="file" multiple="false">
@@ -72,7 +77,10 @@
 
                                 <input type="hidden" id="apurls" name="apurls" value="" >
                                 <input type="hidden" id="apnames" name="apnames" value="" >
-
+                                <div style="width: 400px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
+                                    <strong>提示：</strong>可最多上传10个文件，单个文件不超过2M（上传类型：文档、表格、压缩包、图片等）。
+                                    <br>
+                                </div>
                             </div>
                         </div>
 
