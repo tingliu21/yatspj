@@ -25,9 +25,9 @@ public class Evaluate_appendix extends Model implements Serializable{
     private String evaluateid;
 
     @Column
-    @Comment("指标ID")
+    @Comment("指标评价ID")
     @ColDefine(type = ColType.VARCHAR, width = 32)
-    private String indexid;
+    private String remarkid;
 
     @Column
     @Comment("附件名称")
@@ -55,12 +55,12 @@ public class Evaluate_appendix extends Model implements Serializable{
         this.evaluateid = evaluateid;
     }
 
-    public String getIndexid() {
-        return indexid;
+    public String getRemarkid() {
+        return remarkid;
     }
 
-    public void setIndexid(String indexid) {
-        this.indexid = indexid;
+    public void setRemarkid(String remarkid) {
+        this.remarkid = remarkid;
     }
 
     public String getApname() {

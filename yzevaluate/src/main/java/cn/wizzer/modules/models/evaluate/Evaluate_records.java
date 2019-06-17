@@ -79,6 +79,16 @@ public class Evaluate_records extends Model implements Serializable{
     @ColDefine(type = ColType.BOOLEAN)
     private boolean locked;
 
+    @Column
+    @Comment("自评报告路径")
+    @ColDefine(type = ColType.VARCHAR,width = 100)
+    private String selfevaurl;
+
+    @Column
+    @Comment("3年发展规划路径")
+    @ColDefine(type = ColType.VARCHAR,width = 100)
+    private String planurl;
+
     public String getId() {
         return id;
     }
@@ -181,6 +191,22 @@ public class Evaluate_records extends Model implements Serializable{
 
     public void setLocked(boolean locked) {
         this.locked = locked;
+    }
+
+    public String getSelfevaurl() {
+        return selfevaurl;
+    }
+
+    public void setSelfevaurl(String selfevaurl) {
+        this.selfevaurl = selfevaurl;
+    }
+
+    public String getPlanurl() {
+        return planurl;
+    }
+
+    public void setPlanurl(String planurl) {
+        this.planurl = planurl;
     }
 }
 

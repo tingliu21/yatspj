@@ -4,6 +4,7 @@ import cn.wizzer.common.base.Model;
 import cn.wizzer.modules.models.monitor.Monitor_index;
 import org.nutz.dao.entity.annotation.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Table("evaluate_remark")
 @View("evaluate_remark_view")
@@ -91,6 +92,9 @@ public class Evaluate_remark extends Model implements Serializable{
     @Column
     @Readonly
     private String indexname;
+
+    @Many(target=Evaluate_appendix.class,field = "remarkid")
+    private List<Evaluate_appendix> appendixList;
 
     public String getId() {
         return id;

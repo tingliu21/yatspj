@@ -1,5 +1,3 @@
-<form id="editForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
-      action="${base}/platform/evaluate/remark/selfevaDo" method="post">
 
     <div class="modal-body no-p">
         <div class="row">
@@ -10,9 +8,13 @@
                         <a href="javascript:;" class="h4 show no-m pt5">评价</a>
                     </div>
                 </header>
-
+                <form id="editForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
+                      action="${base}/platform/evaluate/remark/selfevaDo" method="post">
                 <input name="id" type="hidden" value="${obj.id}">
                 <input name="evaluateId" type="hidden" value="${obj.evaluateId}">
+                <input type="hidden" id="apurls" name="apurls"  >
+                <input type="hidden" id="apnames" name="apnames" >
+
                 <div class="row mb10">
                     <div class="col-lg-12">
 
@@ -40,8 +42,8 @@
                         <div class="form-group">
                             <label for="score_s" class="col-sm-3 control-label">学校自评得分</label>
                             <div class="col-sm-8">
-                                <input type="text" id="score_s" class="form-control" name="score_s" data-parsley-required="true"
-                                       placeholder="自打分" value="${obj.score_s}" >
+                                <input type="text" id="score_s" class="form-control" name="score_s" data-parsley-price data-parsley-required="true"
+                                      data-parsley-max="${obj.index.weights}" placeholder="自打分" value="${obj.score_s}" >
                             </div>
                         </div>
                         <div class="form-group">
@@ -53,54 +55,45 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="apurls" class="col-sm-3 control-label">附件材料</label>
+                            <label for="file_upload"  class="col-sm-3 control-label">附件材料</label>
 
                             <div class="col-sm-8">
-                                <div style="width: 400px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
-                                    <strong>提示：</strong>可最多上传10个文件，单个文件不超过2M（上传类型：文档、表格、压缩包、图片等）。
-                                    <br>
-                                </div>
                                 <div id="queue"></div>
                                 <div>
                                     <input id="file_upload" name="file_upload" type="file" multiple="false">
+                                    <!--<button id="upload_img">upload</button>-->
                                 </div>
 
                                 <div class="dd" id="nestable1">
                                     <ol class="dd-list">
                                     </ol>
                                 </div>
-
-                                <input type="hidden" id="apurls" name="apurls" value="" >
-                                <input type="hidden" id="apnames" name="apnames" value="" >
-
                             </div>
                         </div>
-
+                        <div style="width: 570px;margin-top: 5px;margin-left: 10px;padding-right: 5px" class="alert alert-warning alert-dismissable">
+                            <strong>提示：</strong>可最多上传10个文件，单个文件不超过2M（类型：文档、表格、压缩包、图片等）。
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-3"></div>
-                <div class="col-lg-6">
-                    <div class="form-group text-center">
-                        <label></label>
-
-                        <!--<div>-->
-                            <!--<button class="btn btn-primary btn-block btn-lg btn-parsley" data-loading-text="正在提交...">提 交</button>-->
-                        <!--</div>-->
-                    </div>
-                </div>
+                </form>
 
             </section>
-
+            </div>
         </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
-        <button id="submit" type="submit" class="btn btn-primary " data-loading-text="正在提交...">确 定</button>
+        <button class="btn btn-primary btn-parsley" type="button" id="save"> 确 定</button>
     </div>
-</form>
+<!--</form>-->
 <script language="JavaScript">
-    var apurls = [];
-    var apnames=[];
+    var urls = [];
+    var names=[];
+    function clearFile() {
+        $("#img").html("");
+        $("#queue").html("");
+        $("#picurl").val("");
+    }
     $(document).ready(function () {
         $('#file_upload').uploadifive({
             'auto': true,
@@ -108,7 +101,7 @@
             'width': '100%',
             'height': '35',
             'buttonText': '请选择附件材料',
-            'fileType': false,
+            'fileType': '*.doc;*.docx;*.pdf;*.jpg;*.png;*.rar;*.zip',
             'fileSizeLimit': 2048,
             'queueSizeLimit': 10,
             'formData': {},
@@ -118,7 +111,7 @@
                 data = JSON.parse(data);
                 if (data.code == 0) {
                     Toast.success(data.msg);
-
+                    $("#queue").html("");
                     var str='';
                     str+='<li class="dd-item dd3-item dd-nodrag" data-id="'+ data.data+'">';
                     str+='<a href=\'' + data.data + '\'>'+file.name+'</a>';
@@ -126,8 +119,8 @@
                     $("#nestable1 .dd-list").append(str);
                     $("#nestable1").nestable();
 
-                    apurls.push(data.data);
-                    apnames.push(file.name);
+                    urls.push(data.data);
+                    names.push(file.name);
 
                 } else {
                     clearFile();
@@ -144,28 +137,33 @@
                 clearFile();
             }
         });
-        $("#submit").on("click", function () {
+
+        $("#save").on("click",function(){
+            $("#apurls").val(urls.toString());
+            $("#apnames").val(names.toString());
+            $('#editForm').submit();
+        });
+        $('#editForm').ajaxForm({
+            url: "${base}/platform/evaluate/remark/selfevaDo",
+            dataType: 'json',
+            beforeSubmit: function (arr, form, options) {
+
+                form.find("button:submit").button("loading");
 
 
-            $('#editForm').ajaxForm({
-                dataType: 'json',
-                beforeSubmit: function (arr, form, options) {
-                    form.find("button:submit").button("loading");
-
-                },
-                success: function (data, statusText, xhr, form) {
-                    if (data.code == 0) {
-                        Toast.success(data.msg);
-                        $("#dialogEvaluate").modal("hide");
+            },
+            success: function (data, statusText, xhr, form) {
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+                    $("#dialogEvaluate").modal("hide");
 //                    setTimeout(function () {
 //                        $("#goback").trigger("click");
 //                    }, 1000);
-                    } else {
-                        Toast.error(data.msg);
-                    }
-                    form.find("button:submit").button("reset");
+                } else {
+                    Toast.error(data.msg);
                 }
-            });
+                form.find("button:submit").button("reset");
+            }
         });
     });
 </script>

@@ -34,11 +34,11 @@ if ('undefined' !== typeof window.Parsley)
 $(function(){
   window.Parsley.addValidator('price', {
     validateString: function(value) {
-      var price = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
+      var price = /^([1-9][\d]{0,7}|0)(\.[\d]{0,1})?$/;
       return (price.test(value));
     },
     messages: {
-      zh_cn:'请填写正确的金额'
+      zh_cn:'请填写正确的数字'
     }
   });
   window.Parsley.addValidator('phone', {

@@ -1,0 +1,120 @@
+<%
+layout("/layouts/platform.html"){
+%>
+<section class="content-wrap bg-white">
+    <header class="header navbar bg-white shadow">
+        <div class="btn-group tool-button">
+            <!--<a href="javascript:;" class="h4 show no-m pt5">基础性指标</a>-->
+            <p class="navbar-text"><i class="fa mr5"></i>规划材料上传</p>
+        </div>
+    </header>
+    <div class=panel-body style="padding-top: 50px;">
+        <div class="table-responsive no-border">
+            <table class="table table-bordered table-striped mg-t datatable">
+                <thead>
+                <tr>
+                    <th class="col-md-1">学年</th>
+                    <th class="col-md-1">学校类型</th>
+                    <th class="col-md-2">学校名称</th>
+                    <th class="col-md-2">自评报告</th>
+                    <th class="col-md-2">发展规划</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</section>
+<div id="dialogImp" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+<script language="JavaScript">
+    var datatable;
+    function initDatatable() {
+        datatable = $('.datatable').DataTable({
+            "dom": '<"toolbar">frtip',
+            "searching":false,
+            "processing": false,
+            "serverSide": true,
+            "select": true,
+            "ordering": true,
+            "language": {
+                "url": "${base}/assets/plugins/datatables/cn.json"
+            },
+            "preDrawCallback": function () {
+                sublime.showLoadingbar($(".main-content"));
+            },
+            "drawCallback": function () {
+                sublime.closeLoadingbar($(".main-content"));
+            },
+            "ajax": {
+                "url": "${base}/platform/evaluate/records/self/data",
+                "type": "post",
+                "data": function (d) {
+                    //d.nutz = $('#nutz').val();
+                }
+            },
+            "order": [[0, "desc"]],
+            "columns": [
+                {"data": "year", "bSortable": true},
+                {"data": "school.unitType", "bSortable": true},
+                {"data": "school.name", "bSortable": true},
+                {"data": "selfevaurl", "bSortable": true},
+                {"data": "planurl", "bSortable": true},
+            ],
+            "columnDefs": [
+            {
+                "render": function (data, type, row) {
+                    if (data=='211') {
+                        return '<i id="disable_' + row.id + '" class="fa">小学</i>';
+                    } else if(data=='311'){
+                        return '<i id="disable_' + row.id + '" class="fa">初中</i>';
+                    }else if(data=='111'){
+                        return '<i id="disable_' + row.id + '" class="fa">幼儿园</i>';
+                    }
+                },
+                "targets": 1
+            },
+            {
+                "render": function (data, type, row) {
+                    if (data!=null) {
+                        return '<a href="' + row.selfevaurl + '" class="fa  text-success ml5">自评报告</a>';
+                    } else {
+                        return '<div  class="fa  text-danger ml5">未上传</div>';
+                    }
+                },
+                "targets": 3
+            },
+            {
+                "render": function (data, type, row) {
+                    if (data!=null) {
+                        return '<a href="' + row.planurl + '" class="fa  text-success ml5">发展规划</a>';
+                    } else {
+                        return '<div  class="fa  text-danger ml5">未上传</div>';
+                    }
+                },
+                "targets": 4
+            },
+            {
+                "render": function (data, type, row) {
+                    return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/records/self/upload/' + row.id + '" data-toggle="modal" data-target="#dialogImp">规划材料上传</a>' +
+                        '</div>';
+                },
+                "targets": 5
+            }
+
+        ]
+    });
+
+    }
+
+    $(function () {
+        initDatatable();
+
+    });
+</script>
+
+<%}%>

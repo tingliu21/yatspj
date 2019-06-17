@@ -21,7 +21,7 @@ layout("/layouts/platform.html"){
                     <tr>
                             <th class="col-md-1">学年</th>
                             <th class="col-md-1">学校类型</th>
-                            <th>学校名称</th>
+                            <th class="col-md-1">学校名称</th>
                             <th class="col-md-1">权重</th>
                             <th class="col-md-1">评估得分</th>
                             <th class="col-md-1">评估进度</th>
@@ -111,13 +111,15 @@ layout("/layouts/platform.html"){
             "order": [[0, "desc"]],
             "columns": [
                     {"data": "year", "bSortable": true},
-                    {"data": "school.unitType", "bSortable": true},
-                    {"data": "school.name", "bSortable": true},
+                    {"data": "school.unitType", "bSortable": false},
+                    {"data": "school.name", "bSortable": false},
                     {"data": "weights", "bSortable": true},
                     {"data": "score_p", "bSortable": true},
                     {"data": "progress_p", "bSortable": true},
                     {"data": "status_p", "bSortable": true},
                     {"data": "locked", "bSortable": true},
+                {"data": "selfevaurl", "bSortable": true},
+                {"data": "planurl", "bSortable": true},
 
             ],
             "columnDefs": [
@@ -145,9 +147,14 @@ layout("/layouts/platform.html"){
             },
             {
                 "render": function (data, type, row) {
-                    return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/remark/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>基础性指标</a>' +
+                    return '<div class="btn-group tool-button">' +
+                        '<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="ti-angle-down">规划材料</span></button><ul class="dropdown-menu" role="menu">' +
+                        '<li><a href="'+row.selfevaurl+'" >自评报告</a></li>' +
+                        '<li><a href="'+row.planurl+'" >3年规划</a></li>' +
+                        '</ul>'+
+                        '<a class="btn btn-primary" href="${base}/platform/evaluate/remark/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>基础性指标</a>' +
                         '<a class="btn btn-success" href="${base}/platform/evaluate/custom/?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>发展性指标</a>'+
-//                        '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
+
                         '</div>';
                 },
                 "targets": 8

@@ -28,7 +28,7 @@ import java.util.Date;
 public class UploadController {
     private static final Log log = Logs.get();
 
-    @AdaptBy(type = UploadAdaptor.class, args = {"ioc:imageUpload"})
+    @AdaptBy(type = UploadAdaptor.class, args = {"ioc:fileUpload"})
     @POST
     @At
     @Ok("json")
@@ -42,7 +42,7 @@ public class UploadController {
                 return Result.error("空文件");
             } else {
                 String p = Globals.AppRoot;
-                String f = Globals.AppUploadPath + "/image/" + DateUtil.format(new Date(), "yyyyMMdd") + "/" + R.UU32() + tf.getSubmittedFileName().substring(tf.getSubmittedFileName().indexOf("."));
+                String f = Globals.AppUploadPath + "/appendix/" + DateUtil.format(new Date(), "yyyyMMdd") + "/" + R.UU32() + tf.getSubmittedFileName().substring(tf.getSubmittedFileName().indexOf("."));
                 Files.write(new File(p + f), tf.getInputStream());
                 return Result.success("上传成功", Globals.AppBase+f);
             }
@@ -50,6 +50,30 @@ public class UploadController {
             return Result.error("系统错误");
         } catch (Throwable e) {
             return Result.error("图片格式错误");
+        }
+    }
+    @AdaptBy(type = UploadAdaptor.class, args = {"ioc:fileUpload"})
+    @POST
+    @At
+    @Ok("json")
+    @RequiresAuthentication
+    //AdaptorErrorContext必须是最后一个参数
+    public Object docfile(@Param("Filedata") TempFile tf, HttpServletRequest req, AdaptorErrorContext err) {
+        try {
+            if (err != null && err.getAdaptorErr() != null) {
+                return NutMap.NEW().addv("code", 1).addv("msg", "文件不合法");
+            } else if (tf == null) {
+                return Result.error("空文件");
+            } else {
+                String p = Globals.AppRoot;
+                String f = Globals.AppUploadPath + "/" + DateUtil.format(new Date(), "yyyyMMdd") + "/" + R.UU32() + tf.getSubmittedFileName().substring(tf.getSubmittedFileName().indexOf("."));
+                Files.write(new File(p + f), tf.getInputStream());
+                return Result.success("上传成功", Globals.AppBase+f);
+            }
+        } catch (Exception e) {
+            return Result.error("系统错误");
+        } catch (Throwable e) {
+            return Result.error("文件格式错误");
         }
     }
 }

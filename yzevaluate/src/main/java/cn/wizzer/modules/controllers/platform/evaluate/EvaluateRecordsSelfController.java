@@ -26,6 +26,7 @@ import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+import org.nutz.mvc.adaptor.WhaleAdaptor;
 import org.nutz.mvc.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -89,6 +90,12 @@ public class EvaluateRecordsSelfController {
 	@Ok("beetl:/platform/evaluate/records/self/index_download.html")
 	@RequiresAuthentication
 	public void index_download() {
+
+	}
+	@At
+	@Ok("beetl:/platform/evaluate/records/self/index_upload.html")
+	@RequiresAuthentication
+	public void index_upload() {
 
 	}
 	//学校自评列表
@@ -279,7 +286,24 @@ public class EvaluateRecordsSelfController {
 		}
 		return null;
 	}
-
+	@At("/upload/?")
+	@Ok("beetl:/platform/evaluate/records/self/upload.html")
+	@RequiresAuthentication
+	public void upload(String id,HttpServletRequest req) {
+		req.setAttribute("id", id);
+	}
+	@At("/uploadDo")
+	@Ok("json")
+	@AdaptBy(type = WhaleAdaptor.class)
+	@RequiresAuthentication
+	public Object uploadDo(@Param("id") String id,@Param("selfevaurl") String selfevaurl,@Param("planurl") String planurl, HttpServletResponse resp) {
+		try {
+			evaluateRecordsSelfService.upload(id,selfevaurl,planurl);
+			return Result.success("system.success");
+		} catch (Exception e) {
+			return Result.error("system.error");
+		}
+	}
 	/**
 	 * 组装word文档中需要显示数据的集合
 	 * @return

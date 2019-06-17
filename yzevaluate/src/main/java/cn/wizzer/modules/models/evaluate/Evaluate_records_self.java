@@ -54,7 +54,15 @@ public class Evaluate_records_self extends Model implements Serializable{
     @ColDefine(type = ColType.BOOLEAN)
     private boolean status_s;
 
+    @Column
+    @Comment("自评报告路径")
+    @ColDefine(type = ColType.VARCHAR,width = 100)
+    private String selfevaurl;
 
+    @Column
+    @Comment("3年发展规划路径")
+    @ColDefine(type = ColType.VARCHAR,width = 100)
+    private String planurl;
 
     public String getId() {
         return id;
@@ -120,6 +128,20 @@ public class Evaluate_records_self extends Model implements Serializable{
         this.status_s = status_s;
     }
 
+    public String getSelfevaurl() {
+        return selfevaurl;
+    }
 
+    public void setSelfevaurl(String selfevaurl) {
+        this.selfevaurl = selfevaurl;
+    }
+
+    public String getPlanurl() {
+        return planurl;
+    }
+
+    public void setPlanurl(String planurl) {
+        this.planurl = planurl;
+    }
 }
 

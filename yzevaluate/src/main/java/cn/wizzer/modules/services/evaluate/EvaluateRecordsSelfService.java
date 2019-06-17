@@ -47,6 +47,17 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
 
         dao().execute(Sqls.create("update evaluate_records set selfeva = true where evaluateid=@id ").setParam("id", evaluateId));
     }
+    /**
+     * 上传评估报告和规划材料
+     *
+     * @param evaluateId
+     */
+    @Aop(TransAop.READ_COMMITTED)
+    public void upload(String evaluateId,String evapath,String planpath){
+
+        dao().execute(Sqls.create("update evaluate_records set selfevaurl = @evapath, planurl=@planpath where id=@id ").
+                setParam("id", evaluateId).setParam("evapath",evapath).setParam("planpath",planpath));
+    }
     public List<Record> getUnitInfo(String evalId) {
         return list(Sqls.create("select t1.name as unitname, t1.address as address, t1.website as website, t1.telephone as telephone, t1.email as email from sys_unit t1 join evaluate_records t2 on t1.id=t2.schoolid where t2.id=@id").setParam("id", evalId));
 
