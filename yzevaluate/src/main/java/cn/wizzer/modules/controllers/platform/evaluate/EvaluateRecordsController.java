@@ -152,7 +152,9 @@ public class EvaluateRecordsController {
 					//获取学校类别
 					Sys_unit school = sysUnitService.fetch(schoolid);
 					String unitType =school.getUnitType();
-					int totalWeights = monitorIndexService.getTotalWeights(unitType);
+					int totalWeights = 100;
+					//这里统一按100分处理
+//					totalWeights= monitorIndexService.getTotalWeights(unitType);
 
 					Evaluate_records records = new Evaluate_records();
 					records.setYear(year);

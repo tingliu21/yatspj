@@ -21,14 +21,14 @@ layout("/layouts/platform.html"){
                     <tr>
                             <th class="col-md-1">学年</th>
                             <th class="col-md-1">学校类型</th>
-                            <th class="col-md-1">学校名称</th>
+                            <th class="col-md-2">学校名称</th>
                             <th class="col-md-1">权重</th>
                             <th class="col-md-1">评估得分</th>
                             <th class="col-md-1">评估进度</th>
                             <th class="col-md-1">评估状态</th>
-                            <th class="col-md-1">锁定状态</th>
+                            <!--<th class="col-md-1">锁定状态</th>-->
                             <th>操作</th>
-                            <th>锁定/解锁</th>
+                            <!--<th>锁定/解锁</th>-->
                     </tr>
                 </thead>
             </table>
@@ -118,8 +118,8 @@ layout("/layouts/platform.html"){
                     {"data": "progress_p", "bSortable": true},
                     {"data": "status_p", "bSortable": true},
                     {"data": "locked", "bSortable": true},
-                {"data": "selfevaurl", "bSortable": true},
-                {"data": "planurl", "bSortable": true},
+//                {"data": "selfevaurl", "bSortable": true},
+//                {"data": "planurl", "bSortable": true},
 
             ],
             "columnDefs": [
@@ -147,39 +147,23 @@ layout("/layouts/platform.html"){
             },
             {
                 "render": function (data, type, row) {
-                    return '<div class="btn-group tool-button">' +
-                        '<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="ti-angle-down">规划材料</span></button><ul class="dropdown-menu" role="menu">' +
-                        '<li><a href="'+row.selfevaurl+'" >自评报告</a></li>' +
-                        '<li><a href="'+row.planurl+'" >3年规划</a></li>' +
-                        '</ul>'+
+
+                    html ='<div class="btn-group tool-button">' +
+                        '<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="ti-angle-down">规划材料</span></button>' +
+                        '<ul class="dropdown-menu" role="menu"><li><a onclick="checkfile(\''+row.selfevaurl+'\')" href="#" >自评报告</a></li>' +
+                        '<li><a onclick="checkfile(\''+row.planurl+'\')" href="#" >3年规划</a></li></ul>' +
                         '<a class="btn btn-primary" href="${base}/platform/evaluate/remark/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>基础性指标</a>' +
-                        '<a class="btn btn-success" href="${base}/platform/evaluate/custom/?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>发展性指标</a>'+
-
-                        '</div>';
-                },
-                "targets": 8
-            },
-            {
-                "render": function (data, type, row) {
-                    return '<div class="btn-group"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">' +
-                        ' <i class="ti-settings"></i> <span class="ti-angle-down"></span></button><ul class="dropdown-menu" role="menu">' +
-                        '<li><a href="javascript:;" onclick="locked(\'' + row.id + '\')">锁定</a></li>' +
-                        '<li><a href="javascript:;" onclick="unlocked(\'' + row.id + '\')">解锁</a></li>' +
-                        '</ul></div>';
-                },
-                "targets": 9
-
-            },
-            {
-                "render": function (data, type, row) {
-                    if (!data) {
-                        return '<i id="locked_' + row.id + '" class="fa fa-circle text-success ml5"></i>';
-                    } else {
-                        return '<i id="locked_' + row.id + '" class="fa fa-circle text-danger ml5"></i>';
+                        '<a class="btn btn-success" href="${base}/platform/evaluate/custom/?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>发展性指标</a>';
+                    if(!row.locked) {
+                        html +='<a class="btn btn-warning" href="javascript:;" onclick="locked(\'' + row.id + '\')">锁定</a>';
+                    }else{
+                        html +='<a class="btn btn-info" href="javascript:;" onclick="unlocked(\'' + row.id + '\')">解锁</a>';
                     }
+
+
+                    return html;
                 },
                 "targets": 7
-
             }
             ]
         });
@@ -211,7 +195,13 @@ layout("/layouts/platform.html"){
         }, "json");
 
     }
-
+    function checkfile(url){
+        if(url=='null'){
+            alert("学校尚未上传材料！")
+        }else{
+            window.location=url;
+        }
+    }
     function del(id) {
         var dialog = $("#dialogDelete");
         dialog.modal("show");

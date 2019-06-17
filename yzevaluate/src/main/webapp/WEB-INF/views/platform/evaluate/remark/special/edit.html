@@ -20,14 +20,14 @@
                             <label for="mname" class="col-sm-2 control-label">指标名称</label>
                             <div class="col-sm-8">
                                 <input type="text" id="mname" class="form-control" name="mname" data-parsley-required="true"
-                                       placeholder="指标名称" value="${obj.index.name}" readonly="true" >
+                                       placeholder="指标名称" value="${obj.indexname}" readonly="true" >
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="mweights" class="col-sm-2 control-label">权重</label>
                             <div class="col-sm-8">
                                 <input type="text" id="mweights" class="form-control" name="mweights" data-parsley-required="true"
-                                       placeholder="权重" value="${obj.index.weights}" readonly="true" >
+                                       placeholder="权重" value="${obj.weights}" readonly="true" >
                             </div>
                         </div>
                         <div class="form-group">
@@ -46,13 +46,30 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label   class="col-sm-3 control-label">附件材料</label>
+
+                            <div class="col-sm-8">
+                                <div class="dd" id="nestable1">
+                                    <ol class="dd-list">
+                                        <%for(o in obj.appendixList){%>
+                                        <li class="dd-item dd3-item dd-nodrag" data-id="${o.remarkid}">
+                                            <a href="${base}${o.apurl}" data-pjax>
+                                                <span>${o.apname}</span>
+                                            </a>
+                                        </li>
+                                        <%}%>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label for="score_p" class="col-sm-2 control-label">审核得分</label>
                             <div class="col-sm-8">
                                 <input type="text" id="score_p" class="form-control" name="score_p" data-parsley-price data-parsley-required="true"
-                                       data-parsley-max="${obj.index.weights}" placeholder="专家打分" value="${obj.score_p}" >
-                                <div style="width: 400px;margin-top: 5px;" class="alert alert-warning alert-dismissable">
-                                    <strong>提示：</strong>扣分按照0.1分为单位。<br>
-                                </div>
+                                       data-parsley-max="${obj.weights}" placeholder="专家打分" value="${obj.score_p}" >
+                                <!--<div style="width: 400px;margin-top: 5px;" class="alert alert-warning alert-dismissable">-->
+                                    <!--<strong>提示：</strong>扣分按照0.1分为单位。<br>-->
+                                <!--</div>-->
                             </div>
                         </div>
                         <div class="form-group">
@@ -61,7 +78,7 @@
                                 <textarea id="remark_p" name="remark_p" style="width:100%;height:80px;" data-parsley-required="false">${obj.remark_p!}</textarea>
                                 <div style="width: 400px;margin-top: 5px;" class="alert alert-warning alert-dismissable">
                                     <strong>提示：</strong>每项指标必须分小项写明扣分原因。例如，因***扣**分。
-                                    <br>
+
                                 </div>
                             </div>
                         </div>

@@ -30,9 +30,9 @@ layout("/layouts/platform.html"){
                             <th class="col-md-1">评估得分</th>
                             <th class="col-md-1">评估进度</th>
                             <th class="col-md-1">评估状态</th>
-                            <th class="col-md-1">锁定状态</th>
+                            <!--<th class="col-md-1">锁定状态</th>-->
                             <th>操作</th>
-                            <th>锁定/解锁</th>
+                            <!--<th>锁定/解锁</th>-->
                     </tr>
                 </thead>
             </table>
@@ -117,8 +117,8 @@ layout("/layouts/platform.html"){
             "order": [[0, "desc"]],
             "columns": [
                     {"data": "year", "bSortable": true},
-                    {"data": "school.unitType", "bSortable": true},
-                    {"data": "school.name", "bSortable": true},
+                    {"data": "school.unitType", "bSortable": false},
+                    {"data": "school.name", "bSortable": false},
                     {"data": "weights", "bSortable": true},
                     {"data": "score_p", "bSortable": true},
                     {"data": "progress_p", "bSortable": true},
@@ -149,37 +149,27 @@ layout("/layouts/platform.html"){
                 },
                 "targets": 6
             },
-            {
-                "render": function (data, type, row) {
-                    return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/remark/?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>基础性指标</a>' +
-                        '<a class="btn btn-success" href="${base}/platform/evaluate/custom/?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>发展性指标</a>'+
-//                        '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
-                        '</div>';
-                },
-                "targets": 8
-            },
-            {
-                "render": function (data, type, row) {
-                    return '<div class="btn-group"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">' +
-                        ' <i class="ti-settings"></i> <span class="ti-angle-down"></span></button><ul class="dropdown-menu" role="menu">' +
-                        '<li><a href="javascript:;" onclick="locked(\'' + row.id + '\')">锁定</a></li>' +
-                        '<li><a href="javascript:;" onclick="unlocked(\'' + row.id + '\')">解锁</a></li>' +
-                        '</ul></div>';
-                },
-                "targets": 9
+                {
+                    "render": function (data, type, row) {
 
-            },
-            {
-                "render": function (data, type, row) {
-                    if (!data) {
-                        return '<i id="locked_' + row.id + '" class="fa fa-circle text-success ml5"></i>';
-                    } else {
-                        return '<i id="locked_' + row.id + '" class="fa fa-circle text-danger ml5"></i>';
-                    }
-                },
-                "targets": 7
+                        html ='<div class="btn-group tool-button">' +
+                            '<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="ti-angle-down">规划材料</span></button>' +
+                            '<ul class="dropdown-menu" role="menu"><li><a href="'+row.selfevaurl+'" >自评报告</a></li>' +
+                            '<li><a href="'+row.planurl+'" >3年规划</a></li></ul>' +
+                            '<a class="btn btn-primary" href="${base}/platform/evaluate/remark/?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>基础性指标</a>' +
+                            '<a class="btn btn-success" href="${base}/platform/evaluate/custom/?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>发展性指标</a>';
+                        if(!row.locked) {
 
-            }
+                            html +='<a class="btn btn-warning" href="javascript:;" onclick="locked(\'' + row.id + '\')">锁定</a>';
+                        }else{
+                            html +='<a class="btn btn-info" href="javascript:;" onclick="unlocked(\'' + row.id + '\')">解锁</a>';
+                        }
+
+
+                        return html;
+                    },
+                    "targets": 7
+                }
             ]
         });
 //        datatable.on('click', 'tr', function () {
