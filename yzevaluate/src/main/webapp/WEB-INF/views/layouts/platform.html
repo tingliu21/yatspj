@@ -91,18 +91,18 @@
 </div>
 <div class="app <% if(@shiro.getPrincipalProperty('loginSidebar')){ %> small-menu <% } %> <% if(@shiro.getPrincipalProperty('loginScroll')){ %> fixed-scroll <% } %> <% if(@shiro.getPrincipalProperty('loginBoxed')){ %> boxed <% } %>">
     <header class="header header-fixed navbar">
-        <div class="brand">
+        <!--<div class="brand">-->
+        <div class="navbar-header">
+            <!--<a href="javascript:;" class="ti-menu off-left visible-xs" data-toggle="offscreen" data-move="ltr"></a>-->
 
-            <a href="javascript:;" class="ti-menu off-left visible-xs" data-toggle="offscreen" data-move="ltr"></a>
 
-
-            <a href="${base!}/platform/home"  data-pjax class="navbar-brand" style="width:500px;">
+            <a href="${base!}/platform/home"  data-pjax class="navbar-brand" style="width:250px;">鄞州学校发展性评价系统
                 <!--img src="${base!}/assets/img/logoc.png" alt="" class="o_img <% if(!@shiro.getPrincipalProperty('loginSidebar')){ %>o_hide<% } %>"-->
-                <span class="heading-font o_img <% if(@shiro.getPrincipalProperty('loginSidebar')){ %>o_hide<% } %>">
-		            <img src="${base!}/assets/img/logoc.png" style="height:40px;">
-                </span>
+                <!--<span class="heading-font o_img <% if(@shiro.getPrincipalProperty('loginSidebar')){ %>o_hide<% } %>">
+		            &lt;!&ndash;<img src="${base!}/assets/img/logoc.png" style="height:40px;">&ndash;&gt;
+                    <img src=" " style="height:30px;display:inline;">&nbsp;鄞州学校发展性评价系统
+                </span>-->
             </a>
-
         </div>
         <ul class="nav navbar-nav navbar-left">
             <li class="hidden-xs">
@@ -110,7 +110,6 @@
                 <a href="javascript:;" class="toggle-sidebar">
                     <i class="ti-menu"></i>
                 </a>
-
             </li>
 
         </ul>
@@ -168,7 +167,7 @@
                 <ul class="dropdown-menu animated fadeInLeft">
                     <li>
                         <a href="${base!}/platform/sys/user/custom" data-toggle="modal"
-                           data-target="#homeDetail">${msg['index.custommenu']}</a>
+                           data-target="#homeDetail"><!--${msg['index.custommenu']}--></a>
                     </li>
                     <li class="dropdown hidden-xs">
                         <a href="javascript:;" class="pg-toggle">
@@ -195,12 +194,12 @@
         </ul>
     </header>
     <section class="layout">
-
-        <aside class="sidebar offscreen-left">
+<!--关闭常用菜单2019-6-17-->
+<!--        <aside class="sidebar offscreen-left">
 
             <nav class="main-navigation" data-height="auto" data-size="6px" data-distance="0" data-rail-visible="true"
                  data-wheel-step="10">
-                <!--<p class="nav-title">MENU</p>-->
+                &lt;!&ndash;<p class="nav-title">MENU</p>&ndash;&gt;
                 <ul class="nav">
                     <li class="open">
                         <a href="javascript:;">
@@ -229,7 +228,7 @@
                 <ul id="leftnav" class="nav">
                 </ul>
             </nav>
-        </aside>
+        </aside>-->
         <section class="main-content" id="container">
             ${layoutContent}
         </section>
