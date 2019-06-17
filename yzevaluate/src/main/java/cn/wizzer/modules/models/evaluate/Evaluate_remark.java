@@ -92,6 +92,12 @@ public class Evaluate_remark extends Model implements Serializable{
     @Column
     @Readonly
     private String indexname;
+    @Column
+    @Readonly
+    private double weights;
+    @Column
+    @Readonly
+    private String detail;
 
     @Many(target=Evaluate_appendix.class,field = "remarkid")
     private List<Evaluate_appendix> appendixList;
@@ -243,5 +249,29 @@ public class Evaluate_remark extends Model implements Serializable{
 
     public void setIndexname(String indexname) {
         this.indexname = indexname;
+    }
+
+    public double getWeights() {
+        return weights;
+    }
+
+    public void setWeights(double weights) {
+        this.weights = weights;
+    }
+
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
+    }
+
+    public List<Evaluate_appendix> getAppendixList() {
+        return appendixList;
+    }
+
+    public void setAppendixList(List<Evaluate_appendix> appendixList) {
+        this.appendixList = appendixList;
     }
 }

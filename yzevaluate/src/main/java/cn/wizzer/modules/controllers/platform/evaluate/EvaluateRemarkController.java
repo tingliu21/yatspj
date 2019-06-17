@@ -185,7 +185,8 @@ public class EvaluateRemarkController {
     @RequiresAuthentication
     public Object edit(String id) {
 		Evaluate_remark remark = evaluateRemarkService.fetch(id);
-		return evaluateRemarkService.fetchLinks(remark,"index");
+		return evaluateRemarkService.fetchLinks(remark,"appendixList");
+//		return evaluateRemarkService.fetchLinks(remark,"index");
     }
 
 	//自评
@@ -210,7 +211,7 @@ public class EvaluateRemarkController {
 				for (int i=0;i<apurls.length;i++) {
 					Evaluate_appendix appendix = new Evaluate_appendix();
 					appendix.setEvaluateid(evaluateRemark.getEvaluateId());
-					appendix.setRemarkid(evaluateRemark.getIndexid());
+					appendix.setRemarkid(evaluateRemark.getId());
 					appendix.setApname(apnames[i]);
 					appendix.setApurl(apurls[i]);
 					evaluateAppendixService.insert(appendix);
@@ -242,7 +243,8 @@ public class EvaluateRemarkController {
 	@RequiresAuthentication
 	public Object edit_verify(String id) {
 		Evaluate_remark remark = evaluateRemarkService.fetch(id);
-		return evaluateRemarkService.fetchLinks(remark,"index");
+		return evaluateRemarkService.fetchLinks(remark,"appendixList");
+//		return evaluateRemarkService.fetchLinks(remark,"index");
 	}
 	//专家审核
 	@At("/speceva/?")
@@ -250,7 +252,8 @@ public class EvaluateRemarkController {
 	@RequiresAuthentication
 	public Object edit_special(String id) {
 		Evaluate_remark remark = evaluateRemarkService.fetch(id);
-		return evaluateRemarkService.fetchLinks(remark,"index");
+		return evaluateRemarkService.fetchLinks(remark,"appendixList");
+//		return evaluateRemarkService.fetchLinks(remark,"index");
 	}
 	//部门审核、专家审核
 	@At("/deptevaDo")
@@ -308,7 +311,8 @@ public class EvaluateRemarkController {
 		if (!Strings.isBlank(id)) {
 
 			Evaluate_remark remark = evaluateRemarkService.fetch(id);
-			return evaluateRemarkService.fetchLinks(remark,"index");
+			return evaluateRemarkService.fetchLinks(remark,"appendixList");
+//			return evaluateRemarkService.fetchLinks(remark,"index");
 
 		}
 		return null;

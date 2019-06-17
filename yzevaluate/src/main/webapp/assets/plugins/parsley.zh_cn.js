@@ -38,7 +38,7 @@ $(function(){
       return (price.test(value));
     },
     messages: {
-      zh_cn:'请填写正确的数字'
+      zh_cn:'请填写正确的数字（打分以0.1分为单位，分数是0.1的倍数）'
     }
   });
   window.Parsley.addValidator('phone', {
