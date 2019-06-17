@@ -5,12 +5,12 @@ import cn.wizzer.common.base.Result;
 import cn.wizzer.common.filter.PrivateFilter;
 import cn.wizzer.common.page.DataTableColumn;
 import cn.wizzer.common.page.DataTableOrder;
+import cn.wizzer.modules.models.evaluate.Evaluate_appendix;
 import cn.wizzer.modules.models.evaluate.Evaluate_records;
 import cn.wizzer.modules.models.evaluate.Evaluate_remark;
 import cn.wizzer.modules.models.evaluate.Evaluate_special;
-import cn.wizzer.modules.models.monitor.Monitor_catalog;
-import cn.wizzer.modules.models.sys.Sys_role;
 import cn.wizzer.modules.models.sys.Sys_user;
+import cn.wizzer.modules.services.evaluate.EvaluateAppendixService;
 import cn.wizzer.modules.services.evaluate.EvaluateRecordsService;
 import cn.wizzer.modules.services.evaluate.EvaluateRemarkService;
 import cn.wizzer.modules.services.evaluate.EvaluateSpecialService;
@@ -25,6 +25,7 @@ import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+import org.nutz.mvc.adaptor.WhaleAdaptor;
 import org.nutz.mvc.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +47,8 @@ public class EvaluateRemarkController {
 	private EvaluateSpecialService evaluateSpecialService;
 	@Inject
 	private MonitorCatalogService monitorCatalogService;
+	@Inject
+	private EvaluateAppendixService evaluateAppendixService;
 
 	@At({"","/?"})
 	@Ok("beetl:/platform/evaluate/remark/${req_attr.type}/index.html")
@@ -167,6 +170,7 @@ public class EvaluateRemarkController {
     @At
     @Ok("json")
     @SLog(tag = "新建Evaluate_remark", msg = "")
+	@AdaptBy(type = WhaleAdaptor.class)
     public Object addDo(@Param("..") Evaluate_remark evaluateRemark, HttpServletRequest req) {
 		try {
 			evaluateRemarkService.insert(evaluateRemark);
@@ -188,7 +192,8 @@ public class EvaluateRemarkController {
 	@At("/selfevaDo")
     @Ok("json")
     @SLog(tag = "修改Evaluate_remark", msg = "ID:${args[0].id}")
-    public Object editDo(@Param("..") Evaluate_remark evaluateRemark,@Param("picurls") String[] picurls, HttpServletRequest req) {
+	@AdaptBy(type = WhaleAdaptor.class)
+    public Object editDo(@Param("..") Evaluate_remark evaluateRemark,@Param("apurls") String[] apurls, @Param("apnames") String[] apnames,HttpServletRequest req) {
 		try {
 
 			Evaluate_records records = evaluateRecordsService.fetch(evaluateRemark.getEvaluateId());
@@ -200,8 +205,18 @@ public class EvaluateRemarkController {
 			evaluateRemark.setSelfeva(true);//自评完成
 			evaluateRemarkService.updateIgnoreNull(evaluateRemark);
 
-			//上传附件，暂时没写好 2019-6-10 Liut
+			//上传附件 2019-6-13 Liut
+			if(apurls!=null&&apurls.length>0) {
+				for (int i=0;i<apurls.length;i++) {
+					Evaluate_appendix appendix = new Evaluate_appendix();
+					appendix.setEvaluateid(evaluateRemark.getEvaluateId());
+					appendix.setRemarkid(evaluateRemark.getIndexid());
+					appendix.setApname(apnames[i]);
+					appendix.setApurl(apurls[i]);
+					evaluateAppendixService.insert(appendix);
 
+				}
+			}
 			//修改records记录
 			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateRemark.getEvaluateId());
 			double progress = evaluateRecordsService.getProgress_s(evaluateRemark.getEvaluateId());
