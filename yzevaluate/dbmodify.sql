@@ -16,3 +16,4 @@ COMMENT ON COLUMN evaluate_records.selfevaurl IS '自评报告路径';
 COMMENT ON COLUMN evaluate_records.planurl IS '3年发展规划路径';
 
 --评估记录的权重改为100分
+UPDATE evaluate_records SET weights=100

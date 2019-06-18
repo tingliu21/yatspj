@@ -10,7 +10,6 @@ import cn.wizzer.modules.models.evaluate.*;
 import cn.wizzer.modules.models.monitor.Monitor_catalog;
 import cn.wizzer.modules.models.monitor.Monitor_index;
 import cn.wizzer.modules.models.sys.Sys_user;
-import cn.wizzer.modules.services.evaluate.EvaluateQualifyService;
 import cn.wizzer.modules.services.evaluate.EvaluateRecordsSelfService;
 import cn.wizzer.modules.services.evaluate.EvaluateRemarkService;
 import cn.wizzer.modules.services.evaluate.EvaluateSummaryService;
@@ -52,8 +51,6 @@ public class EvaluateRecordsSelfController {
 	private MonitorIndexService monitorIndexService;
 	@Inject
 	private MonitorCatalogService monitorCatalogService;
-	@Inject
-	private EvaluateQualifyService evaluateQualifyService;
 	@Inject
 	private EvaluateRemarkService evaluateRemarkService;
 	@Inject
@@ -133,7 +130,10 @@ public class EvaluateRecordsSelfController {
     public Object addDo(@Param("year") int year,@Param("unitType") String unitType,@Param("schoolId") String schoolId, HttpServletRequest req) {
 
 		try {
-			int totalWeights = monitorIndexService.getTotalWeights(unitType);
+			int totalWeights = 100;
+			//这里统一按100分处理
+//					totalWeights= monitorIndexService.getTotalWeights(unitType);
+
 				if(!Strings.isBlank(schoolId)){
 
 					Evaluate_records_self records = new Evaluate_records_self();
@@ -142,19 +142,9 @@ public class EvaluateRecordsSelfController {
 					records.setWeights(totalWeights);
 					//插入评估记录
 					records = evaluateRecordsSelfService.insert(records);
+
 					List<Monitor_index> monitorIndexs = monitorIndexService.query(
-							Cnd.where("unitType", "=", Strings.sBlank(unitType)).and("qualify", "=", true));
-					for (Monitor_index index : monitorIndexs) {
-						Evaluate_qualify qualify = new Evaluate_qualify();
-						qualify.setEvaluateId(records.getId());
-						qualify.setIndexId(index.getId());
-
-						//插入达标性评估记录
-						evaluateQualifyService.insert(qualify);
-
-					}
-					monitorIndexs = monitorIndexService.query(
-							Cnd.where("unitType", "=", Strings.sBlank(unitType)).and("qualify", "=", false));
+							Cnd.where("unitType", "=", Strings.sBlank(unitType)));
 					for (Monitor_index index : monitorIndexs) {
 						Evaluate_remark remark = new Evaluate_remark();
 						remark.setEvaluateId(records.getId());
@@ -166,19 +156,6 @@ public class EvaluateRecordsSelfController {
 						//插入监测指标记录
 						evaluateRemarkService.insert(remark);
 					}
-
-					List<Monitor_catalog> monitorCatalogs = monitorCatalogService.query(
-							Cnd.where("unitType", "=", Strings.sBlank(unitType)).and("qualify", "=", true).and("hasChildren", "=", false));
-
-
-					for (Monitor_catalog catalog : monitorCatalogs) {//遍历monitorIndexs
-						Evaluate_summary summary = new Evaluate_summary();//新建自评概述表
-						summary.setEvaluateid(records.getId());
-						summary.setCatalogid(catalog.getId());
-						evaluateSummaryService.insert(summary);//插入自评概述
-
-					}
-
 					return Result.success("system.success");
 				}
 

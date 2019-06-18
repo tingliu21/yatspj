@@ -201,52 +201,7 @@ layout("/layouts/platform.html"){
 
     }
 
-    function del(id) {
-        var dialog = $("#dialogDelete");
-        dialog.modal("show");
-        dialog.find("#okDel").unbind("click");
-        dialog.find("#okDel").bind("click", function (event) {
-            var btn = $(this);
-            btn.button("loading");
-            $.post("${base}/platform/evaluate/records/locked/" + id, {}, function (data) {
-                if (data.code == 0) {
-                    datatable.ajax.reload(null,false);
-                } else {
-                    Toast.error(data.msg);
-                }
-                //重置按钮状态，关闭提示框
-                btn.button("reset");
-                dialog.modal("hide");
-            }, "json");
-        });
-    }
-    function delCheck() {
-        var chks = datatable.rows('.selected').data();
-        if (chks.length > 0) {
-            var ids = [];
-            $.each(datatable.rows('.selected').data(), function (i, n) {
-                ids.push(n.id);
-            });
-            var dialog = $("#dialogDelete");
-            dialog.modal("show");
-            dialog.find("#okDel").unbind("click");
-            dialog.find("#okDel").bind("click", function (event) {
-                var btn = $(this);
-                btn.button("loading");
-                $.post("${base}/platform/evaluate/records/delete", {ids: ids.toString()}, function (data) {
-                    if (data.code == 0) {
-                        datatable.ajax.reload(null,false);
-                    } else {
-                        Toast.error(data.msg);
-                    }
-                    btn.button("reset");
-                    dialog.modal("hide");
-                }, "json");
-            });
-        } else {
-            Toast.warning("请先选择要删除的项！");
-        }
-    }
+
     $(function () {
         initDatatable();
         $("#dialogDetail").on("hidden.bs.modal", function () {

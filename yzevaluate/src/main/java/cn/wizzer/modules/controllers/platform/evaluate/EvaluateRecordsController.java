@@ -53,8 +53,7 @@ public class EvaluateRecordsController {
 	private SysUserService sysUserService;
 	@Inject
 	private MonitorIndexService monitorIndexService;
-	@Inject
-	private EvaluateQualifyService evaluateQualifyService;
+
 	@Inject
 	private EvaluateRemarkService evaluateRemarkService;
 	@Inject
@@ -145,8 +144,6 @@ public class EvaluateRecordsController {
     @SLog(tag = "初始化学校评估数据", msg = "")
     public Object addDo(@Param("year") int year,@Param("taskname")String taskname,@Param("schoolIds") String[] schoolIds, @Param("specialIds") String[] specialIds,HttpServletRequest req) {
 		try {
-
-
 			if(schoolIds!=null&&schoolIds.length>0){
 				for (String schoolid : schoolIds) {
 					//获取学校类别
@@ -171,6 +168,10 @@ public class EvaluateRecordsController {
 						Evaluate_remark remark = new Evaluate_remark();
 						remark.setEvaluateId(records.getId());
 						remark.setIndexid(index.getId());
+						if(!index.isSelfeva()){
+							//不需要学校自评指标,默认评估完成
+							remark.setSelfeva(true);
+						}
 						//插入监测指标记录
 						evaluateRemarkService.insert(remark);
 					}
@@ -359,16 +360,7 @@ public class EvaluateRecordsController {
 
 	}
 
-	//关联查询始终有问题
-//	@At("/test")
-//	@Ok("json:full")
-//	@RequiresAuthentication
-//	public Object test( @Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
-//		Cnd linkCnd = Cnd.where("id","=","f0fb46024f1944f097c8134325ebf2ac");
-//		return monitorIndexService.data(length,start,draw,order,columns,null,"dept",linkCnd);
-//
-//
-//	}
+
 	@At("/special/download/?")
 	@Ok("void")
 	@RequiresAuthentication
