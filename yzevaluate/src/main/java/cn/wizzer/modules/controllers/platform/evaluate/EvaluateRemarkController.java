@@ -54,35 +54,34 @@ public class EvaluateRemarkController {
 	@Ok("beetl:/platform/evaluate/remark/${req_attr.type}/index.html")
 	@RequiresAuthentication
 	//type取值有2个，self和special
-	//cType为指标目录类别，1为基础性指标，2为规范性指标，3为发展性指标
-	public void index(String type,@Param("evaluateId") String evaluateId,@Param("unitType") String unitType,@Param("cType") String cType,HttpServletRequest req) {
+	public void index(String type,@Param("evaluateId") String evaluateId,@Param("unitType") String unitType,HttpServletRequest req) {
 		Evaluate_records evaluate = evaluateRecordsService.fetch(evaluateId);
 		evaluate = evaluateRecordsService.fetchLinks(evaluate,"school");
 		req.setAttribute("schoolname",evaluate.getSchool().getName());
 		req.setAttribute("evaluateId",evaluateId);
 		req.setAttribute("unitType",unitType);
 		req.setAttribute("type", type);
-		req.setAttribute("cType",cType);
-	}
-	@At({"index_standard","/?/index_standard"})
-	@Ok("beetl:/platform/evaluate/remark/${req_attr.type}/index_standard.html")
-	@RequiresAuthentication
-	public void index_standard(String type,@Param("evaluateId") String evaluateId,@Param("unitType") String unitType,@Param("cType") String cType,HttpServletRequest req) {
-		req.setAttribute("evaluateId",evaluateId);
-		req.setAttribute("unitType",unitType);
-		req.setAttribute("type", type);
-		req.setAttribute("ctype",cType);
-	}
 
-	@At({"index_develop","/?/index_develop"})
-	@Ok("beetl:/platform/evaluate/remark/${req_attr.type}/index_develop.html")
-	@RequiresAuthentication
-	public void index_develop(String type,@Param("evaluateId") String evaluateId,@Param("unitType") String unitType,@Param("cType") String cType,HttpServletRequest req) {
-		req.setAttribute("evaluateId",evaluateId);
-		req.setAttribute("unitType",unitType);
-		req.setAttribute("type", type);
-		req.setAttribute("ctype",3);
 	}
+//	@At({"index_standard","/?/index_standard"})
+//	@Ok("beetl:/platform/evaluate/remark/${req_attr.type}/index_standard.html")
+//	@RequiresAuthentication
+//	public void index_standard(String type,@Param("evaluateId") String evaluateId,@Param("unitType") String unitType,@Param("cType") String cType,HttpServletRequest req) {
+//		req.setAttribute("evaluateId",evaluateId);
+//		req.setAttribute("unitType",unitType);
+//		req.setAttribute("type", type);
+//		req.setAttribute("ctype",cType);
+//	}
+//
+//	@At({"index_develop","/?/index_develop"})
+//	@Ok("beetl:/platform/evaluate/remark/${req_attr.type}/index_develop.html")
+//	@RequiresAuthentication
+//	public void index_develop(String type,@Param("evaluateId") String evaluateId,@Param("unitType") String unitType,@Param("cType") String cType,HttpServletRequest req) {
+//		req.setAttribute("evaluateId",evaluateId);
+//		req.setAttribute("unitType",unitType);
+//		req.setAttribute("type", type);
+//		req.setAttribute("ctype",3);
+//	}
 
 	@At
 	@Ok("json:full")

@@ -35,10 +35,11 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
     public void deleteAndChild(String evaluateId) {
         //dao().execute(Sqls.create("delete from evaluate_records where path like @path").setParam("path", catalog.getPath() + "%"));
         //清空该评估记录下的所有观测点评分
-        dao().execute(Sqls.create("delete from evaluate_qualify where evaluateid=@id ").setParam("id", evaluateId));
+
         dao().execute(Sqls.create("delete from evaluate_remark where evaluateid=@id ").setParam("id", evaluateId));
         dao().execute(Sqls.create("delete from evaluate_custom where evaluateid=@id ").setParam("id", evaluateId));
         dao().execute(Sqls.create("delete from evaluate_summary where evaluateid=@id")).setParam("id",evaluateId);
+        dao().execute(Sqls.create("delete from evaluate_appendix where evaluateid=@id").setParam("id",evaluateId));
         //清空该评估记录
         delete(evaluateId);
 
@@ -47,27 +48,23 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
 
     public double getProgress_s(String evaluateId){
         Sql sql = Sqls.create("select count(indexid) from evaluate_remark where evaluateid = @eid").setParam("eid", evaluateId);
-        int iTotalIndex_q = count(Sqls.create("select count(indexid) from evaluate_qualify where evaluateid = @eid").setParam("eid", evaluateId));
         int iTotalIndex_r = count(Sqls.create("select count(indexid) from evaluate_remark where evaluateid = @eid").setParam("eid", evaluateId));
         int iTotalIndex_c = count(Sqls.create("select count(indexname) from evaluate_custom where evaluateid = @eid").setParam("eid", evaluateId));
-        int iQualifyIndex = count(Sqls.create("select count(indexid) from evaluate_qualify where evaluateid = @eid and selfeva=@eva").setParam("eid", evaluateId).setParam("eva",true));
         int iCustomIndex = count(Sqls.create("select count(indexname) from evaluate_custom where evaluateid = @eid and selfeva=@eva").setParam("eid", evaluateId).setParam("eva",true));
         int iRemarkIndex = count(Sqls.create("select count(indexid) from evaluate_remark where evaluateid = @eid and selfeva=@eva").setParam("eid", evaluateId).setParam("eva",true));
 
-        return (double)(iQualifyIndex+iRemarkIndex+iCustomIndex)/(iTotalIndex_q+iTotalIndex_r+iTotalIndex_c);
+        return (double)(iRemarkIndex+iCustomIndex)/(iTotalIndex_r+iTotalIndex_c);
     }
 
     public double getProgress_p(String evaluateId){
         Sql sql = Sqls.create("select count(indexid) from evaluate_remark where evaluateid = @eid").setParam("eid", evaluateId);
-        int iTotalIndex_q = count(Sqls.create("select count(indexid) from evaluate_qualify where evaluateid = @eid").setParam("eid", evaluateId));
         int iTotalIndex_r = count(Sqls.create("select count(indexid) from evaluate_remark where evaluateid = @eid").setParam("eid", evaluateId));
         int iTotalIndex_c = count(Sqls.create("select count(indexname) from evaluate_custom where evaluateid = @eid").setParam("eid", evaluateId));
 
-        int iQualifyIndex = count(Sqls.create("select count(indexid) from evaluate_qualify where evaluateid = @eid and verifyeva=@eva").setParam("eid", evaluateId).setParam("eva",true));
         int iRemarkIndex = count(Sqls.create("select count(indexid) from evaluate_remark where evaluateid = @eid and verifyeva=@eva").setParam("eid", evaluateId).setParam("eva",true));
         int iCustomIndex = count(Sqls.create("select count(indexname) from evaluate_custom where evaluateid = @eid and verifyeva=@eva").setParam("eid", evaluateId).setParam("eva",true));
 
-        return (double)(iQualifyIndex+iRemarkIndex+iCustomIndex)/(iTotalIndex_q+iTotalIndex_r+iTotalIndex_c);
+        return (double)(iRemarkIndex+iCustomIndex)/(iTotalIndex_r+iTotalIndex_c);
     }
     public NutMap getSpecialUser(){
         NutMap re = new NutMap();

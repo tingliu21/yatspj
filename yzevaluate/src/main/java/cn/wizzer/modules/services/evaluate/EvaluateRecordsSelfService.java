@@ -27,15 +27,17 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
     @Aop(TransAop.READ_COMMITTED)
     public void deleteAndChild(String evaluateId) {
 
-        //清空该评估记录
-        delete(evaluateId);
+
         //dao().execute(Sqls.create("delete from evaluate_records where path like @path").setParam("path", catalog.getPath() + "%"));
         //清空该评估记录下的所有观测点评分
-        dao().execute(Sqls.create("delete from evaluate_qualify where evaluateid=@id ").setParam("id", evaluateId));
+
         dao().execute(Sqls.create("delete from evaluate_remark where evaluateid=@id ").setParam("id", evaluateId));
+        dao().execute(Sqls.create("delete from evaluate_custom where evaluateid=@id").setParam("id",evaluateId));
         dao().execute(Sqls.create("delete from evaluate_summary where evaluateid=@id").setParam("id",evaluateId));
+        dao().execute(Sqls.create("delete from evaluate_appendix where evaluateid=@id").setParam("id",evaluateId));
 
-
+        //清空该评估记录
+        delete(evaluateId);
     }
     /**
      * 提交评估记录

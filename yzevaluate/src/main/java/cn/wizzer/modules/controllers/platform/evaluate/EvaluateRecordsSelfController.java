@@ -221,7 +221,7 @@ public class EvaluateRecordsSelfController {
 
 	@At({"/delete","/delete/?"})
 	@Ok("json")
-	@SLog(tag = "删除Evaluate_records_self", msg = "ID:")
+	@SLog(tag = "删除评估记录", msg = "ID:")
 	public Object delete(String id ,HttpServletRequest req) {
 		try {
 			evaluateRecordsSelfService.deleteAndChild(id);
