@@ -31,8 +31,10 @@ public class SysHomeController {
     @At("")
     @Ok("beetl:/platform/sys/home.html")
     @RequiresAuthentication
-    public void home() {
+    public void home(HttpServletRequest req) {
         //SecurityUtils.getSubject().getSession().setTimeout(1000);
+        req.setAttribute("Selfdeadline",Globals.MyConfig.get("Selfdeadline"));
+
     }
 
     @At
