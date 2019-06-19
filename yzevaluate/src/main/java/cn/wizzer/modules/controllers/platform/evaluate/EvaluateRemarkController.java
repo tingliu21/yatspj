@@ -1,6 +1,7 @@
 package cn.wizzer.modules.controllers.platform.evaluate;
 
 import cn.wizzer.common.annotation.SLog;
+import cn.wizzer.common.base.Globals;
 import cn.wizzer.common.base.Result;
 import cn.wizzer.common.filter.PrivateFilter;
 import cn.wizzer.common.page.DataTableColumn;
@@ -29,10 +30,7 @@ import org.nutz.mvc.adaptor.WhaleAdaptor;
 import org.nutz.mvc.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @IocBean
 @At("/platform/evaluate/remark")
@@ -196,7 +194,9 @@ public class EvaluateRemarkController {
 	@AdaptBy(type = WhaleAdaptor.class)
     public Object editDo(@Param("..") Evaluate_remark evaluateRemark,@Param("apurls") String[] apurls, @Param("apnames") String[] apnames,HttpServletRequest req) {
 		try {
-
+			if(Globals.SelfDeadline!=null && Globals.SelfDeadline.compareTo(new Date())<0){
+				return Result.error("已经过了截止日期，不能再修改评价了");
+			}
 			Evaluate_records records = evaluateRecordsService.fetch(evaluateRemark.getEvaluateId());
 			if(records.isStatus_s()){
 				return Result.error("已经提交审核，不能再修改评价了");

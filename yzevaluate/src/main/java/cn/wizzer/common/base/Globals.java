@@ -5,6 +5,9 @@ import cn.wizzer.modules.models.sys.Sys_route;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +28,15 @@ public class Globals {
     public static String AppDomain = "127.0.0.1";
     //文件上传路径
     public static String AppUploadPath = "/upload";
+    //自评截止日期
+    public static Date SelfDeadline=null;
     //系统自定义参数
     public static Map<String, String> MyConfig;
     //自定义路由
     public static Map<String, Sys_route> RouteMap;
 
-    public static void init(Dao dao) {
+    public static void init(Dao dao)  {
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy年MM月dd日 hh:mm:ss");
         if (Globals.MyConfig == null) {
             Globals.MyConfig = new HashMap<>();
         } else Globals.MyConfig.clear();
@@ -49,6 +55,13 @@ public class Globals {
                 case "AppUploadPath":
                     Globals.AppUploadPath = sysConfig.getConfigValue();
                     break;
+                case "Selfdeadline":
+                    try {
+                        String deadline = sysConfig.getConfigValue()+" 23:59:59";
+                        Globals.SelfDeadline=  simpleDateFormat.parse(deadline);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 default:
                     Globals.MyConfig.put(sysConfig.getConfigKey(), sysConfig.getConfigValue());
                     break;
