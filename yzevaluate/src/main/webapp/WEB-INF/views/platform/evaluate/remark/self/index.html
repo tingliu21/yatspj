@@ -118,7 +118,7 @@ layout("/layouts/platform.html"){
                     "render": function (data, type, row) {
                         html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><span class="glyphicon glyphicon-eye-open"></span> 查看</a>';
                         //需要自评的指标再看看用户是否有权限
-                        if(row.selfeva){
+                        if(row.ndselfeva){
                             <% if(@shiro.hasPermission("evaluate.self.remark")){%>
                                 html+='<div class="btn-group-vertical"><a class="btn btn-danger" href="${base}/platform/evaluate/remark/selfeva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
                                     '    <span class="glyphicon glyphicon-pencil"></span> 评价</a>' +
