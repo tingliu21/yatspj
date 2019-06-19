@@ -76,10 +76,10 @@
                                 <div class="dd" id="nestable1">
                                     <ol class="dd-list">
                                         <%for(o in obj.appendixList){%>
-                                        <li class="dd-item dd3-item dd-nodrag" data-id="${o.remarkid}">
-                                            <a href="${base}${o.apurl}" data-pjax>
-                                            <span>${o.apname}</span>
-                                            </a>
+                                        <li class="dd-item dd3-item dd-nodrag" data-id="${o.apurl}">
+                                            <div class="dd3-content"><a href="${base}${o.apurl}" data-pjax>
+                                                <span>${o.apname}</span></a><i class="fa fa-close pull-right" onclick="delContent('${o.apurl}','${o.id}')"></i>
+                                                </a></div>
                                         </li>
                                         <%}%>
                                     </ol>
@@ -110,6 +110,30 @@
         $("#queue").html("");
         $("#picurl").val("");
     }
+    function delContent(url,id){
+        if(id!='null'&&id!=null) {
+            //数据库中的记录删除
+            $.post("${base}/platform/evaluate/appendix/delete/"+ id, {}, function (data) {
+                if (data.code == 0) {
+                    Toast.success("附件删除成功");
+                    $("li[data-id='"+url+"']").remove();
+                } else {
+                    Toast.error(data.msg);
+                }
+            }, "json");
+        }else{
+            for(var i=0;i<urls.length;i++){
+                if(urls[i]==url){
+                    urls.splice(i,1);
+                    names.splice(i,1);
+                    Toast.success("附件删除成功");
+                    $("li[data-id='"+url+"']").remove();
+                    break;
+                }
+            }
+        }
+
+    }
     $(document).ready(function () {
         $('#file_upload').uploadifive({
             'auto': true,
@@ -130,7 +154,7 @@
                     $("#queue").html("");
                     var str='';
                     str+='<li class="dd-item dd3-item dd-nodrag" data-id="'+ data.data+'">';
-                    str+='<a href=\'' + data.data + '\'>'+file.name+'</a>';
+                    str+='<div class="dd3-content"><a href=\'' + data.data + '\'>'+file.name+'</a><i class="fa fa-close pull-right" onclick="delContent(\''+ data.data+'\')"></i> </div>';
                     str+='</li>';
                     $("#nestable1 .dd-list").append(str);
                     $("#nestable1").nestable();

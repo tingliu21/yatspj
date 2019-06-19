@@ -27,6 +27,20 @@ public class EvaluateAppendixController {
 	@Inject
 	private EvaluateAppendixService evaluateAppendixService;
 
+	@At({"/delete","/delete/?"})
+	@Ok("json")
+	@SLog(tag = "删除Evaluate_appendix", msg = "ID:")
+	public Object delete(String id,HttpServletRequest req) {
+		try {
+			evaluateAppendixService.delete(id);
+			req.setAttribute("id", id);
+
+			return Result.success("system.success");
+		} catch (Exception e) {
+			return Result.error("system.error");
+		}
+
+	}
 
 
 }
