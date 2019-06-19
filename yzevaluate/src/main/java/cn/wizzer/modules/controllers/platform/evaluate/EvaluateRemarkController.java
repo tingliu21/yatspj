@@ -106,7 +106,8 @@ public class EvaluateRemarkController {
 		return null;
 
     }
-    //专家评估指标，专家可看5个指标，但只能编辑自己负责的
+
+    //专家评估指标，仅列出续现场评估的指标
     @At
 	@Ok("json:full")
 	@RequiresPermissions("evaluate.verify.special")
