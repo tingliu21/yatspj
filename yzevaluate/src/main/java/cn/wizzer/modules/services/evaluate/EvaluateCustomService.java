@@ -6,6 +6,7 @@ import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
 import org.nutz.dao.sql.Sql;
 import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 @IocBean(args = {"refer:dao"})
@@ -25,5 +26,19 @@ public class EvaluateCustomService extends Service<Evaluate_custom> {
 //        Sql sql = Sqls.create("select sum(score_p) from evaluate_custom where evaluateid = @eid").setParam("eid", evaluateId);
 //        return score(sql);
 //    }
+    public double getTotalWeights(String evaluateId,String customid){
+        Sql sql ;
+        if(!Strings.isBlank(customid) && !"0".equals(customid)) {
+
+            sql = Sqls.create("select sum(weights) from evaluate_custom where evaluateid = @eid and id!=@id").setParam("eid", evaluateId).setParam("id",customid);
+
+        }else{
+            sql = Sqls.create("select sum(weights) from evaluate_custom where evaluateid = @eid").setParam("eid", evaluateId);
+        }
+
+        double weights = score(sql);
+
+        return weights;
+    }
 }
 

@@ -1,15 +1,14 @@
-<form id="editForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
-      action="${base}/platform/evaluate/custom/editDo" method="post">
-
-    <div class="modal-body no-p">
-        <div class="row">
-            <div class="col-xs-12">
-                <section class="panel panel-form">
-                    <header class="panel-heading clearfix brtl brtr">
-                        <div class="overflow-hidden">
-                            <a href="javascript:;" class="h4 show no-m pt5">发展性指标(任务)自评</a>
-                        </div>
-                    </header>
+<div class="modal-body no-p">
+    <div class="row">
+        <div class="col-xs-12">
+            <section class="panel panel-form">
+                <header class="panel-heading clearfix brtl brtr">
+                    <div class="overflow-hidden">
+                        <a href="javascript:;" class="h4 show no-m pt5">发展性指标(任务)自评</a>
+                    </div>
+                </header>
+                <form id="editForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
+                      action="${base}/platform/evaluate/custom/editDo" method="post">
                 <input name="id" type="hidden" value="${obj.id}">
                 <input name="evaluateId" type="hidden" value="${obj.evaluateId}">
                 <div class="row mb10">
@@ -38,35 +37,35 @@
                         <div class="form-group">
                             <label for="taskname" class="col-sm-2 control-label">具体发展性目标（任务)</label>
                             <div class="col-sm-8">
-                                <input type="text" id="taskname" class="form-control" name="taskname" data-parsley-required="true"
-                                       placeholder="具体发展性目标（任务)" value="${obj.taskname}" >
+                                <textarea id="taskname" name="taskname" class="form-control" data-parsley-required="true" style="width:100%;height:60px;" placeholder="具体发展性目标（任务)" value="${obj.taskname}"></textarea>
+
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="taskdetail" class="col-sm-2 control-label">达成标志</label>
                             <div class="col-sm-8">
-                                <input type="text" id="taskdetail" class="form-control" name="taskdetail" data-parsley-required="true"
-                                       placeholder="达成标志" value="${obj.taskdetail}" >
+                                <textarea id="taskdetail" name="taskdetail" class="form-control" data-parsley-required="true" style="width:100%;height:60px;"
+                                          placeholder="达成标志" value="${obj.taskdetail}"></textarea>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="analysis_s" class="col-sm-2 control-label">原有基础自我分析</label>
                             <div class="col-sm-8">
-                                <input type="text" id="analysis_s" class="form-control" name="analysis_s" data-parsley-required="true"
-                                       placeholder="原有基础自我分析" value="${obj.analysis_s}" >
+                                <textarea id="analysis_s" name="analysis_s" class="form-control" data-parsley-required="true" style="width:100%;height:60px;"
+                                          placeholder="原有基础自我分析" value="${obj.analysis_s}"></textarea>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="weights" class="col-sm-2 control-label">分值</label>
                             <div class="col-sm-8">
-                                <input type="text" id="weights" class="form-control" name="weights" data-parsley-required="true"
+                                <input type="text" id="weights" class="form-control" name="weights" data-parsley-max="10" data-parsley-score data-parsley-required="true"
                                        placeholder="分值" value="${obj.weights}" >
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="score_s" class="col-sm-2 control-label">自打分</label>
                             <div class="col-sm-8">
-                                <input type="text" id="score_s" class="form-control" name="score_s" data-parsley-required="true"
+                                <input type="text" id="score_s" class="form-control" name="score_s"  data-parsley-min="0" data-parsley-score data-parsley-required="true"
                                        placeholder="自打分" value="${obj.score_s}" >
                             </div>
                         </div>
@@ -104,7 +103,7 @@
                         <!--</div>-->
                     </div>
                 </div>
-
+                </form>
                 </section>
             </div>
 
@@ -114,9 +113,16 @@
         <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
         <button id="ok" type="submit" class="btn btn-primary " data-loading-text="正在提交...">确 定</button>
     </div>
-</form>
+
 <script language="JavaScript">
     $(document).ready(function () {
+        $("#ok").on("click",function(){
+            if($('#score_s').val()>$('#weights').val()){
+                Toast.error("自评分不高于权重值！");
+            }else {
+                $('#editForm').submit();
+            }
+        });
         $('#editForm').ajaxForm({
             dataType: 'json',
             beforeSubmit: function (arr, form, options) {

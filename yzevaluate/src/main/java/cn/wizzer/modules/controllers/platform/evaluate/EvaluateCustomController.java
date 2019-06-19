@@ -75,13 +75,20 @@ public class EvaluateCustomController {
     @SLog(tag = "新建Evaluate_custom", msg = "")
     public Object addDo(@Param("..") Evaluate_custom evaluateCustom, HttpServletRequest req) {
 		try {
+			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateCustom.getEvaluateId());
+			if(evaluateRecords.isStatus_s()){
+				return Result.error("已经提交审核，不能再修改评价了");
+			}
+			double totalCusWeights = evaluateCustomService.getTotalWeights(evaluateCustom.getEvaluateId(),"")+evaluateCustom.getWeights();
+			if(totalCusWeights>10){
+				return Result.error("发展性指标不能超过10分");
+			}
 			evaluateCustom.setOpBy(Strings.sNull(req.getAttribute("uid")));
 			evaluateCustom.setOpAt((int) (System.currentTimeMillis() / 1000));
 			evaluateCustom.setSelfeva(true);//学校自评完成
 			evaluateCustomService.insert(evaluateCustom);
 
 			//修改records记录
-			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateCustom.getEvaluateId());
 			double progress = evaluateRecordsService.getProgress_s(evaluateCustom.getEvaluateId());
 			evaluateRecords.setProgress_s(progress);
 
@@ -111,13 +118,19 @@ public class EvaluateCustomController {
     @SLog(tag = "修改Evaluate_custom", msg = "ID:${args[0].id}")
     public Object editDo(@Param("..") Evaluate_custom evaluateCustom, HttpServletRequest req) {
 		try {
-
+			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateCustom.getEvaluateId());
+			if(evaluateRecords.isStatus_s()){
+				return Result.error("已经提交审核，不能再修改评价了");
+			}
+			double totalCusWeights = evaluateCustomService.getTotalWeights(evaluateCustom.getEvaluateId(),evaluateCustom.getId())+evaluateCustom.getWeights();
+			if(totalCusWeights>10){
+				return Result.error("发展性指标不能超过10分");
+			}
 			evaluateCustom.setOpBy(Strings.sNull(req.getAttribute("uid")));
 			evaluateCustom.setOpAt((int) (System.currentTimeMillis() / 1000));
 			evaluateCustom.setSelfeva(true);//学校自评完成
 			evaluateCustomService.updateIgnoreNull(evaluateCustom);
 			//修改records记录
-			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateCustom.getEvaluateId());
 			double progress = evaluateRecordsService.getProgress_s(evaluateCustom.getEvaluateId());
 			evaluateRecords.setProgress_s(progress);
 
