@@ -105,7 +105,8 @@ layout("/layouts/platform.html"){
                 "type": "post",
                 "data": function (d) {
                     //d.nutz = $('#nutz').val();
-
+                    d.year = $('#year').val();
+                    d.taskname=$('#taskname').val();
                 }
             },
             "order": [[0, "desc"]],
