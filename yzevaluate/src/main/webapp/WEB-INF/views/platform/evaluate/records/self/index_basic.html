@@ -149,7 +149,7 @@ layout("/layouts/platform.html"){
             {
                 "render": function (data, type, row) {
                     return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/remark/self?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>自评</a>' +
-                        '<a class="btn btn-warning" href="javascript:;" onclick="sub(\'' + row.id + '\','+row.progress_s+')">提交审核</a>'+
+                        '<a class="btn btn-warning" href="javascript:;" onclick="sub(\'' + row.id + '\','+row.progress_s+','+row.status_s+')">提交审核</a>'+
                         '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
                         '</div>';
                 },
@@ -179,9 +179,13 @@ layout("/layouts/platform.html"){
             }, "json");
         });
     }
-    function sub(id,progress) {
+    function sub(id,progress,status) {
         if(progress<1){
             Toast.error("尚未自评完成，暂不能提交");
+            return false;
+        }
+        if(status){
+            Toast.error("已提交审核，不要重复提交");
             return false;
         }
         var dialog = $("#dialogSubmit");
