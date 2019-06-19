@@ -1,18 +1,20 @@
 
-<form id="addForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
-      action="${base}/platform/evaluate/custom/addDo" method="post">
-    <div class="modal-body no-p">
-        <div class="row">
-            <div class="col-xs-12">
-                 <section class="panel panel-primary no-b">
-                    <header class="panel-heading clearfix brtl brtr">
-                        <div class="overflow-hidden">
-                            <a href="javascript:;" class="h4 show no-m pt5">添加发展性指标(任务)</a>
-                        </div>
-                    </header>
+<div class="modal-body no-p">
+    <div class="row">
+        <div class="col-xs-12">
+             <section class="panel panel-primary no-b">
+                <header class="panel-heading clearfix brtl brtr">
+                    <div class="overflow-hidden">
+                        <a href="javascript:;" class="h4 show no-m pt5">添加发展性指标(任务)</a>
+                    </div>
+                </header>
+
+                <form id="addForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
+                      action="${base}/platform/evaluate/custom/addDo" method="post">
+                <input type="hidden" id="evaluateId" name="evaluateId"  value="${evaluateId}">
                 <div class="row mb10">
                     <div class="col-lg-12">
-                        <input type="hidden" id="evaluateId" name="evaluateId"  value="${evaluateId}">
+
                         <!--<div class="form-group">
                             <label for="evaluateId" class="col-sm-2 control-label">评估ID</label>
                             <div class="col-sm-8">
@@ -26,22 +28,21 @@
                                 <input type="text" id="location" class="form-control" name="location" data-parsley-required="true" placeholder="指标序号">
                             </div>
                         </div>-->
-
                         <div class="form-group">
-                        <label for="indexname" class="col-sm-2 control-label">指标类型</label>
-                        <div class="col-sm-8">
-                        <select class="form-control" name="indexname" id="indexname">
-                        <option value="校园建设">校园建设</option>
-                        <option value="课程改革">课程改革</option>
-                            <option value="教师发展">教师发展</option>
-                            <option value="学生成长">学生成长</option>
-                            <option value="特色打造">特点打造</option>
-                            <option value="国际交流">国际交流</option>
-                        </select>
-                            <div style="width: 400px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
-                                <strong>提示：</strong>下拉框选择指标<br>
+                            <label for="indexname" class="col-sm-2 control-label">指标类型</label>
+                            <div class="col-sm-8">
+                                <select class="form-control" name="indexname" id="indexname">
+                                <option value="校园建设">校园建设</option>
+                                <option value="课程改革">课程改革</option>
+                                    <option value="教师发展">教师发展</option>
+                                    <option value="学生成长">学生成长</option>
+                                    <option value="特色打造">特点打造</option>
+                                    <option value="国际交流">国际交流</option>
+                                </select>
+                                <div style="width: 400px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
+                                    <strong>提示：</strong>下拉框选择指标
+                                </div>
                             </div>
-                        </div>
                         </div>
                         <div class="form-group">
                             <label for="taskname" class="col-sm-2 control-label">具体发展性目标（任务)</label>
@@ -64,13 +65,13 @@
                         <div class="form-group">
                             <label for="weights" class="col-sm-2 control-label">分值</label>
                             <div class="col-sm-8">
-                            <input type="text" id="weights" class="form-control" name="weights" data-parsley-required="true" placeholder="分值">
+                            <input type="text" id="weights" class="form-control" name="weights" data-parsley-max="10" data-parsley-score data-parsley-required="true" placeholder="分值">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="score_s" class="col-sm-2 control-label">自打分</label>
                             <div class="col-sm-8">
-                            <input type="text" id="score_s" class="form-control" name="score_s" data-parsley-required="true" placeholder="自打分">
+                            <input type="text" id="score_s" class="form-control" name="score_s" data-parsley-score  data-parsley-required="true" placeholder="自打分">
                             </div>
                         </div>
                         <!--<div class="form-group">
@@ -94,16 +95,7 @@
 
                     </div>
                 </div>
-                <div class="col-lg-3"></div>
-                <div class="col-lg-6">
-                    <div class="form-group text-center">
-                        <label></label>
-
-                        <!--<div>-->
-                            <!--<button class="btn btn-primary btn-block btn-lg btn-parsley" data-loading-text="正在提交...">提 交</button>-->
-                        <!--</div>-->
-                    </div>
-                </div>
+                </form>
                 </section>
             </div>
         </div>
@@ -112,9 +104,16 @@
             <button id="ok" type="submit" class="btn btn-primary " data-loading-text="正在提交...">确 定</button>
         </div>
     </div>
-</form>
+
 <script language="JavaScript">
     $(document).ready(function () {
+        $("#ok").on("click",function(){
+            if($('#score_s').val()>$('#weights').val()){
+                Toast.error("自评分不高于权重值！");
+            }else {
+                $('#addForm').submit();
+            }
+        });
         $('#addForm').ajaxForm({
             dataType: 'json',
             beforeSubmit: function (arr, form, options) {
@@ -133,5 +132,4 @@
         });
     });
 </script>
-
 
