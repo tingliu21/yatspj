@@ -66,21 +66,14 @@ public class EvaluateRecordsSelfController {
 	@Ok("beetl:/platform/evaluate/records/self/index_basic.html")
 	@RequiresAuthentication
 	public void index_basic(HttpServletRequest req) {
-		req.setAttribute("ctype",1);
-	}
 
-	@At
-	@Ok("beetl:/platform/evaluate/records/self/index_standard.html")
-	@RequiresAuthentication
-	public void index_standard(HttpServletRequest req) {
-		req.setAttribute("ctype",2);
 	}
 
 	@At
 	@Ok("beetl:/platform/evaluate/records/self/index_develop.html")
 	@RequiresAuthentication
 	public void index_develop(HttpServletRequest req) {
-		req.setAttribute("ctype",3);
+
 	}
 
 	@At
@@ -166,10 +159,9 @@ public class EvaluateRecordsSelfController {
     }
 	@At({"/submit/?"})
 	@Ok("json")
-	@SLog(tag = "删除Evaluate_records_self", msg = "ID:${args[2].getAttribute('id')}")
+	@SLog(tag = "提交学校自评记录", msg = "ID:")
 	public Object submit(String id ,HttpServletRequest req) {
 		try {
-
 			evaluateRecordsSelfService.submit(id);
 			req.setAttribute("id", id);
 
