@@ -216,6 +216,10 @@ public class EvaluateRecordsSelfController {
 	@SLog(tag = "删除评估记录", msg = "ID:")
 	public Object delete(String id ,HttpServletRequest req) {
 		try {
+			Evaluate_records_self records = evaluateRecordsSelfService.fetch(id);
+			if(records.isStatus_s()){
+				return Result.error("已经提交审核，不能再删除评估记录");
+			}
 			evaluateRecordsSelfService.deleteAndChild(id);
 			//req.setAttribute("id", id);
 			return Result.success("system.success");
