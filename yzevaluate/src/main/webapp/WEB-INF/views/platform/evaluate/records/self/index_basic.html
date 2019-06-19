@@ -149,7 +149,7 @@ layout("/layouts/platform.html"){
             {
                 "render": function (data, type, row) {
                     return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/remark/self?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>自评</a>' +
-                        '<a class="btn btn-warning" href="javascript:;" onclick="sub(\'' + row.id + '\','+row.progress_s+','+row.status_s+')">提交审核</a>'+
+//                        '<a class="btn btn-warning" href="javascript:;" onclick="sub(\'' + row.id + '\','+row.progress_s+','+row.status_s+')">提交审核</a>'+
                         '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
                         '</div>';
                 },
