@@ -80,7 +80,7 @@ layout("/layouts/platform.html"){
             },
             {
                 "render": function (data, type, row) {
-                    if (data!=null) {
+                    if (data!=null && data!="") {
                         return '<a href="' + row.selfevaurl + '" class="fa  text-success ml5">自评报告</a>';
                     } else {
                         return '<div  class="fa  text-danger ml5">未上传</div>';
@@ -90,7 +90,7 @@ layout("/layouts/platform.html"){
             },
             {
                 "render": function (data, type, row) {
-                    if (data!=null) {
+                    if (data!=null&& data!="") {
                         return '<a href="' + row.planurl + '" class="fa  text-success ml5">发展规划</a>';
                     } else {
                         return '<div  class="fa  text-danger ml5">未上传</div>';
