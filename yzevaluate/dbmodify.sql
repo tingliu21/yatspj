@@ -20,10 +20,15 @@ UPDATE evaluate_records SET weights=100
 
 --发展性指标表加自评理由字段
 ALTER TABLE evaluate_custom
-  ADD COLUMN remark_s character varying(100);
+  ADD COLUMN remark_s character varying(200);
 COMMENT ON COLUMN evaluate_custom.remark_s IS '自评理由';
 
 --发展性指标表加督评理由字段
 ALTER TABLE evaluate_custom
-  ADD COLUMN remark_p character varying(100);
+  ADD COLUMN remark_p character varying(200);
 COMMENT ON COLUMN evaluate_custom.remark_p IS '督评理由';
+--自评理由和督评理由字段改长
+ALTER TABLE evaluate_remark
+   ALTER COLUMN remark_s TYPE character varying(200);
+ALTER TABLE evaluate_remark
+   ALTER COLUMN remark_p TYPE character varying(200);
