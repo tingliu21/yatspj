@@ -51,11 +51,20 @@ public class Evaluate_custom extends Model implements Serializable{
     @ColDefine(type = ColType.FLOAT, width = 8)
     private double score_s;
 
+    @Column
+    @Comment("自评理由")
+    @ColDefine(type = ColType.VARCHAR, width = 100)
+    private String remark_s;
 
     @Column
     @Comment("督评分")
     @ColDefine(type = ColType.FLOAT, width = 8)
     private double score_p;
+
+    @Column
+    @Comment("督评理由")
+    @ColDefine(type = ColType.VARCHAR, width = 100)
+    private String remark_p;
 
     @Column
     @Comment("是否自评完成")
@@ -156,6 +165,22 @@ public class Evaluate_custom extends Model implements Serializable{
 
     public void setWeights(Integer weights) {
         this.weights = weights;
+    }
+
+    public String getRemark_s() {
+        return remark_s;
+    }
+
+    public void setRemark_s(String remark_s) {
+        this.remark_s = remark_s;
+    }
+
+    public String getRemark_p() {
+        return remark_p;
+    }
+
+    public void setRemark_p(String remark_p) {
+        this.remark_p = remark_p;
     }
 
     public Boolean getVerifyeva() {

@@ -69,6 +69,15 @@
                                        placeholder="自打分" value="${obj.score_s}" >
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="remark_s" class="col-sm-2 control-label">学校自评理由</label>
+                            <div class="col-sm-8">
+                                <textarea id="remark_s" name="remark_s" class="form-control" style="width:100%;height:80px;" data-parsley-required="true" value="${obj.remark_s}">${obj.remark_s!}</textarea>
+                            <!--<div style="width: 400px;padding: 5px" class="alert alert-warning alert-dismissable">
+                                每项指标分小项写明得分原因，如指标1中第1条因***得***分。
+                            </div>-->
+                            </div>
+                       </div>
                         <!--<div class="form-group">-->
                             <!--<label for="score_p" class="col-sm-2 control-label">督评分</label>-->
                             <!--<div class="col-sm-8">-->

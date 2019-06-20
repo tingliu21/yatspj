@@ -4,19 +4,19 @@
             <section class="panel panel-primary no-b">
                 <header class="panel-heading clearfix brtl brtr">
                     <div class="overflow-hidden">
-                        <a href="javascript:;" class="h4 show no-m pt5">Evaluate_custom</a>
+                        <a href="javascript:;" class="h4 show no-m pt5">查看具体发展性目标（任务）</a>
                         <small>${obj.id}</small>
                     </div>
                 </header>
                 <div class="list-group">
                     <table class="table table-bordered table-striped mg-t datatable">
                         <tbody>
-                                                        <tr>
+                                                        <!--<tr>
                                 <td>评估ID</td><td>${obj.evaluateId}</td>
                             </tr>
                                                         <tr>
                                 <td>指标</td><td>${obj.indexname}</td>
-                            </tr>
+                            </tr>-->
                                                         <tr>
                                 <td>具体发展性目标（任务)</td><td>${obj.taskname}</td>
                             </tr>
@@ -33,17 +33,23 @@
                                 <td>自打分</td><td>${obj.score_s}</td>
                             </tr>
                                                         <tr>
+                                                            <td>自评理由</td><td>${obj.remark_s}</td>
+                                                        </tr>
+                                                        <tr>
                                 <td>督评分</td><td>${obj.score_p}</td>
                             </tr>
                                                         <tr>
-                                <td>是否自评完成</td><td>${obj.selfeva}</td>
+                                                            <td>督评理由</td><td>${obj.remark_p}</td>
+                                                        </tr>
+                                                        <tr>
+                               <!-- <td>是否自评完成</td><td>${obj.selfeva}</td>
                             </tr>
                                                         <tr>
                                 <td>是否审核完成</td><td>${obj.verifyeva}</td>
                             </tr>
                                                         <tr>
                                 <td>指标序号</td><td>${obj.location}</td>
-                            </tr>
+                            </tr>-->
                                                     </tbody>
                     </table>
                 </div>
