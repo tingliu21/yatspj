@@ -36,15 +36,17 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
-                <button id="ok" type="submit" class="btn btn-primary " data-loading-text="正在提交...">确 定</button>
-            </div>
+
             </form>
             </section>
+
     </div>
 
 </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+    <button id="ok" type="submit" class="btn btn-primary " data-loading-text="正在提交...">确 定</button>
 </div>
 <script language="JavaScript">
     $(document).ready(function () {
@@ -113,6 +115,14 @@
             },
             'onCancel': function () {
                 $("#planqueue").html("");
+            }
+        });
+        $("#ok").on("click",function(){
+            if($("#planurl").val()=="" && $("#selfevaurl").val()==""){
+                Toast.error("请选择上传材料");
+            }
+            else{
+                $('#addForm').submit();
             }
         });
         $('#addForm').ajaxForm({
