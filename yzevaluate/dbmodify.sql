@@ -32,3 +32,8 @@ ALTER TABLE evaluate_remark
    ALTER COLUMN remark_s TYPE character varying(200);
 ALTER TABLE evaluate_remark
    ALTER COLUMN remark_p TYPE character varying(200);
+
+--三级指标表加专家评否字段
+ALTER TABLE monitor_index
+  ADD COLUMN speceva boolean;
+COMMENT ON COLUMN monitor_index.speceva IS '专家评否';
