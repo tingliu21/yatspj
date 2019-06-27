@@ -92,5 +92,21 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
 
     }
 
+    //获取评估组别
+    public List<Record> getGrouplist(){
+        Sql sql = Sqls.create("Select taskname, string_agg(id,',') as id from evaluate_records group by taskname");
+        List<Record> indexlist = list(sql);
+        return  indexlist;
+    }
+    //按组获取学校名称
+    public List<Record> getSchoollistbygroup(String taskname){
+        Sql sql = Sqls.create("SELECT  evaluate_records.id,sys_unit.name FROM evaluate_records inner join sys_unit on schoolid=sys_unit.id where taskname= @taskname").setParam("taskname", taskname);
+        List<Record> indexlist = list(sql);
+        return  indexlist;
+    }
+
+
+
+
 }
 

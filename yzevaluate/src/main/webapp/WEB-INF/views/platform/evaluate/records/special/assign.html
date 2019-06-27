@@ -1,0 +1,61 @@
+<%
+layout("/layouts/platform.html"){
+%>
+<aside class="sidebar-250 canvas-right bg-default ">
+    <header class="header navbar clearfix bb bg-default pl0 pr0">
+        <p class="navbar-text"><i class="fa fa-sitemap mr5"></i> 评估分组</p>
+    </header>
+    <div class="content-wrap no-p">
+        <div class="wrapper2">
+            <div class="m5">
+                <div id="jsTree"></div>
+            </div>
+        </div>
+    </div>
+</aside>
+<section class="content-wrap bg-white">
+    <header class="header navbar bg-white shadow">
+        <div class="btn-group tool-button">
+            <p class="navbar-text"><i class="fa fa-chevron-right"></i> 科室打分<i class="fa  fa-chevron-right"></i></p>
+            <!--<a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/remark/add" data-pjax><i class="ti-plus"></i> 新建Evaluate_remark</a>-->
+            <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>-->
+        </div>
+    </header>
+    <div class=panel-body style="padding-top: 50px;">
+        <input id="catalogId" type="hidden">
+    </div>
+</section>
+<script language="JavaScript">
+
+    var unitTreeTable;
+    function initTreeView() {
+        $("#jsTree").jstree({
+            plugins: ["wholerow"],
+            core: {
+                data: {
+                    url: function (node) {
+                        return node.id === "#" ? "${base}/platform/evaluate/records/tree/${unitType}" : "${base}/platform/evaluate/records/schooltree/${unitType}?taskname=" + node.text
+                    }
+                },
+                multiple: false
+            }
+        }).on("select_node.jstree", function (node, selected) {
+            var id = selected.selected;
+            $("#catalogId").val(id);
+        }).on("loaded.jstree", function (node, jstree) {
+            var id = $(node.target).find("li:first").attr("id");
+            if (id) {
+                jstree.instance.select_node(id);
+            }
+        });
+    }
+
+
+    $(function () {
+        initTreeView();
+
+
+    });
+</script>
+
+<%}%>
