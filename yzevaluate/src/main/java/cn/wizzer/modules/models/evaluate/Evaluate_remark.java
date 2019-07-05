@@ -101,6 +101,7 @@ public class Evaluate_remark extends Model implements Serializable{
     @Column
     @Readonly
     private boolean ndselfeva;
+    
 
     @Many(target=Evaluate_appendix.class,field = "remarkid")
     private List<Evaluate_appendix> appendixList;
@@ -285,4 +286,5 @@ public class Evaluate_remark extends Model implements Serializable{
     public void setNdselfeva(boolean ndselfeva) {
         this.ndselfeva = ndselfeva;
     }
+
 }

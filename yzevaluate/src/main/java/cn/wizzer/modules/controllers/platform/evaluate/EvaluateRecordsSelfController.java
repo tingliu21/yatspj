@@ -271,11 +271,14 @@ public class EvaluateRecordsSelfController {
 	@RequiresAuthentication
 	public Object uploadDo(@Param("id") String id,@Param("selfevaurl") String selfevaurl,@Param("planurl") String planurl, HttpServletResponse resp) {
 		try {
-			evaluateRecordsSelfService.upload(id,selfevaurl,planurl);
-			return Result.success("system.success");
+			if (!Strings.isBlank(selfevaurl)|| !Strings.isBlank(planurl)) {
+				evaluateRecordsSelfService.upload(id, selfevaurl, planurl);
+				return Result.success("system.success");
+			}
 		} catch (Exception e) {
 			return Result.error("system.error");
 		}
+		return null;
 	}
 	/**
 	 * 组装word文档中需要显示数据的集合

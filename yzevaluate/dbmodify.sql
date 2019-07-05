@@ -32,3 +32,4 @@ ALTER TABLE evaluate_remark
    ALTER COLUMN remark_s TYPE character varying(200);
 ALTER TABLE evaluate_remark
    ALTER COLUMN remark_p TYPE character varying(200);
+

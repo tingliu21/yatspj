@@ -79,6 +79,65 @@ public class EvaluateRecordsController {
 	public void specindex( HttpServletRequest req) {
 
 	}
+
+	@At("/special/assign")
+	@Ok("beetl:/platform/evaluate/records/special/assign.html")
+	@RequiresAuthentication
+	public void assign( HttpServletRequest req) {
+		req.setAttribute("unitType","111");
+	}
+
+	@At("/special/addspec")
+	@Ok("beetl:/platform/evaluate/records/special/addspec.html")
+	@RequiresAuthentication
+	public void addspec( HttpServletRequest req) {
+	}
+
+	@At({"/tree","/tree/?"})
+	@Ok("json")
+	@RequiresAuthentication
+	public Object tree(String evatype,@Param("pid") String pid) {
+		Cnd cnd = Cnd.where("parentId", "=", Strings.sBlank(pid));
+
+		List<Record> list = evaluateRecordsService.getGrouplist();
+
+		List<Map<String, Object>> tree = new ArrayList<>();
+		/*for (Evaluate_records records : list) {
+			Map<String, Object> obj = new HashMap<>();
+			obj.put("id", records.getId());
+			obj.put("text", records.getName());
+			//obj.put("children", records.isHasChildren());
+			tree.add(obj);
+		}*/
+ 		for(Record record:list) {
+			Map<String, Object> obj = new HashMap<>();
+			obj.put("id", record.getString("id"));
+			obj.put("text", record.getString("taskname"));
+			obj.put("children",true);
+			tree.add(obj);
+		}
+		return tree;
+	}
+	@At({"/schooltree","/schooltree/?"})
+	@Ok("json")
+	@RequiresAuthentication
+	public Object schooltree(String evatype,@Param("taskname") String taskname) {
+		Cnd cnd = Cnd.NEW();
+		if (!Strings.isBlank(taskname)) {
+			cnd.and("taskname", "like", "%" + taskname + "%");
+		}
+		List<Record> list = evaluateRecordsService.getSchoollistbygroup(taskname);
+		List<Map<String, Object>>tree = new ArrayList<>();
+
+		for(Record record:list) {
+			Map<String, Object> obj = new HashMap<>();
+			obj.put("id", record.getString("id"));
+			obj.put("text", record.getString("name"));
+			obj.put("children",false);
+			tree.add(obj);
+		}
+		return tree;
+	}
 	@At("")
 	@Ok("beetl:/platform/evaluate/records/index.html")
 	@RequiresAuthentication
@@ -129,7 +188,6 @@ public class EvaluateRecordsController {
 		return evaluateRecordsService.data(length, start, draw, order, columns, cnd, "school");
 	}
 
-//    @At("/add/?")
 	@At
     @Ok("beetl:/platform/evaluate/records/add.html")
     @RequiresAuthentication
