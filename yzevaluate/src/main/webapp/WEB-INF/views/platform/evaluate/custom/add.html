@@ -11,7 +11,9 @@
 
                 <form id="addForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
                       action="${base}/platform/evaluate/custom/addDo" method="post">
-                <input type="hidden" id="evaluateId" name="evaluateId"  value="${evaluateId}">
+                    <input type="hidden" id="evaluateId" name="evaluateId"  value="${evaluateId}">
+                    <input type="hidden" id="apurls" name="apurls"  >
+                    <input type="hidden" id="apnames" name="apnames" >
                 <div class="row mb10">
                     <div class="col-lg-12">
 
@@ -29,7 +31,7 @@
                             </div>
                         </div>-->
                         <div class="form-group">
-                            <label for="indexname" class="col-sm-2 control-label">指标类型</label>
+                            <label for="indexname" class="col-sm-3 control-label">指标类型</label>
                             <div class="col-sm-8">
                                 <select class="form-control" name="indexname" id="indexname">
                                 <option value="校园建设">校园建设</option>
@@ -39,49 +41,67 @@
                                     <option value="特色打造">特点打造</option>
                                     <option value="国际交流">国际交流</option>
                                 </select>
-                                <div style="width: 400px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
+                                <div style="width: 400px; padding: 5px" class="alert alert-warning alert-dismissable">
                                     <strong>提示：</strong>下拉框选择指标
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="taskname" class="col-sm-2 control-label">具体发展性目标（任务)</label>
+                            <label for="taskname" class="col-sm-3 control-label">具体发展性目标（任务)</label>
                             <div class="col-sm-8">
                                 <textarea id="taskname" name="taskname" class="form-control" data-parsley-required="true" style="width:100%;height:60px;" placeholder="具体发展性目标（任务)"></textarea>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="taskdetail" class="col-sm-2 control-label">达成标志</label>
+                            <label for="taskdetail" class="col-sm-3 control-label">达成标志</label>
                             <div class="col-sm-8">
                                 <textarea id="taskdetail" name="taskdetail" class="form-control" data-parsley-required="true" style="width:100%;height:60px;" placeholder="达成标志"></textarea>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="analysis_s" class="col-sm-2 control-label">原有基础自我分析</label>
+                            <label for="analysis_s" class="col-sm-3 control-label">原有基础自我分析</label>
                             <div class="col-sm-8">
                                 <textarea id="analysis_s" name="analysis_s" class="form-control" data-parsley-required="true" style="width:100%;height:60px;" placeholder="原有基础自我分析"></textarea>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="weights" class="col-sm-2 control-label">分值</label>
+                            <label for="weights" class="col-sm-3 control-label">分值</label>
                             <div class="col-sm-8">
                             <input type="text" id="weights" class="form-control" name="weights" data-parsley-max="10" data-parsley-score data-parsley-required="true" placeholder="分值">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="score_s" class="col-sm-2 control-label">自打分</label>
+                            <label for="score_s" class="col-sm-3 control-label">自打分</label>
                             <div class="col-sm-8">
                             <input type="text" id="score_s" class="form-control" name="score_s" data-parsley-min="0" data-parsley-score  data-parsley-required="true" placeholder="自打分">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="remark_s" class="col-sm-2 control-label">学校自评理由</label>
+                            <label for="remark_s" class="col-sm-3 control-label">学校自评理由</label>
                             <div class="col-sm-8">
                                 <textarea id="remark_s" name="remark_s" style="width:100%;height:80px;" data-parsley-required="true" placeholder="学校自评理由">${obj.remark_s!}</textarea>
                                 <!--<div style="width: 400px;padding: 5px" class="alert alert-warning alert-dismissable">
                                     每项指标分小项写明得分原因，如指标1中第1条因***得***分。
                                 </div>-->
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="file_upload"  class="col-sm-3 control-label">附件材料</label>
+                            <div class="col-sm-8">
+                                <div id="queue"></div>
+                                <div>
+                                    <input id="file_upload" name="file_upload" type="file" multiple="false">
+                                    <!--<button id="upload_img">upload</button>-->
+                                </div>
+
+                                <div class="dd" id="nestable1">
+                                    <ol class="dd-list">
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="width: 550px;margin-top: 5px;margin-left: 15px;padding: 5px" class="alert alert-warning alert-dismissable">
+                            <strong>提示：</strong>可最多上传10个文件，单个文件不超过2M（类型：文档、表格、压缩包、图片等）。
                         </div>
                         <!--<div class="form-group">
                             <label for="score_p" class="col-sm-2 control-label">督评分</label>
@@ -115,11 +135,88 @@
     </div>
 
 <script language="JavaScript">
+    var urls = [];
+    var names=[];
+    function clearFile() {
+        $("#img").html("");
+        $("#queue").html("");
+        $("#picurl").val("");
+    }
+    function delContent(url,id){
+        if(id!='null'&&id!=null) {
+            //数据库中的记录删除
+            $.post("${base}/platform/evaluate/appendix/delete/"+ id, {}, function (data) {
+                if (data.code == 0) {
+                    Toast.success("附件删除成功");
+                    $("li[data-id='"+url+"']").remove();
+                } else {
+                    Toast.error(data.msg);
+                }
+            }, "json");
+        }else{
+            for(var i=0;i<urls.length;i++){
+                if(urls[i]==url){
+                    urls.splice(i,1);
+                    names.splice(i,1);
+                    Toast.success("附件删除成功");
+                    $("li[data-id='"+url+"']").remove();
+                    break;
+                }
+            }
+        }
+
+    }
     $(document).ready(function () {
+        $('#file_upload').uploadifive({
+            'auto': true,
+            'multi': true,
+            'width': '100%',
+            'height': '35',
+            'buttonText': '请选择附件材料',
+            'fileType': '*.doc;*.docx;*.pdf;*.jpg;*.png;*.rar;*.zip',
+            'fileSizeLimit': 2048,
+            'queueSizeLimit': 10,
+            'formData': {},
+            'queueID': 'queue',
+            'uploadScript': '${base}/open/file/upload/image',
+            'onUploadComplete': function (file, data) {
+                data = JSON.parse(data);
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+                    $("#queue").html("");
+                    var str='';
+                    str+='<li class="dd-item dd3-item dd-nodrag" data-id="'+ data.data+'">';
+                    str+='<div class="dd3-content"><a href=\'' + data.data + '\'>'+file.name+'</a><i class="fa fa-close pull-right" onclick="delContent(\''+ data.data+'\')"></i> </div>';
+                    str+='</li>';
+                    $("#nestable1 .dd-list").append(str);
+                    $("#nestable1").nestable();
+
+                    urls.push(data.data);
+                    names.push(file.name);
+
+                } else {
+                    clearFile();
+                    Toast.error(data.msg);
+                }
+            },
+            'onDrop': function (file, fileDropCount) {
+                clearFile();
+            },
+            'onClearQueue': function (queue) {
+                clearFile();
+            },
+            'onCancel': function () {
+                clearFile();
+            }
+        });
+
+
         $("#ok").on("click",function(){
             if($('#score_s').val()>$('#weights').val()){
                 Toast.error("自评分不高于权重值！");
             }else {
+                $("#apurls").val(urls.toString());
+                $("#apnames").val(names.toString());
                 $('#addForm').submit();
             }
         });

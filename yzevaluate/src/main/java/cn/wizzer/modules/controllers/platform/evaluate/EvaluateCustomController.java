@@ -5,8 +5,10 @@ import cn.wizzer.common.base.Result;
 import cn.wizzer.common.filter.PrivateFilter;
 import cn.wizzer.common.page.DataTableColumn;
 import cn.wizzer.common.page.DataTableOrder;
+import cn.wizzer.modules.models.evaluate.Evaluate_appendix;
 import cn.wizzer.modules.models.evaluate.Evaluate_custom;
 import cn.wizzer.modules.models.evaluate.Evaluate_records;
+import cn.wizzer.modules.services.evaluate.EvaluateAppendixService;
 import cn.wizzer.modules.services.evaluate.EvaluateCustomService;
 import cn.wizzer.modules.services.evaluate.EvaluateRecordsService;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -16,6 +18,7 @@ import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+import org.nutz.mvc.adaptor.WhaleAdaptor;
 import org.nutz.mvc.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +33,8 @@ public class EvaluateCustomController {
 	private EvaluateCustomService evaluateCustomService;
 	@Inject
 	private EvaluateRecordsService evaluateRecordsService;
-
+	@Inject
+	private EvaluateAppendixService evaluateAppendixService;
 /*	@At("")
 	@Ok("beetl:/platform/evaluate/custom/index.html")
 	@RequiresAuthentication
@@ -73,7 +77,8 @@ public class EvaluateCustomController {
     @At
     @Ok("json")
     @SLog(tag = "新建Evaluate_custom", msg = "")
-    public Object addDo(@Param("..") Evaluate_custom evaluateCustom, HttpServletRequest req) {
+	@AdaptBy(type = WhaleAdaptor.class)
+    public Object addDo(@Param("..") Evaluate_custom evaluateCustom,@Param("apurls") String[] apurls, @Param("apnames") String[] apnames, HttpServletRequest req) {
 		try {
 			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateCustom.getEvaluateId());
 			if(evaluateRecords.isStatus_s()){
@@ -87,7 +92,18 @@ public class EvaluateCustomController {
 			evaluateCustom.setOpAt((int) (System.currentTimeMillis() / 1000));
 			evaluateCustom.setSelfeva(true);//学校自评完成
 			evaluateCustomService.insert(evaluateCustom);
+			//上传附件 2019-7-04 Liut
+			if(apurls!=null&&apurls.length>0) {
+				for (int i=0;i<apurls.length;i++) {
+					Evaluate_appendix appendix = new Evaluate_appendix();
+					appendix.setEvaluateid(evaluateCustom.getEvaluateId());
+					appendix.setRemarkid(evaluateCustom.getId());
+					appendix.setApname(apnames[i]);
+					appendix.setApurl(apurls[i]);
+					evaluateAppendixService.insert(appendix);
 
+				}
+			}
 			//修改records记录
 			double progress = evaluateRecordsService.getProgress_s(evaluateCustom.getEvaluateId());
 			evaluateRecords.setProgress_s(progress);
@@ -110,13 +126,15 @@ public class EvaluateCustomController {
     @Ok("beetl:/platform/evaluate/custom/edit.html")
     @RequiresAuthentication
     public Object edit(String id) {
-		return evaluateCustomService.fetch(id);
+		Evaluate_custom custom = evaluateCustomService.fetch(id);
+		return evaluateCustomService.fetchLinks(custom,"appendixList");
     }
 
     @At
     @Ok("json")
     @SLog(tag = "修改Evaluate_custom", msg = "ID:${args[0].id}")
-    public Object editDo(@Param("..") Evaluate_custom evaluateCustom, HttpServletRequest req) {
+	@AdaptBy(type = WhaleAdaptor.class)
+    public Object editDo(@Param("..") Evaluate_custom evaluateCustom, @Param("apurls") String[] apurls, @Param("apnames") String[] apnames,HttpServletRequest req) {
 		try {
 			Evaluate_records evaluateRecords = evaluateRecordsService.fetch(evaluateCustom.getEvaluateId());
 			if(evaluateRecords.isStatus_s()){
@@ -130,6 +148,18 @@ public class EvaluateCustomController {
 			evaluateCustom.setOpAt((int) (System.currentTimeMillis() / 1000));
 			evaluateCustom.setSelfeva(true);//学校自评完成
 			evaluateCustomService.updateIgnoreNull(evaluateCustom);
+			//上传附件 2019-7-04 Liut
+			if(apurls!=null&&apurls.length>0) {
+				for (int i=0;i<apurls.length;i++) {
+					Evaluate_appendix appendix = new Evaluate_appendix();
+					appendix.setEvaluateid(evaluateCustom.getEvaluateId());
+					appendix.setRemarkid(evaluateCustom.getId());
+					appendix.setApname(apnames[i]);
+					appendix.setApurl(apurls[i]);
+					evaluateAppendixService.insert(appendix);
+
+				}
+			}
 			//修改records记录
 			double progress = evaluateRecordsService.getProgress_s(evaluateCustom.getEvaluateId());
 			evaluateRecords.setProgress_s(progress);
@@ -151,8 +181,8 @@ public class EvaluateCustomController {
 	@Ok("beetl:/platform/evaluate/custom/special/edit.html")
 	@RequiresAuthentication
 	public Object edit_special(String id) {
-		Evaluate_custom remark = evaluateCustomService.fetch(id);
-		return remark;
+		Evaluate_custom custom = evaluateCustomService.fetch(id);
+		return evaluateCustomService.fetchLinks(custom,"appendixList");
 	}
 	//部门审核、专家审核
 	@At("/deptevaDo")
@@ -185,16 +215,13 @@ public class EvaluateCustomController {
 
     @At({"/delete","/delete/?"})
     @Ok("json")
-    @SLog(tag = "删除Evaluate_custom", msg = "ID:${args[2].getAttribute('id')}")
-    public Object delete(String id, @Param("ids") String[] ids ,HttpServletRequest req) {
+    @SLog(tag = "删除Evaluate_custom", msg = "ID:")
+    public Object delete(String id,HttpServletRequest req) {
 		try {
-			if(ids!=null&&ids.length>0){
-				evaluateCustomService.delete(ids);
-    			req.setAttribute("id", org.apache.shiro.util.StringUtils.toString(ids));
-			}else{
-				evaluateCustomService.delete(id);
-    			req.setAttribute("id", id);
-			}
+
+			evaluateCustomService.deleteAndChild(id);
+			req.setAttribute("id", id);
+
 			return Result.success("system.success");
 		} catch (Exception e) {
 			return Result.error("system.error");
@@ -207,7 +234,9 @@ public class EvaluateCustomController {
     @RequiresAuthentication
 	public Object detail(String id) {
 		if (!Strings.isBlank(id)) {
-			return evaluateCustomService.fetch(id);
+			Evaluate_custom custom = evaluateCustomService.fetch(id);
+			return evaluateCustomService.fetchLinks(custom,"appendixList");
+//			return evaluateCustomService.fetch(id);
 
 		}
 		return null;

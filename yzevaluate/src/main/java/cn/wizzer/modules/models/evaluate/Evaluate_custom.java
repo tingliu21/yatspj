@@ -5,6 +5,7 @@ import cn.wizzer.modules.models.monitor.Monitor_index;
 import org.nutz.dao.entity.annotation.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Table("evaluate_custom")
 public class Evaluate_custom extends Model implements Serializable{
@@ -43,8 +44,8 @@ public class Evaluate_custom extends Model implements Serializable{
     private String analysis_s;
     @Column
     @Comment("分值")
-    @ColDefine(type = ColType.INT, width = 3)
-    private Integer weights;
+    @ColDefine(type = ColType.FLOAT, width = 3)
+    private double weights;
 
     @Column
     @Comment("自打分")
@@ -80,6 +81,9 @@ public class Evaluate_custom extends Model implements Serializable{
     @Column
     @Comment("指标序号")
     private int location;
+
+    @Many(target=Evaluate_appendix.class,field = "remarkid")
+    private List<Evaluate_appendix> appendixList;
 
     public String getId() {
         return id;
@@ -159,11 +163,11 @@ public class Evaluate_custom extends Model implements Serializable{
         this.analysis_s = analysis_s;
     }
 
-    public Integer getWeights() {
+    public double getWeights() {
         return weights;
     }
 
-    public void setWeights(Integer weights) {
+    public void setWeights(double weights) {
         this.weights = weights;
     }
 
@@ -197,5 +201,12 @@ public class Evaluate_custom extends Model implements Serializable{
 
     public void setLocation(int location) {
         this.location = location;
+    }
+    public List<Evaluate_appendix> getAppendixList() {
+        return appendixList;
+    }
+
+    public void setAppendixList(List<Evaluate_appendix> appendixList) {
+        this.appendixList = appendixList;
     }
 }
