@@ -259,6 +259,7 @@ public class EvaluateRecordsSelfController {
 		}
 		return null;
 	}
+	//上传自评报告和3年规划
 	@At("/upload/?")
 	@Ok("beetl:/platform/evaluate/records/self/upload.html")
 	@RequiresAuthentication
@@ -270,13 +271,18 @@ public class EvaluateRecordsSelfController {
 	@AdaptBy(type = WhaleAdaptor.class)
 	@RequiresAuthentication
 	public Object uploadDo(@Param("id") String id,@Param("selfevaurl") String selfevaurl,@Param("planurl") String planurl, HttpServletResponse resp) {
-		try {
-			if (!Strings.isBlank(selfevaurl)|| !Strings.isBlank(planurl)) {
-				evaluateRecordsSelfService.upload(id, selfevaurl, planurl);
+		if (!Strings.isBlank(id)) {
+			try {
+				Evaluate_records_self record =evaluateRecordsSelfService.fetch(id);
+				record.setId(id);
+				if(!Strings.isBlank(selfevaurl)) record.setSelfevaurl(selfevaurl);
+				if(!Strings.isBlank(planurl)) record.setPlanurl(planurl);
+				evaluateRecordsSelfService.updateIgnoreNull(record);
+//				evaluateRecordsSelfService.upload(id, selfevaurl, planurl);
 				return Result.success("system.success");
+			} catch (Exception e) {
+				return Result.error("system.error");
 			}
-		} catch (Exception e) {
-			return Result.error("system.error");
 		}
 		return null;
 	}

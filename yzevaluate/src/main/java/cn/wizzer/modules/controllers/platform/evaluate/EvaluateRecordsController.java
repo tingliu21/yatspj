@@ -86,6 +86,12 @@ public class EvaluateRecordsController {
 	public void assign( HttpServletRequest req) {
 		req.setAttribute("unitType","111");
 	}
+	@At("/special/assignDo")
+	@Ok("json")
+	@RequiresAuthentication
+	public void assignDo(@Param("recordId") String[] records,@Param("special1") String[] special1,@Param("special2") String[] special2,@Param("special3") String[] special3,@Param("special4") String[] special4, HttpServletRequest req) {
+
+	}
 
 	@At("/special/addspec")
 	@Ok("beetl:/platform/evaluate/records/special/addspec.html")

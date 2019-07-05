@@ -21,13 +21,125 @@ layout("/layouts/platform.html"){
             <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>-->
         </div>
     </header>
-    <div class=panel-body style="padding-top: 50px;">
-        <input id="catalogId" type="hidden">
+    <div class="panel-body" style="padding-top: 80px;">
+
+        <form id="addForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
+              action="${base}/platform/evaluate/records/special/assignDo" method="post">
+            <input type="hidden" name="recordId" id="recordId" value="">
+            <input type="hidden" name="unitType" value="${unitType}">
+
+            <div class="row mb10">
+                <div class="col-lg-12">
+                    <div class="form-group has-feedback">
+                        <label for="special1" class="col-sm-2 control-label">专家1</label>
+
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input id="special1" type="text" class="form-control" placeholder="请选择专家" disabled
+                                       value="" />
+
+                                <span class="input-group-btn">
+                                    <button id="sel1" type="button" class="btn btn-primary" onclick="openspecialDlg('special1')" ><i class="ti-plus"></i>选择
+                                    </button>
+                                </span>
+                            </div>
+                            <input type="hidden" name="special1" value="">
+                        </div>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <label for="special2" class="col-sm-2 control-label">专家2</label>
+
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input id="special2" type="text" class="form-control" placeholder="请选择专家" disabled
+                                       value="" />
+
+                                <span class="input-group-btn">
+                                    <button id="sel2" type="button" class="btn btn-primary" onclick="openspecialDlg('special2')"><i class="ti-plus"></i>选择
+                                    </button>
+                                </span>
+                            </div>
+                            <input type="hidden" name="special2" value="">
+                        </div>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <label for="special3" class="col-sm-2 control-label">专家3</label>
+
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input id="special3" type="text" class="form-control" placeholder="请选择专家" disabled
+                                       value="" />
+
+                                <span class="input-group-btn">
+                                    <button id="sel3" type="button" class="btn btn-primary" onclick="openspecialDlg('special3')"><i class="ti-plus"></i>选择
+                                    </button>
+                                </span>
+                            </div>
+                            <input type="hidden" name="special3" value="">
+                        </div>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <label for="special4" class="col-sm-2 control-label">专家4</label>
+
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input id="special4" type="text" class="form-control" placeholder="请选择专家" disabled
+                                       value="" />
+
+                                <span class="input-group-btn">
+                                    <button id="sel4" type="button" class="btn btn-primary" onclick="openspecialDlg('special4')"><i class="ti-plus"></i>选择
+                                    </button>
+                                </span>
+                            </div>
+                            <input type="hidden" name="special4" value="">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-lg-3"></div>
+            <div class="col-lg-6">
+                <div class="form-group text-center">
+                    <label></label>
+
+                    <div>
+                        <button class="btn btn-primary btn-block btn-lg btn-parsley" data-loading-text="正在提交..." id="submit">提 交</button>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 </section>
-<script language="JavaScript">
+<div id="dialogSelect" class="modal fade bs-modal-sm" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">选择指标</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <table id="datatable_select" class="table table-bordered table-striped mg-t datatable">
+                            <thead>
+                            <tr>
+                                <th>用户名</th>
 
-    var unitTreeTable;
+                                <th>专家名称</th>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                <button type="button" class="btn btn-primary" onclick="select()">确认选择</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script language="JavaScript">
+    var eventid;
+    var datatable_select;
     function initTreeView() {
         $("#jsTree").jstree({
             plugins: ["wholerow"],
@@ -41,7 +153,7 @@ layout("/layouts/platform.html"){
             }
         }).on("select_node.jstree", function (node, selected) {
             var id = selected.selected;
-            $("#catalogId").val(id);
+            $("#recordId").val(id);
         }).on("loaded.jstree", function (node, jstree) {
             var id = $(node.target).find("li:first").attr("id");
             if (id) {
@@ -49,9 +161,62 @@ layout("/layouts/platform.html"){
             }
         });
     }
+    function initdatatable_select() {
+        datatable_select = $('#datatable_select').DataTable({
+            "dom": '<"toolbar">frtip',
 
+            "searching":false,
+            "processing": false,
+            "serverSide": false,
+            "select": true,
+            "ordering": true,
+            "language": {
+                "url": "${base}/assets/plugins/datatables/cn.json"
+            },
+            "ajax": {
+                "url": "${base}/platform/evaluate/records/selectspecialdata",
+                "type": "post",
+                "data": function (d) {
+                    //d.unitType ="${unitType!}";
 
-    $(function () {
+                }
+            },
+            "order": [[0, "desc"]],
+            "columns": [
+                {"data": "loginname", "bSortable": true},
+                {"data": "nickname", "bSortable": true}
+            ]
+        });
+        datatable_select.on('click', 'tr', function () {
+            $(this).toggleClass('selected');
+        });
+
+    }
+    function select() {
+        var chks = datatable_select.rows('.selected').data();
+        if (chks.length > 0) {
+            var ids = [];
+            var specialname=[];
+            $.each(chks, function (i, n) {
+                ids.push(n.id);
+                specialname.push(n.nickname);
+            });
+
+            $("#addForm #"+eventid).val(specialname.toString());
+            $("#addForm input[name='"+eventid+"']").val(ids.toString());
+            $("#datatable_select tr.selected").toggleClass('selected');//清除本次所选
+
+            $("#dialogSelect").modal("hide");
+        }else{
+            Toast.warning("请先选择专家！");
+        }
+    }
+    function openspecialDlg(event){
+        eventid = event;
+        if(!datatable_select) initdatatable_select();
+        $("#dialogSelect").modal("show");
+    }
+    $(document).ready(function () {
         initTreeView();
 
 

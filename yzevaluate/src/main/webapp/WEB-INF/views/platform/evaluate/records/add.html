@@ -122,7 +122,8 @@ layout("/layouts/platform.html"){
         $("#dialogSelect").on("hidden.bs.modal", function () {
             $(this).removeData("bs.modal");
         });
-        $("#sel").on("click", function () {
+        $("#sel").on("click", function (event) {
+           console.log( event.target.id);
             var unitType = $('input:radio[name=unitType]:checked').val();
             $("#dialogSelect").modal({
                 remote: "${base}/platform/evaluate/records/select?unitType=" + unitType

@@ -195,7 +195,8 @@ layout("/layouts/platform.html"){
     function select() {
         var tree = $.jstree.reference("#jsTree");
         var node = tree.get_selected(true);
-        $("#addForm #catalogId").val(node[0].text);
+        var a = "#addForm #catalogId";
+        $(a).val(node[0].text);
         $("#addForm input[name='catalogId']").val(node[0].id);
         $("#dialogSelect").modal("hide");
     }

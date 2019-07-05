@@ -32,4 +32,8 @@ ALTER TABLE evaluate_remark
    ALTER COLUMN remark_s TYPE character varying(200);
 ALTER TABLE evaluate_remark
    ALTER COLUMN remark_p TYPE character varying(200);
+--发展性指标权重改为小数点1位
+ALTER TABLE evaluate_custom
+   ALTER COLUMN weights TYPE numeric(3,1);
+COMMENT ON COLUMN evaluate_custom.weights IS '分值';
 
