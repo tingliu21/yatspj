@@ -86,12 +86,7 @@ public class EvaluateRecordsController {
 	public void assign( HttpServletRequest req) {
 		req.setAttribute("unitType","111");
 	}
-	@At("/special/assignDo")
-	@Ok("json")
-	@RequiresAuthentication
-	public void assignDo(@Param("recordId") String[] records,@Param("special1") String[] special1,@Param("special2") String[] special2,@Param("special3") String[] special3,@Param("special4") String[] special4, HttpServletRequest req) {
 
-	}
 
 	@At("/special/addspec")
 	@Ok("beetl:/platform/evaluate/records/special/addspec.html")
@@ -202,6 +197,45 @@ public class EvaluateRecordsController {
 	public void add(HttpServletRequest req) {
 
     }
+
+	@At("/special/assignDo")
+	@Ok("json")
+	@RequiresAuthentication
+	public Object assignDo(@Param("recordIds") String[] recordIds,@Param("special1") String special1,@Param("special2") String special2,@Param("special3") String special3,@Param("special4") String special4, HttpServletRequest req) {
+		try {
+			for(String recordId:recordIds)
+			{
+			//用学校ID获取评估记录
+			Evaluate_records records = evaluateRecordsService.fetch(recordId);
+
+			List<Record> indexList = monitorIndexService.getSpecialIndex("111");
+			//分配评审专家
+			for(Record rec : indexList) {
+				//给一次评估分配专家
+				Evaluate_special evaluateSpecial = new Evaluate_special();
+				evaluateSpecial.setEvaluateId(records.getId());
+				evaluateSpecial.setIndexId(rec.getString("id"));
+				String strRole = rec.getString("rolecode");
+				if (strRole.equals("")) {
+					evaluateSpecial.setSpecialId(special1);
+
+				} else if (strRole.equals("special1")) {
+					evaluateSpecial.setSpecialId(special2);
+
+				} else if (strRole.equals("special2")) {
+					evaluateSpecial.setSpecialId(special3);
+
+				} else if (strRole.equals("special3")) {
+					evaluateSpecial.setSpecialId(special4);
+				}
+				evaluateSpecialService.insert(evaluateSpecial);
+			}
+			}
+			return Result.success("system.success");
+		} catch (Exception e) {
+			return Result.error("system.error");
+		}
+	}
 
     @At
     @Ok("json")

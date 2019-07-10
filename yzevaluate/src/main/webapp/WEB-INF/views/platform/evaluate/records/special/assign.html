@@ -16,7 +16,7 @@ layout("/layouts/platform.html"){
 <section class="content-wrap bg-white">
     <header class="header navbar bg-white shadow">
         <div class="btn-group tool-button">
-            <p class="navbar-text"><i class="fa fa-chevron-right"></i> 科室打分<i class="fa  fa-chevron-right"></i></p>
+            <p class="navbar-text"><i class="fa fa-chevron-right"></i>  <input id="groupName" type="text"  readonly="true" ><i class="fa  fa-chevron-right"></i></p>
             <!--<a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/remark/add" data-pjax><i class="ti-plus"></i> 新建Evaluate_remark</a>-->
             <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>-->
         </div>
@@ -25,7 +25,7 @@ layout("/layouts/platform.html"){
 
         <form id="addForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
               action="${base}/platform/evaluate/records/special/assignDo" method="post">
-            <input type="hidden" name="recordId" id="recordId" value="">
+            <input type="hidden" name="recordIds" id="recordIds" value="">
             <input type="hidden" name="unitType" value="${unitType}">
 
             <div class="row mb10">
@@ -115,7 +115,7 @@ layout("/layouts/platform.html"){
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">选择指标</h4>
+                <h4 class="modal-title">选择专家</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -152,8 +152,10 @@ layout("/layouts/platform.html"){
                 multiple: false
             }
         }).on("select_node.jstree", function (node, selected) {
+            var groupname = selected.node.text;
+            $("#groupName").val(groupname);
             var id = selected.selected;
-            $("#recordId").val(id);
+            $("#recordIds").val(id);
         }).on("loaded.jstree", function (node, jstree) {
             var id = $(node.target).find("li:first").attr("id");
             if (id) {
