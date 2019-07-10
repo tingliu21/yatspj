@@ -216,7 +216,7 @@ public class EvaluateRecordsController {
 				evaluateSpecial.setEvaluateId(records.getId());
 				evaluateSpecial.setIndexId(rec.getString("id"));
 				String strRole = rec.getString("rolecode");
-				if (strRole.equals("")) {
+				if (strRole.equals("specialLeader")) {
 					evaluateSpecial.setSpecialId(special1);
 
 				} else if (strRole.equals("special1")) {
