@@ -94,7 +94,14 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
 
     //获取评估组别
     public List<Record> getGrouplist(){
-        Sql sql = Sqls.create("Select taskname, string_agg(id,',') as id from evaluate_records group by taskname");
+        Sql sql = Sqls.create("Select taskname, string_agg(id,',') as id from evaluate_records group by taskname order by case taskname\n" +
+                "when '第一组评估' then 1\n" +
+                "when '第二组评估' then 2 \n" +
+                "when '第三组评估' then 3 \n" +
+                "when '第四组评估' then 4 \n" +
+                "when '第五组评估' then 5 \n" +
+                "when '第六组评估' then 6  \n" +
+                "end ");
         List<Record> indexlist = list(sql);
         return  indexlist;
     }
