@@ -1,36 +1,6 @@
-NutzWk 基于Nutz的开源企业级开发框架 
-======
+鄞州区幼儿园现代化评估
 
-[![Build Status](https://travis-ci.org/Wizzercn/NutzWk.png?branch=bootstrap)](https://travis-ci.org/Wizzercn/NutzWk)
-[![GitHub release](https://img.shields.io/github/release/Wizzercn/NutzWk.svg)](https://github.com/Wizzercn/NutzWk/releases)
-[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
-
-开发计划:
-
-* NutzWk 4.0.x   分布式版本 (beetl / beetl+velocity)
-* NutzWk 3.3.x   CMS+微信+系统+权限+常用功能封装 (beetl / beetl+velocity)
-* NutzWk 2.0.x   试验版(不建议使用)
-* NutzWk 1.0.x   传统版(velocity 支持IE6)
-
-注:_velocity后缀为同时支持beetl和velocity两种模板引擎版本  
-
-QQ交流群: 68428921
-
-在线演示地址
-======
-https://nutzwk.wizzer.cn/                 NutzWk v3.x
-
-https://vue.wizzer.cn                     NutzWk v3.x-vue
-
-https://github.com/Wizzercn/NodeWk       Node.js版源码
-
-======
-基于Nutz的开源企业级开发框架
-
-NutzWk 3.x 运行环境：
-*   JDK 8
-*   Tomcat 8.x +
-*   Maven 3.3.x +
+基于NutzWk 3.3.x版本，CMS+微信+系统+权限+常用功能封装 (beetl / beetl+velocity)
 
 NutzWk 3.x 新特性：
 *   集成Shiro权限框架
@@ -49,7 +19,6 @@ NutzWk 3.x 新特性：
 *   集成Beetl/Velocity模板引擎
 *   后台管理界面采用Pjax+Bootstrap
 
-
 使用说明：
 *   创建空的数据库
 *   修改数据库连接 src/main/resources/config/custom/db.properties
@@ -58,48 +27,9 @@ NutzWk 3.x 新特性：
 *   http://127.0.0.1/sysadmin 若部署在非根路径,请加上ContextPath
 *   用户名：superadmin  密码：1
 
-若下载jar失败,请查阅 http://nutzam.com/core/basic/maven.html
-
-若非mysql数据库,请修改quartz的数据库类型 src/main/resources/quartz.properties 里面的org.quartz.jobStore.driverDelegateClass
-
-代码生成器【IDEA插件】
+版本说明
 ======
-
-**IDEA插件搜 nutzwk-plugin **
-
-![IDEA插件截图](nutzwk_plugin.png)
-IDEA - Code - Generate - nutzwk mvc
-
-https://github.com/enilu/nutzwk-code-generator              适用于NutzWk v3.x
-
-*  nutzwk-plugin 插件是通过 nutzwk-code-generator 实现的，感谢@enilu 的贡献
-*  v3.2.2 以后版本 nutzwk-code-generator 直接集成到框架中
-
-代码生成器【图形界面】
-======
-
-https://github.com/Wizzercn/NutzCodematic/tree/v3.3.0       适用于NutzWk v3.3.0
-
-https://github.com/Wizzercn/NutzCodematic/tree/v3.0.0       适用于NutzWk v3.0.0 ~ v3.2.7
-
-https://github.com/Wizzercn/NutzCodematic/tree/v1.0.0       适用于NutzWk 1.0
-
-老版本说明
-======
-
-NutzWk 1.0 源码是这个链接： https://github.com/Wizzercn/NutzWk/tree/1.0
-
-NutzWk 1.0 含Activiti工作流的源码在这里： https://github.com/wendal/wzflow
-
-NutzWk v3.x 运行截图
-======
-![主界面截图](nutzwk_home.png)
-
-捐助
-======
-如果您觉得 NutzWk 对你有帮助，欢迎给予一定的捐助来维持项目的长期发展。
-
-### 支付宝扫码捐赠
-![支付宝扫码捐赠](alipay.png)
-
-捐赠清单：https://nutzwk.wizzer.cn/private/pm/info
+浙江省教育现代化发展水平监测2017年     https://github.com/tingliu21/yatspj/tree/master/edudevelop  
+拱墅区中小学现代化优质评估           https://github.com/tingliu21/yatspj/tree/master/evaluate
+鄞州区幼儿园现代化评估                 https://github.com/tingliu21/yatspj/tree/master/yzevaluate
+浙江省教育现代化发展水平监测2018
