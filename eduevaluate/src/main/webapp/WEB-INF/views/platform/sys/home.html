@@ -1,0 +1,109 @@
+<%
+layout("/layouts/platform.html"){
+%>
+<style>
+    .bg_box {
+        width: 415px;
+        height: 157px;
+        position: relative;
+        float: left;
+        box-shadow: 0 0 5px #666;
+
+        background-size: 22%;
+        background-position: 100% 100%, 0 0;
+        background-repeat: no-repeat, repeat;
+        z-index: 9;
+    }
+
+    .bg_box .item_coupon_box .item_coupon_bg {
+        width: 63px;
+        height: 20px;
+        transform: skew(-16deg);
+        border: 1px solid #ff8a00;
+        border-radius: 2px;
+        position: relative;
+        overflow: hidden;
+        margin: 20px 0 0 20px;
+    }
+    .bg_box .item_coupon_box .item_mention span {
+        font-size: 20px;
+        color: #ff8a00;
+        letter-spacing: 2px;
+    }
+
+    .bg-box-content {
+        width: 415px;
+        margin: 10px auto;
+    }
+
+    .bg_box .item_coupon_box .item_coupon {
+        width: 63px;
+        height: 20px;
+        line-height: 20px;
+        text-align: center;
+        color: #ff8a00;
+        position: absolute;
+        top: 22px;
+        left: 20px;
+        overflow: hidden;
+        font-size: 12px;
+    }
+
+    .bg_box .item_coupon_box .item_mention {
+        height: 40px;
+        line-height: 50px;
+        margin-left: 20px;
+
+        color: #333;
+        font-size: 14px;
+
+    }
+
+    .bg_box .item_coupon_box .item_desc {
+        width: 250px;
+        height: 36px;
+        line-height: 40px;
+        font-size: 14px;
+        color: #333;
+        margin-left: 20px;
+        overflow: hidden;
+    }
+</style>
+
+<div class="content-wrap">
+
+    <div class="wrapper">
+        <div class="bg-box-content">
+
+        <div class="bg_box" style="position: relative;">
+            <div class="item_coupon_box">
+                <div class="item_coupon_bg"></div>
+                <div class="item_coupon">温馨提醒</div>
+                <div>
+
+                </div>
+                <div class="item_mention">幼儿园上传材料截止时间为: <span></span></div>
+                <p class="item_desc">请尽快完成幼儿园自评!</p></div>
+
+        </div>
+        </div>
+
+    </div>
+
+
+</div>
+<footer style="margin: 0 auto;width:420px">
+
+    <address>
+        <strong>浙江省教育现代化研究与评价中心</strong>
+    </address>
+    <address>
+        <strong>刘婷</strong><br>
+        联系电话: 13735576259 &nbsp;
+        邮箱：<a href="mailto:#">yats521@163.com</a>
+    </address>
+
+</footer>
+
+
+<%}%>
