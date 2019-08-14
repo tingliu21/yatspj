@@ -1,0 +1,154 @@
+<%
+layout("/layouts/platform.html"){
+%>
+<section class="content-wrap bg-white">
+    <header class="header navbar bg-white shadow">
+        <div class="btn-group tool-button">
+            <a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/monitor/catalog/add" data-pjax><i class="ti-plus"></i> 新建指标体系</a>
+            <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>-->
+        </div>
+    </header>
+    <div class=panel-body style="padding-top: 50px;">
+        <div class="table-responsive no-border">
+            <table  id="treeTable"  class="table no-m">
+                <thead>
+                    <tr>
+                            <th>指标名称</th>
+                            <th>指标权重</th>
+                            <th>打开方式</th>
+                            <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <% for(obj in list){
+                %>
+                <tr data-tt-id="${obj.id!}" data-tt-parent-id="${obj.parentId!}" data-tt-branch="${obj.hasChildren!}">
+                    <td>
+                        <span class="pd-l-sm"></span> ${obj.name!}
+                    </td>
+                    <td>${obj.weights!}</td>
+                    <td><%if(obj.target=="_self"){%>本页面<%}%><%if(obj.target=="_blank"){%>新页面<%}%></td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                <i class="ti-settings"></i>
+                                <span class="ti-angle-down"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="${base}/platform/monitor/catalog/edit/${obj.id!}" data-pjax>修改</a></li>
+                                <li><a href="javascript:;" onclick="del('${obj.id!}')">删除</a></li>
+                                <li class="divider"></li>
+                                <li><a href="${base}/platform/monitor/catalog/add?pid=${obj.id!}" data-pjax>添加子指标</a></li>
+
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                <%
+                } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<div id="dialogDelete" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">删除</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        删除后无法恢复。<br/>
+                        <br/>确定删除吗？
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取  消</button>
+                <button id="okDel" type="button" class="btn btn-primary" data-loading-text="正在删除...">确  定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dialogDetail" class="modal fade bs-modal-sm" tabindex="-3" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+<script language="JavaScript">
+    var treeTable;
+    $(function () {
+        $("#dialogDetail").on("hidden.bs.modal", function() {
+            $(this).removeData("bs.modal");
+        });
+
+        treeTable= $("#treeTable").treetable({
+            expandable: true,
+            onNodeExpand : function(){
+                var node = this;
+                var rows = "<tr data-tt-id=\"loading\" data-tt-parent-id=\""+node.id+"\" data-tt-branch=\"false\"><td colspan='5'><img src=\""+base+"/assets/img/loading.gif\"/>loading</td></tr>";
+                treeTable.treetable("loadBranch", node, rows);
+                $.post("${base}/platform/monitor/catalog/child/"+node.id,{}, function(data){
+                    treeTable.treetable("unloadBranch", node);
+                    treeTable.treetable("loadBranch", node, data);
+                });
+            }
+        });
+    });
+    function del(id) {
+        var dialog = $("#dialogDelete");
+        dialog.modal("show");
+        dialog.find("#okDel").unbind("click");
+        dialog.find("#okDel").bind("click", function (event) {
+            var btn = $(this);
+            btn.button("loading");
+            $.post("${base}/platform/monitor/catalog/delete/" + id, {}, function (data) {
+
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+                    treeTable.treetable("removeNode", id);
+                    //从表格中移除此行
+                } else {
+                    Toast.error(data.msg);
+                }
+                //重置按钮状态，关闭提示框
+                btn.button("reset");
+                dialog.modal("hide");
+            }, "json");
+        });
+    }
+    function delCheck() {
+        var chks = datatable.rows('.selected').data();
+        if (chks.length > 0) {
+            var ids = [];
+            $.each(datatable.rows('.selected').data(), function (i, n) {
+                ids.push(n.id);
+            });
+            var dialog = $("#dialogDelete");
+            dialog.modal("show");
+            dialog.find("#okDel").unbind("click");
+            dialog.find("#okDel").bind("click", function (event) {
+                var btn = $(this);
+                btn.button("loading");
+                $.post("${base}/platform/monitor/catalog/delete", {ids: ids.toString()}, function (data) {
+                    if (data.code == 0) {
+                        datatable.ajax.reload(null,false);
+                    } else {
+                        Toast.error(data.msg);
+                    }
+                    btn.button("reset");
+                    dialog.modal("hide");
+                }, "json");
+            });
+        } else {
+            Toast.warning("请先选择要删除的项！");
+        }
+    }
+
+</script>
+
+<%}%>

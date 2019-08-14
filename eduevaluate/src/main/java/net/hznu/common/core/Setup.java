@@ -131,7 +131,7 @@ public class Setup implements org.nutz.mvc.Setup {
      * @param dao
      */
     private void initSysData(NutConfig config, Dao dao) {
-        Daos.createTablesInPackage(dao, "cn.wizzer.modules", false);
+        Daos.createTablesInPackage(dao, "net.hznu.modules", false);
         // 若必要的数据表不存在，则初始化数据库
         if (0 == dao.count(Sys_user.class)) {
             //初始化配置表

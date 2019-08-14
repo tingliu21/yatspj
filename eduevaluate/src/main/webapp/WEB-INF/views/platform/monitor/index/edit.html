@@ -1,0 +1,210 @@
+<%
+layout("/layouts/platform.html"){
+%>
+<header class="header navbar bg-white shadow">
+    <div class="btn-group tool-button">
+        <a class="btn btn-primary navbar-btn" href="${base}/platform/monitor/index" id="goback" data-pjax><i class="ti-angle-left"></i> 返回</a>
+    </div>
+</header>
+
+<div class="content-wrap">
+    <div class="wrapper" style="min-height:500px;">
+        <section class="panel panel-form">
+            <form id="editForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
+                  action="${base}/platform/monitor/index/editDo" method="post">
+                <input name="id" type="hidden" value="${obj.id}">
+                <div class="row mb10">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label for="location" class="col-sm-2 control-label">监测点序号</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="location" class="form-control" name="location" data-parsley-required="true"
+                                       placeholder="序号" value="${obj.location}" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="name" class="col-sm-2 control-label">监测点名称</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="name" class="form-control" name="name" data-parsley-required="true"
+                                       placeholder="指标名称" value="${obj.name}" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="mvalue" class="col-sm-2 control-label">目标值</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="mvalue" class="form-control" name="mvalue" data-parsley-required="false"
+                                       placeholder="指标目标值" value="${obj.mvalue}" >
+                            </div>
+                        </div>
+                        <!--<div class="form-group">-->
+                            <!--<label for="detail" class="col-sm-2 control-label">评分细则</label>-->
+                            <!--<div class="col-sm-8">-->
+                                <!--<textarea id="detail" name="detail" class="form-control" style="width:100%;height:80px;" data-parsley-required="false">${obj.detail!}</textarea>-->
+
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">
+                            <label for="formula" class="col-sm-2 control-label">评分公式</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="formula" class="form-control" name="formula" data-parsley-required="false"
+                                       placeholder="评分公式" value="${obj.formula}" >
+                            </div>
+                        </div>-->
+                        <div class="form-group">
+                            <label for="weights" class="col-sm-2 control-label">权重</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="weights" class="form-control" name="weights" data-parsley-required="false"
+                                       placeholder="权重" value="${obj.weights}" >
+                            </div>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <label for="parentId" class="col-sm-2 control-label">送审部门</label>
+
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <input id="parentId" type="text" class="form-control" placeholder="选择送审部门" disabled
+                                           value="<%if(!isEmpty(obj.dept)){%>${obj.dept.name}<%}%>"  data-parsley-required="true"/>
+
+                                    <span class="input-group-btn">
+			                             			<button type="button" class="btn btn-primary" data-toggle="modal"
+                                                            data-target="#dialogSelectParentUnit"><i class="ti-plus"></i>选择
+                                                    </button>
+			                             		</span>
+                                </div>
+                                <input type="hidden" name="department" value="<%if(!isEmpty(obj)){%>${obj.department}<%}%>">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="masterrole" class="col-sm-2 control-label">评测专家</label>
+                            <div class="col-sm-8">
+                                <select class="form-control" name="masterrole" id="masterrole">
+
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <!--<div class="form-group">
+                            <label for="qualify" class="col-sm-2 control-label">是否达标性指标</label>
+                            <div class="col-sm-8 switcha">
+                                <div class="mr15">
+                                    <input type="checkbox" id="qualify" name="qualify" class="js-switch-blue" <%if(obj.qualify){%>checked<%}%> >
+                                </div>
+                            </div>
+                        </div>-->
+
+                    </div>
+                </div>
+                <div class="col-lg-3"></div>
+                <div class="col-lg-6">
+                    <div class="form-group text-center">
+                        <label></label>
+
+                        <div>
+                            <button class="btn btn-primary btn-block btn-lg btn-parsley" data-loading-text="正在提交...">提 交</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+    </div>
+</div>
+<!-- 选择上级单位 -->
+<div id="dialogSelectParentUnit" class="modal fade bs-modal-sm" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">选择上级单位</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div id="jsTreeParentUnit" class="demo"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                <button type="button" class="btn btn-primary" onclick="selectParentMenu()">确认选择</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script language="JavaScript">
+    function initTreeView() {
+        $("#jsTreeParentUnit").jstree({
+            plugins: ["wholerow", "json_data"],
+            core: {
+                data: {
+                    dataType: "json",
+                    url: function (node) {
+                        return node.id === "#" ? "${base}/platform/sys/unit/tree" : "${base}/platform/sys/unit/tree?pid=" + node.id
+                    }
+                },
+                multiple: false
+            }
+        }).on("dblclick.jstree", function (node) {
+            selectParentMenu();
+        });
+    }
+    //选择送审部门菜单
+    function selectParentMenu() {
+        var tree = $.jstree.reference("#jsTreeParentUnit");
+        var node = tree.get_selected(true);
+        $("#editForm #parentId").val(node[0].text);
+        $("#editForm input[name='department']").val(node[0].id);
+        $("#dialogSelectParentUnit").modal("hide");
+        selectMasterRole();
+    }
+    //选择审核角色
+    function selectMasterRole(){
+        var deptid = $("#editForm input[name='department']").val();
+        if(deptid!='') {
+            $.ajax({
+                url: "${base}/platform/sys/role/roledata?uid=" + deptid,
+                async:false,
+                type: "get",
+                dataType: "json",
+                success: function (data) {
+                    $("#masterrole").empty();
+                    if (data.length > 0) {
+                        for (var i=0;i< data.length;i++) {
+                            $("#masterrole").append("<option value='" + data[i].id + "'>" + data[i].text + "</option>")
+                        }
+                    }
+
+                }
+            });
+        }
+    }
+    $(document).ready(function () {
+        initTreeView();
+        selectMasterRole();
+        //$("#masterrole").val("<%if(!isEmpty(obj)){%>${obj.masterrole}<%}%>");
+        $("#masterrole").find("option[value='<%if(!isEmpty(obj)){%>${obj.masterrole}<%}%>']").attr("selected",true);
+
+        $('#editForm').ajaxForm({
+            dataType: 'json',
+            beforeSubmit: function (arr, form, options) {
+                form.find("button:submit").button("loading");
+            },
+            success: function (data, statusText, xhr, form) {
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+                    setTimeout(function () {
+                        $("#goback").trigger("click");
+                    }, 1000);
+                } else {
+                    Toast.error(data.msg);
+                }
+                form.find("button:submit").button("reset");
+            }
+        });
+    });
+</script>
+
+
+<%}%>

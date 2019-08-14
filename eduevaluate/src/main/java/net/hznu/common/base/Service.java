@@ -300,7 +300,38 @@ public class Service<T> extends EntityService<T> {
         return sql.getString();
 
     }
+    /**
+     * 计算指标代码
+     *
+     * @param tableName
+     * @param cloName
+     * @param value
+     * @return
+     */
+    public String getSubCode(String tableName, String cloName, String value) {
+        final String val = Strings.sNull(value);
+        Sql sql = Sqls.create("select " + cloName + " from " + tableName
+                + " where " + cloName + " like '" + val + "__' order by "
+                + cloName + " desc");
+        sql.setCallback(new SqlCallback() {
+            public Object invoke(Connection conn, ResultSet rs, Sql sql)
+                    throws SQLException {
+                String rsvalue = val + "01";
+                if (rs != null && rs.next()) {
+                    rsvalue = rs.getString(1);
+                    int newvalue = NumberUtils.toInt(rsvalue
+                            .substring(rsvalue.length() - 2)) + 1;
+                    rsvalue = rsvalue.substring(0, rsvalue.length() - 2)
+                            + new java.text.DecimalFormat("00")
+                            .format(newvalue);
+                }
+                return rsvalue;
+            }
+        });
+        this.dao().execute(sql);
+        return sql.getString();
 
+    }
     /**
      * 自定义SQL统计
      *
