@@ -125,7 +125,10 @@ layout("/layouts/platform.html"){
                         if(row.department == '${@shiro.getPrincipalProperty("unitid")}'){
                             //判断记录是否锁定
                             //if(row.locked == false) {
-                                html += '<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/speceva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +'   <i class="ti-plus"></i> 考评</a>' +'</div>';
+                            //专家只能考评自己负责的指标
+                            if (row.specialid == '${@shiro.getPrincipalProperty("id")}') {
+                                html += '<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/speceva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' + '   <i class="ti-plus"></i> 考评</a>' + '</div>';
+                            }
                             //}
                         }else {
                             //如果用户不属于专家部门，但有专家审核的所有权限，也能进行考评
