@@ -38,7 +38,7 @@ public class MonitorCatalogController {
 
 		///where (A or B) and C
 		req.setAttribute("list", monitorCatalogService.query(Cnd.where(Cnd.exps("parentId", "=", "").or("parentId", "is", null))
-						.asc("path")));
+						.asc("catacode")));
 
 	}
 
@@ -120,7 +120,7 @@ public class MonitorCatalogController {
 	public Object tree(String evatype,@Param("pid") String pid) {
 		Cnd cnd = Cnd.where("parentId", "=", Strings.sBlank(pid));
 
-		List<Monitor_catalog> list = monitorCatalogService.query(cnd.asc("path"));
+		List<Monitor_catalog> list = monitorCatalogService.query(cnd.asc("catacode"));
 		List<Map<String, Object>> tree = new ArrayList<>();
 		for (Monitor_catalog catalog : list) {
 			Map<String, Object> obj = new HashMap<>();
@@ -138,7 +138,7 @@ public class MonitorCatalogController {
 	public Object tree2(String evatype,@Param("pid") String pid) {
 		Cnd cnd = Cnd.where("parentId", "=", Strings.sBlank(pid)).and("level","<",3);
 
-		List<Monitor_catalog> list = monitorCatalogService.query(cnd.asc("path"));
+		List<Monitor_catalog> list = monitorCatalogService.query(cnd.asc("catacode"));
 		List<Map<String, Object>> tree = new ArrayList<>();
 		for (Monitor_catalog catalog : list) {
 			Map<String, Object> obj = new HashMap<>();
@@ -154,7 +154,7 @@ public class MonitorCatalogController {
 	@RequiresAuthentication
 	public Object child(String id) {
 
-		return monitorCatalogService.query(Cnd.where("parentId", "=", id).asc("path"));
+		return monitorCatalogService.query(Cnd.where("parentId", "=", id).asc("catacode"));
 	}
 
 
