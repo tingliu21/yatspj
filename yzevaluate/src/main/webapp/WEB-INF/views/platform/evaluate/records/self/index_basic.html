@@ -7,6 +7,11 @@ layout("/layouts/platform.html"){
             <!--<a href="javascript:;" class="h4 show no-m pt5">基础性指标</a>-->
             <p class="navbar-text"><i class="fa mr5"></i>基础性指标</p>
         </div>
+        <div class="pull-right">
+            <button class="btn btn-primary navbar-btn" onclick="sublime.toggleFilter('.cd-panel')"><i
+                    class="fa fa-sliders"></i> 筛选
+            </button>
+        </div>
         <!--<div class="btn-group tool-button">-->
             <!--<% if(@shiro.hasPermission("evaluate.init")){%>-->
             <!--<a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/add" data-pjax><i class="ti-plus"></i>初始化数据</a>-->
@@ -34,6 +39,32 @@ layout("/layouts/platform.html"){
         </div>
     </div>
 </section>
+<div class="cd-panel from-right">
+    <header class="cd-panel-header">
+        <h4>高级筛选</h4>
+    </header>
+    <div class="cd-panel-container">
+        <div class="cd-panel-content shadow">
+            <div class="form-group">
+                <label for="year">评估学年</label>
+                <input type="text" id="year" name="year" onclick="this.value=''" class="form-control" placeholder="评估学年">
+            </div>
+            <div class="form-group">
+                <label for="taskname">评估组别</label>
+                <select class="form-control" name="taskname" id="taskname">
+                    <option value="">请选择</option>
+                    <option value="第一组">第一组</option>
+                    <option value="第二组">第二组</option>
+                    <option value="第三组">第三组</option>
+                    <option value="第四组">第四组</option>
+                    <option value="第五组">第五组</option>
+                    <option value="第六组">第六组</option>
+                </select>
+            </div>
+            <button id="searchBtn" type="button" class="btn btn-default">查询</button>
+        </div>
+    </div>
+</div>
 <div id="dialogDelete" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -109,6 +140,8 @@ layout("/layouts/platform.html"){
                     "type": "post",
                     "data": function (d) {
                         //d.nutz = $('#nutz').val();
+                        d.year = $('#year').val();
+                        d.taskname=$('#taskname').val();
                     }
                 },
                 "order": [[0, "desc"]],
@@ -160,6 +193,9 @@ layout("/layouts/platform.html"){
     });
 
     }
+    $("#searchBtn").on('click', function () {
+        datatable.ajax.reload();
+    });
     function del(id) {
         var dialog = $("#dialogDelete");
         dialog.modal("show");
@@ -208,7 +244,6 @@ layout("/layouts/platform.html"){
     }
     $(function () {
         initDatatable();
-
     });
 </script>
 

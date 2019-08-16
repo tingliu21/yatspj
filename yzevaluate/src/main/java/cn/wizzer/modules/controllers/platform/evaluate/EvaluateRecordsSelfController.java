@@ -92,7 +92,7 @@ public class EvaluateRecordsSelfController {
 	@At
 	@Ok("json:full")
 	@RequiresAuthentication
-	public Object data(@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
+	public Object data(@Param("year") int year, @Param("taskname") String taskname,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
 		Cnd cnd = Cnd.NEW();
 		//获取当前用户
 		Subject subject = SecurityUtils.getSubject();
@@ -100,6 +100,12 @@ public class EvaluateRecordsSelfController {
 		//评估单位仅显示自己单位的自评记录
 		if(user!=null && user.getUnit().isEvaluate()){
 			cnd = Cnd.where("schoolid", "=", user.getUnit().getId());
+		}
+		if (year!=0) {
+			cnd.and("year", "=",  year );
+		}
+		if (!Strings.isBlank(taskname)) {
+			cnd.and("taskname", "like", "%" + taskname + "%");
 		}
 		return evaluateRecordsSelfService.data(length, start, draw, order, columns, cnd, "school");
     }
@@ -247,7 +253,7 @@ public class EvaluateRecordsSelfController {
 			//读入word模板
 			InputStream is = getClass().getClassLoader().getResourceAsStream("template/SelfEvaluate.docx");
 			try {
-				String filename = "拱墅区现代优质学校评估自评表.docx";
+				String filename = "鄞州区发展性学校评估自评表.docx";
 				filename = URLEncoder.encode(filename, "UTF-8");
 
 				xwpfUtil.exportWord(wordDataMap,is,resp,filename);
@@ -296,16 +302,16 @@ public class EvaluateRecordsSelfController {
 
 		List<Map<String, Object>> table_scale = new ArrayList<Map<String, Object>>();
 
-		List<Record> recordsUnitInfo = evaluateRecordsSelfService.getUnitInfo(evalId);
+		/*List<Record> recordsUnitInfo = evaluateRecordsSelfService.getUnitInfo(evalId);
 		if (recordsUnitInfo.size() > 0) {
 			parametersMap.put("unitname", recordsUnitInfo.get(0).getString("unitname"));
 			parametersMap.put("address", recordsUnitInfo.get(0).getString("address"));
 			parametersMap.put("website", recordsUnitInfo.get(0).getString("website"));
 			parametersMap.put("telephone", recordsUnitInfo.get(0).getString("telephone"));
 			parametersMap.put("email", recordsUnitInfo.get(0).getString("email"));
-		}
+		}*/
 
-		List<Record> recordsBasicEvalData = evaluateRecordsSelfService.getBasicEvalData(evalId);
+		/*List<Record> recordsBasicEvalData = evaluateRecordsSelfService.getBasicEvalData(evalId);
 		for (Record record : recordsBasicEvalData) {
 			int location = record.getInt("location");
 			if (record.get("qualify") != null) {
@@ -316,13 +322,13 @@ public class EvaluateRecordsSelfController {
 			} else {
 				parametersMap.put("s_i" + location, "");
 			}
-		}
+		}*/
 
-		List<Record> recordsBasicSummaryData = evaluateRecordsSelfService.getBasicSummaryData(evalId);
+		/*List<Record> recordsBasicSummaryData = evaluateRecordsSelfService.getBasicSummaryData(evalId);
 		for (Record record : recordsBasicSummaryData) {
 			int location = record.getInt("location");
 			parametersMap.put("sintro"+location, record.getString("summary"));
-		}
+		}*/
 
 		List<Record> recordsRemarkData = evaluateRecordsSelfService.getRemarkData(evalId);
 		for (Record record : recordsRemarkData) {
@@ -335,7 +341,7 @@ public class EvaluateRecordsSelfController {
 			parametersMap.put("r_i" + location, remark_s);
 		}
 
-		List<Record> recordsScaleData = evaluateRecordsSelfService.getScaleData(evalId);
+		/*List<Record> recordsScaleData = evaluateRecordsSelfService.getScaleData(evalId);
 		for (Record record : recordsScaleData) {
 			Map<String, Object> map=new HashMap<>();
 			map.put("grade", record.getString("grade"));
@@ -345,10 +351,10 @@ public class EvaluateRecordsSelfController {
 			map.put("avgnum", record.getInt("averagenum"));
 			map.put("extra", record.getString("instruction"));
 			table_scale.add(map);
-		}
+		}*/
 
 
-		wordDataMap.put("table_scale", table_scale);
+		//wordDataMap.put("table_scale", table_scale);
 		wordDataMap.put("parametersMap", parametersMap);
 		return wordDataMap;
 	}
