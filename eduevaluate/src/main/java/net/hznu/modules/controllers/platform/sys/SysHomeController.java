@@ -33,7 +33,7 @@ public class SysHomeController {
     @RequiresAuthentication
     public void home(HttpServletRequest req) {
         //SecurityUtils.getSubject().getSession().setTimeout(1000);
-        req.setAttribute("Selfdeadline", Globals.MyConfig.get("Selfdeadline"));
+        //req.setAttribute("Selfdeadline", Globals.MyConfig.get("Selfdeadline"));
 
     }
 

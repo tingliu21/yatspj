@@ -30,7 +30,10 @@ public class Sys_unit extends Model implements Serializable {
     @Comment("树路径")
     @ColDefine(type = ColType.VARCHAR, width = 100)
     private String path;
-
+    @Column
+    @Comment("单位等级")
+    @ColDefine(type=ColType.INT)
+    private int level;
     @Column
     @Comment("单位名称")
     @ColDefine(type = ColType.VARCHAR, width = 100)
@@ -47,9 +50,9 @@ public class Sys_unit extends Model implements Serializable {
     private String unitcode;
 
     @Column
-    @Comment("单位介绍")
+    @Comment("行政区名称")
     @ColDefine(type = ColType.VARCHAR, width = 255)
-    private String note;
+    private String xzqhmc;
 
     @Column
     @Comment("单位地址")
@@ -86,10 +89,7 @@ public class Sys_unit extends Model implements Serializable {
     @Comment("是否评估")
     @ColDefine(type = ColType.BOOLEAN)
     private boolean evaluate;
-    @Column
-    @Comment("学校类别")
-    @ColDefine(type = ColType.CHAR, width = 3)
-    private String unitType;
+
     public String getId() {
         return id;
     }
@@ -112,6 +112,14 @@ public class Sys_unit extends Model implements Serializable {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     public String getName() {
@@ -138,12 +146,12 @@ public class Sys_unit extends Model implements Serializable {
         this.unitcode = unitcode;
     }
 
-    public String getNote() {
-        return note;
+    public String getXzqhmc() {
+        return xzqhmc;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setXzqhmc(String xzqhmc) {
+        this.xzqhmc = xzqhmc;
     }
 
     public String getAddress() {
@@ -194,13 +202,6 @@ public class Sys_unit extends Model implements Serializable {
         this.hasChildren = hasChildren;
     }
 
-    public String getUnitType() {
-        return unitType;
-    }
-
-    public void setUnitType(String unitType) {
-        this.unitType = unitType;
-    }
 
     public boolean isEvaluate() {
         return evaluate;

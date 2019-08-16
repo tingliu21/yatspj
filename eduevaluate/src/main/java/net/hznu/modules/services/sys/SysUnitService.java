@@ -34,6 +34,10 @@ public class SysUnitService extends Service<Sys_unit> {
             path = pp.getPath();
         }
         unit.setPath(getSubPath("sys_unit", "path", path));
+        //获取第几级指标
+
+        int level = path.length()/4;
+        unit.setLevel(level);
         unit.setParentId(pid);
         dao().insert(unit);
         if (!Strings.isEmpty(pid)) {
