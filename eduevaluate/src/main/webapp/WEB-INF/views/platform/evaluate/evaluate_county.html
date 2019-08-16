@@ -1,0 +1,155 @@
+<%
+layout("/layouts/platform.html"){
+%>
+
+<div class="easyui-panel"
+		style="width: 100%; max-width: 1200px; padding: 10px 10px;">
+		<div style="margin-bottom: 20px">
+
+		</div>
+
+		<!-- 为ECharts准备具备大小（宽高）的Dom -->
+
+
+		<div id="amain" style="width: 800px; height: 750px;"></div>
+		<div id="bmain" style="width: 800px; height: 500px;"></div>
+		<div id="cmain" style="width: 800px; height: 1500px;"></div>
+<!-- 		<div id="dmain" style="width: 800px; height: 600px;"></div> -->
+		<input type="button" name="name" value="导出" id="export" />
+		<!-- <form id="chartForm" style="display:none" method="post" enctype="multipart/form-data" action="monitor/exportPng"> -->
+		 <form id="chartForm" style="display:none" method="post" action="monitor/exportPng?year=2016&xzqhdm=330102">
+		    <!-- <input id="imageValue1" name="radarCounty64" type="text" maxlength="50000" /> 
+		    <input id="imageValue2" name="fileType" type="text" value=".png" />-->
+		    <input id="imageValue1" name="radar1" type="text" maxlength="50000" />
+		    <input id="imageValue1" name="bar2" type="text" maxlength="50000" />
+		    <input id="imageValue1" name="bar55" type="text" maxlength="50000" />
+<!-- 		    <input id="imageValue1" name="bar_t" type="text" maxlength="50000" /> -->
+		     <input class="easyui-textbox" name="fileType" style="width:90%" data-options="label:'电话:'"> 
+		     <!-- <input class="easyui-textbox" name="radarCounty64" style="width:90%" data-options="label:'用户名:',required:true"> -->
+		</form>
+	</div>
+<script src="${base!}/assets/js/countyreport.js"></script>
+	<script type="text/javascript">
+
+
+	 // 基于准备好的dom，初始化echarts图表
+	var chartRadar1 = echarts.init(document.getElementById('amain')); 
+	 var chartBar2 = echarts.init(document.getElementById('bmain')); 
+	 var chartBar55 = echarts.init(document.getElementById('cmain')); 
+//     var chartBart = echarts.init(document.getElementById('dmain')); 
+    var selXzqhdm="";
+
+
+
+    
+
+  //导出
+    $('#export').on('click', function () {
+        
+        var chartExportUrl = 'monitor/exportPng?year=2016&xzqhdm='+selXzqhdm;
+        var picRadar1 = chartRadar1.getDataURL();//获取echarts图的base64编码，为png格式。
+        var picBar2 = chartBar2.getDataURL();//获取echarts图的base64编码，为png格式。
+        var picBar55 = chartBar55.getDataURL();//获取echarts图的base64编码，为png格式。
+        //var picBart = chartBart.getDataURL();//获取echarts图的base64编码，为png格式。
+         $('#chartForm').find('input[name="radar1"]').val(picRadar1);//将编码赋值给输入框   
+         $('#chartForm').find('input[name="bar2"]').val(picBar2);//将编码赋值给输入框
+         $('#chartForm').find('input[name="bar55"]').val(picBar55);//将编码赋值给输入框
+        //$('#chartForm').find('input[name="bar_t"]').val(picBart);//将编码赋值给输入框
+        
+         /* $('#chartForm').submit(); */
+        
+        
+            $('#chartForm').form('submit',{
+                url: chartExportUrl,
+                onSubmit: function(){
+                    return true;
+                	//return $(this).form('validate');
+                },
+                success: function(result){
+                    var result = eval('('+result+')');
+                    if (result.errorMsg){
+                        $.messager.show({
+                            title: 'Error',
+                            msg: result.errorMsg
+                        });
+                    } 
+                }
+            });
+
+    });
+     function showScoreByCity1( xzqhdm,xzqhmc)
+     {
+         // 基于准备好的dom，初始化echarts图表
+
+         //var aname = xzqhmc+'一级指标得分比较';
+         $.get('${base!}/assets/data.json').done(function (data){
+
+             console.log(data);//前端调试控制台输出数据，看看是否符合要求
+
+             option = {
+                 title: {
+                     text: '一级指标得分比较',
+                     left:'center',
+                     //text: aname,
+                     top:0
+                 },
+
+                 tooltip: {},
+                 legend: {
+                     data: ['得分', '目标值','省均值'],
+                     top:30
+                 },
+                 radar: {
+                     // shape: 'circle',
+                     name: {
+                         textStyle: {
+                             color: '#fff',
+                             backgroundColor: '#999',
+                             borderRadius: 3,
+                             padding: [3, 5],
+                             left:'center'
+                         }
+                     },
+                     indicator: [
+                         { name: '优先发展(34)', max: 34},
+                         { name: '育人为本(16)', max: 16},
+                         { name: '促进公平(26)', max: 26},
+                         { name: '教育质量(14)', max: 14},
+                         { name: '社会认可(10)', max: 10}
+                     ]
+                 },
+                 series: [{
+                     type: 'radar',
+                     // areaStyle: {normal: {}},
+                     data : data,
+                     itemStyle:{
+                         normal:{
+                             label:{
+                                 show:true,
+                                 position:'top',
+
+                                 formatter: function(a){
+                                     console.log(a.dataIndex);
+                                     if(a.dataIndex==1)
+                                         return '';
+                                     else return a.Number;
+
+                                 }
+                             }
+                         }
+                     }
+                 }]
+
+             };
+             // 为echarts对象加载数据
+             chartRadar1.setOption(option);
+             window.onresize = chartRadar1.resize;
+         });
+     }
+     $(document).ready(function () {
+         showScoreByCity1(${xzqh!},'上城区');
+
+     });
+
+	</script>
+<%}%>

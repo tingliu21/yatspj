@@ -29,16 +29,16 @@ public class MonitorCatalogService extends Service<Monitor_catalog> {
      */
     @Aop(TransAop.READ_COMMITTED)
     public void save(Monitor_catalog catalog, String pid) {
-        String path = "";
+        String catacode = "";
         if (!Strings.isEmpty(pid)) {
             Monitor_catalog pp = this.fetch(pid);
-            path = pp.getPath();
+            catacode = pp.getCatacode();
         } else pid = "";
-        path = getSubPath("monitor_catalog", "path", path);
-        catalog.setPath(path);
+        catacode = getSubCode("monitor_catalog", "catacode", catacode);
+        catalog.setCatacode(catacode);
         //获取第几级指标
 
-        int level = path.length()/4;
+        int level = catacode.length()/2;
         catalog.setLevel(level);
 
         catalog.setParentId(pid);
@@ -56,9 +56,9 @@ public class MonitorCatalogService extends Service<Monitor_catalog> {
     @Aop(TransAop.READ_COMMITTED)
     public void deleteAndChild(Monitor_catalog catalog) {
         //清空该指标目录下的所有子指标目录
-        dao().execute(Sqls.create("delete from monitor_catalog where path like @path").setParam("path", catalog.getPath() + "%"));
+        dao().execute(Sqls.create("delete from monitor_catalog where catacode like @catacode").setParam("catacode", catalog.getCatacode() + "%"));
         //清空该指标目录下的所有观测点（三级指标）
-        dao().execute(Sqls.create("delete from monitor_index where catalogId=@id or catalogId in(SELECT id FROM monitor_catalog WHERE path like @path)").setParam("id", catalog.getId()).setParam("path", catalog.getPath() + "%"));
+        dao().execute(Sqls.create("delete from monitor_index where catalogId=@id or catalogId in(SELECT id FROM monitor_catalog WHERE catacode like @catacode)").setParam("id", catalog.getId()).setParam("catacode", catalog.getCatacode() + "%"));
         //判断是否要把该指标目录的父指标目录的haschildren设为false
         if (!Strings.isEmpty(catalog.getParentId())) {
             int count = count(Cnd.where("parentId", "=", catalog.getParentId()));

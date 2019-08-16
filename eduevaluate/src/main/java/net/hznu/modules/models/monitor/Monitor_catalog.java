@@ -27,9 +27,10 @@ public class Monitor_catalog extends Model implements Serializable{
     private String parentId;
 
     @Column
-    @Comment("树路径")
+    @Comment("指标体系代码")
     @ColDefine(type = ColType.VARCHAR, width = 100)
-    private String path;
+    private String catacode;
+
 
     @Column
     @Comment("指标名称")
@@ -83,12 +84,12 @@ public class Monitor_catalog extends Model implements Serializable{
         this.parentId = parentId;
     }
 
-    public String getPath() {
-        return path;
+    public String getCatacode() {
+        return catacode;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setCatacode(String catacode) {
+        this.catacode = catacode;
     }
 
     public String getName() {

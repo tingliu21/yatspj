@@ -27,90 +27,14 @@ public class EvaluateIndexController {
 	@Inject
 	private EvaluateIndexService evaluateIndexService;
 
-	@At("")
-	@Ok("beetl:/platform/evaluate/index/index.html")
-	@RequiresAuthentication
-	public void index() {
 
+
+	@At("/evaluate_county")
+	@Ok("beetl:/platform/evaluate/evaluate_county.html")
+	@RequiresAuthentication
+	public void evaluate_county(HttpServletRequest req) {
+
+		req.setAttribute("xzqh","330102");
 	}
-
-	@At
-	@Ok("json:full")
-	@RequiresAuthentication
-	public Object data(@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
-		Cnd cnd = Cnd.NEW();
-    	return evaluateIndexService.data(length, start, draw, order, columns, cnd, null);
-    }
-
-    @At
-    @Ok("beetl:/platform/evaluate/index/add.html")
-    @RequiresAuthentication
-    public void add() {
-
-    }
-
-    @At
-    @Ok("json")
-    @SLog(tag = "新建Evaluate_index", msg = "")
-    public Object addDo(@Param("..") Evaluate_index evaluateIndex, HttpServletRequest req) {
-		try {
-			evaluateIndexService.insert(evaluateIndex);
-			return Result.success("system.success");
-		} catch (Exception e) {
-			return Result.error("system.error");
-		}
-    }
-
-    @At("/edit/?")
-    @Ok("beetl:/platform/evaluate/index/edit.html")
-    @RequiresAuthentication
-    public Object edit(String id) {
-		return evaluateIndexService.fetch(id);
-    }
-
-    @At
-    @Ok("json")
-    @SLog(tag = "修改Evaluate_index", msg = "ID:${args[0].id}")
-    public Object editDo(@Param("..") Evaluate_index evaluateIndex, HttpServletRequest req) {
-		try {
-
-			evaluateIndex.setOpAt((int) (System.currentTimeMillis() / 1000));
-			evaluateIndexService.updateIgnoreNull(evaluateIndex);
-			return Result.success("system.success");
-		} catch (Exception e) {
-			return Result.error("system.error");
-		}
-    }
-
-
-    @At({"/delete","/delete/?"})
-    @Ok("json")
-    @SLog(tag = "删除Evaluate_index", msg = "ID:${args[2].getAttribute('id')}")
-    public Object delete(String id, @Param("ids") String[] ids ,HttpServletRequest req) {
-		try {
-			if(ids!=null&&ids.length>0){
-				evaluateIndexService.delete(ids);
-    			req.setAttribute("id", org.apache.shiro.util.StringUtils.toString(ids));
-			}else{
-				evaluateIndexService.delete(id);
-    			req.setAttribute("id", id);
-			}
-			return Result.success("system.success");
-		} catch (Exception e) {
-			return Result.error("system.error");
-		}
-    }
-
-
-    @At("/detail/?")
-    @Ok("beetl:/platform/evaluate/index/detail.html")
-    @RequiresAuthentication
-	public Object detail(String id) {
-		if (!Strings.isBlank(id)) {
-			return evaluateIndexService.fetch(id);
-
-		}
-		return null;
-    }
 
 }
