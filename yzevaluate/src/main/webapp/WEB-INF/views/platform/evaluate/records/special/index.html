@@ -46,8 +46,16 @@ layout("/layouts/platform.html"){
                 <input type="text" id="year" name="year" onclick="this.value=''" class="form-control" placeholder="评估学年">
             </div>
             <div class="form-group">
-                <label for="taskname">评估名称</label>
-                <input type="text" id="taskname" name="taskname" onclick="this.value=''" class="form-control" placeholder="评估名称">
+                <label for="taskname">评估组别</label>
+                <select class="form-control" name="taskname" id="taskname">
+                    <option value="">请选择</option>
+                    <option value="第一组">第一组</option>
+                    <option value="第二组">第二组</option>
+                    <option value="第三组">第三组</option>
+                    <option value="第四组">第四组</option>
+                    <option value="第五组">第五组</option>
+                    <option value="第六组">第六组</option>
+                </select>
             </div>
             <button id="searchBtn" type="button" class="btn btn-default">查询</button>
         </div>

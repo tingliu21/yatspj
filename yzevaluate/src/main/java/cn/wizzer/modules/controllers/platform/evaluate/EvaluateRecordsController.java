@@ -63,7 +63,12 @@ public class EvaluateRecordsController {
 	@Inject
 	private EvaluateSpecialService evaluateSpecialService;
 
+	@At("/scorechart")
+	@Ok("beetl:/platform/evaluate/records/scorechart.html")
+	@RequiresAuthentication
+	public void scorechart( HttpServletRequest req) {
 
+	}
 //	@At({"","/?"})
 //	@Ok("beetl:/platform/evaluate/records/${req_attr.type}/index.html")
 //	@RequiresAuthentication
@@ -165,7 +170,7 @@ public class EvaluateRecordsController {
 	@At
 	@Ok("json:full")
 	@RequiresPermissions("evaluate.verify.special")
-	public Object specdata(@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
+	public Object specdata(@Param("year") int year, @Param("taskname") String taskname,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
 		Cnd cnd = Cnd.NEW();
 		//获取专家id
 		Subject subject = SecurityUtils.getSubject();
@@ -184,7 +189,12 @@ public class EvaluateRecordsController {
 			//2018-12-21修改，可以先由专家审核,专家只审核自己分配的学校
 			cnd = Cnd.where("id", "in", evaluateids).and("status_p", "=", false);
 		}
-
+		if (year!=0) {
+			cnd.and("year", "=",  year );
+		}
+		if (!Strings.isBlank(taskname)) {
+			cnd.and("taskname", "like", "%" + taskname + "%");
+		}
 
 		return evaluateRecordsService.data(length, start, draw, order, columns, cnd, "school");
 	}
@@ -469,7 +479,7 @@ public class EvaluateRecordsController {
 			//读入word模板
 			InputStream is = getClass().getClassLoader().getResourceAsStream("template/SpecialEvaluate.docx");
 			try {
-				String filename = "拱墅区现代优质学校专家评估表.docx";
+				String filename = "鄞州学校发展性评价专家评估表.docx";
 				filename = URLEncoder.encode(filename, "UTF-8");
 
 				xwpfUtil.exportWord(wordDataMap,is,resp,filename);
