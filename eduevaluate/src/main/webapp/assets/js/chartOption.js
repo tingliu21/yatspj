@@ -59,7 +59,7 @@ var radarOption= {
 	series : [ {
 		//name : '平均值 vs 目标值',
 		type : 'radar',
-		
+
 		//data : data,
 		itemStyle : {
 			normal : {
@@ -119,9 +119,9 @@ var barOption_v={
 	 }, */
 	xAxis : [ {
 		type : 'category',
-		data : [ '经费保障', '教师保障', '资源保障', '立德树人',
-				'育人环境', '国际交流与合作', '义务教育优质均衡',
-				'教育协调发展', '教育发展水平','各类教育质量', '教育满意' ],
+		data : [ '经费保障', '教师保障', '资源保障', '教育教学',
+				'对外开放',  '义务教育优质均衡',
+				'教育协调发展', '教育发展水平','学生发展', '教育满意' ],
 		axisLabel : {
 			interval : 0,
 			rotate : 30
@@ -208,7 +208,7 @@ var barOption_h={
 	title : {
 		left : 'center',
 		top : 0,
-		text : '46个监测点实现程度比较',
+		text : '45个监测点实现程度比较',
 	},
 	legend : {
 		top : 25,

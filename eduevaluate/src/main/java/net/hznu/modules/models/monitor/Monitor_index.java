@@ -98,6 +98,11 @@ public class Monitor_index extends Model implements Serializable {
     @Readonly
     private String deptname;
 
+    @Column
+    @Comment("评估年度")
+    @ColDefine(type=ColType.INT)
+    private int year;
+
     public String getId() {
         return id;
     }
@@ -246,5 +251,12 @@ public class Monitor_index extends Model implements Serializable {
 
     public void setDeptname(String deptname) {
         this.deptname = deptname;
+    }
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
     }
 }

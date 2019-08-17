@@ -36,7 +36,9 @@ layout("/layouts/platform.html"){
 	var chartRadar1 = echarts.init(document.getElementById('amain')); 
 	 var chartBar2 = echarts.init(document.getElementById('bmain')); 
 	 var chartBar55 = echarts.init(document.getElementById('cmain')); 
-//     var chartBart = echarts.init(document.getElementById('dmain')); 
+//     var chartBart = echarts.init(document.getElementById('dmain'));
+     chartRadar1.setOption(radarOption);
+
     var selXzqhdm="";
 
 
@@ -77,77 +79,28 @@ layout("/layouts/platform.html"){
             });
 
     });
-     function showScoreByCity1( xzqhdm,xzqhmc)
+     function showScoreByCity1(year, xzqhdm,chartBar)
      {
          // 基于准备好的dom，初始化echarts图表
-
          //var aname = xzqhmc+'一级指标得分比较';
-         $.get('${base!}/assets/data.json').done(function (data){
-
+         //$.get('monitor/getCountyScore1?year='+year+'&xzqhdm='+xzqhdm).done(function (data){
+         $.get('${base!}/platform/evaluate/getCountyScore1?xzqhdm=330102').done(function (data){
+             console.log('一级指标得分返回值')
              console.log(data);//前端调试控制台输出数据，看看是否符合要求
-
-             option = {
-                 title: {
-                     text: '一级指标得分比较',
-                     left:'center',
-                     //text: aname,
-                     top:0
+             chartBar.setOption({
+                 legend:{
+                     data:[ '得分', '目标值','浙江省' ]
                  },
+                 series:[{
 
-                 tooltip: {},
-                 legend: {
-                     data: ['得分', '目标值','省均值'],
-                     top:30
-                 },
-                 radar: {
-                     // shape: 'circle',
-                     name: {
-                         textStyle: {
-                             color: '#fff',
-                             backgroundColor: '#999',
-                             borderRadius: 3,
-                             padding: [3, 5],
-                             left:'center'
-                         }
-                     },
-                     indicator: [
-                         { name: '优先发展(34)', max: 34},
-                         { name: '育人为本(16)', max: 16},
-                         { name: '促进公平(26)', max: 26},
-                         { name: '教育质量(14)', max: 14},
-                         { name: '社会认可(10)', max: 10}
-                     ]
-                 },
-                 series: [{
-                     type: 'radar',
-                     // areaStyle: {normal: {}},
-                     data : data,
-                     itemStyle:{
-                         normal:{
-                             label:{
-                                 show:true,
-                                 position:'top',
-
-                                 formatter: function(a){
-                                     console.log(a.dataIndex);
-                                     if(a.dataIndex==1)
-                                         return '';
-                                     else return a.Number;
-
-                                 }
-                             }
-                         }
-                     }
+                     data:data
                  }]
-
-             };
-             // 为echarts对象加载数据
-             chartRadar1.setOption(option);
+             });
              window.onresize = chartRadar1.resize;
          });
      }
      $(document).ready(function () {
-         showScoreByCity1(${xzqh!},'上城区');
+         showScoreByCity1(2018,${xzqh!},chartRadar1);
 
      });
 

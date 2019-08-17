@@ -1,6 +1,7 @@
 package net.hznu.modules.services.monitor;
 
 import net.hznu.common.base.Service;
+import net.hznu.common.chart.MonitorStat;
 import net.hznu.modules.models.monitor.Monitor_catalog;
 import org.nutz.aop.interceptor.ioc.TransAop;
 import org.nutz.dao.Chain;
@@ -12,6 +13,8 @@ import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+
+import java.util.List;
 
 @IocBean(args = {"refer:dao"})
 public class MonitorCatalogService extends Service<Monitor_catalog> {
@@ -66,6 +69,22 @@ public class MonitorCatalogService extends Service<Monitor_catalog> {
                 dao().execute(Sqls.create("update monitor_catalog set hasChildren=false where id=@pid").setParam("pid", catalog.getParentId()));
             }
         }
+    }
+    public MonitorStat getScoreByLevel(int year,int level){
+        MonitorStat monitorStat = new MonitorStat();
+        //获取相应等级的指标体系
+        List<Monitor_catalog> catalogs = query(Cnd.where("level","=",level).and("year","=",year).and("isshow","=",true).asc("catacode"));
+
+        monitorStat.setName("目标值");
+        double[] value = new double[catalogs.size()];
+        for (int i = 0; i < catalogs.size(); i++) {
+            Monitor_catalog index1 = catalogs.get(i);
+            value[i] = index1.getWeights();
+        }
+        monitorStat.setValue(value);
+
+        return monitorStat;
+
     }
 }
 

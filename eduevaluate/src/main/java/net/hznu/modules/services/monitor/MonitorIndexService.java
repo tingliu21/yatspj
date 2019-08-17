@@ -1,6 +1,7 @@
 package net.hznu.modules.services.monitor;
 
 import net.hznu.common.base.Service;
+import net.hznu.common.chart.MonitorStat;
 import net.hznu.modules.models.monitor.Monitor_index;
 import org.nutz.aop.interceptor.ioc.TransAop;
 import org.nutz.dao.Chain;
@@ -52,5 +53,8 @@ public class MonitorIndexService extends Service<Monitor_index> {
         Sql sql = Sqls.create("select sum(weights) from monitor_index where year = @year").setParam("year", year);
         return count(sql);
     }
+
+
+
 }
 

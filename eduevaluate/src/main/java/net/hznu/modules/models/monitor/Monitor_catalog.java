@@ -43,7 +43,7 @@ public class Monitor_catalog extends Model implements Serializable{
     private String target;
 
     @Column
-    @Comment("是否显示")
+    @Comment("是否图表显示")
     @ColDefine(type = ColType.BOOLEAN)
     private boolean isShow;
 
@@ -67,6 +67,11 @@ public class Monitor_catalog extends Model implements Serializable{
     @Comment("权重")
     @ColDefine(type = ColType.FLOAT, width = 3)
     private double weights;
+    @Column
+    @Comment("评估年度")
+    @ColDefine(type=ColType.INT)
+    private int year;
+
 
     public String getId() {
         return id;
@@ -146,5 +151,13 @@ public class Monitor_catalog extends Model implements Serializable{
 
     public void setWeights(double weights) {
         this.weights = weights;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
     }
 }
