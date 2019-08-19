@@ -103,7 +103,7 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
                     MonitorStat monitorStat = new MonitorStat();
                     if (resultSet.next()) {
                         monitorStat.setName(resultSet.getString("xzqhmc"));
-                        double[] value = new double[5];
+                        double[] value = new double[fieldnames.size()];
                         for (int i = 0; i < fieldnames.size(); i++) {
 
                             String fieldname = fieldnames.get(i);

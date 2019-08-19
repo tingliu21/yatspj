@@ -54,7 +54,22 @@ public class MonitorIndexService extends Service<Monitor_index> {
         return count(sql);
     }
 
+    public MonitorStat getScoreByLevel(int year,int level){
+        MonitorStat monitorStat = new MonitorStat();
+        //获取相应等级的指标体系
+        List<Monitor_index> indexList = query(Cnd.where("level","=",level).and("year","=",year).and("isshow","=",true).asc("location"));
 
+        monitorStat.setName("目标值");
+        double[] value = new double[indexList.size()];
+        for (int i = 0; i < indexList.size(); i++) {
+            Monitor_index index1 = indexList.get(i);
+            value[i] = index1.getWeights();
+        }
+        monitorStat.setValue(value);
+
+        return monitorStat;
+
+    }
 
 }
 

@@ -2,18 +2,47 @@
 layout("/layouts/platform.html"){
 %>
 
-<div class="easyui-panel"
+<div
 		style="width: 100%; max-width: 1200px; padding: 10px 10px;">
-		<div style="margin-bottom: 20px">
-
-		</div>
 
 		<!-- 为ECharts准备具备大小（宽高）的Dom -->
 
 
-		<div id="amain" style="width: 800px; height: 750px;"></div>
-		<div id="bmain" style="width: 800px; height: 500px;"></div>
-		<div id="cmain" style="width: 800px; height: 1500px;"></div>
+	<ul id="myTab" class="nav nav-tabs">
+		<li class="active">
+			<a href="#home" data-toggle="tab">
+				一级指标
+			</a>
+		</li>
+		<li>
+			<a href="#ios" data-toggle="tab">
+				二级指标
+			</a>
+		</li>
+		<li>
+			<a href="#jmeter" data-toggle="tab">
+				监测点
+			</a>
+		</li>
+	</ul>
+
+	<!-- 每个tab页对应的内容 -->
+	<div id="myTabContent" class="tab-content">
+		<div class="tab-pane fade in active" id="home">
+			<div id="amain" style="width: 800px; height: 750px;"></div>
+		</div>
+		<div class="tab-pane fade" id="ios">
+			<div id="bmain" style="width: 800px; height: 500px;"></div>
+		</div>
+		<div class="tab-pane fade" id="jmeter">
+			<div id="cmain" style="width: 800px; height: 1500px;"></div>
+		</div>
+
+	</div>
+
+
+
+
 <!-- 		<div id="dmain" style="width: 800px; height: 600px;"></div> -->
 		<input type="button" name="name" value="导出" id="export" />
 		<!-- <form id="chartForm" style="display:none" method="post" enctype="multipart/form-data" action="monitor/exportPng"> -->
@@ -27,7 +56,7 @@ layout("/layouts/platform.html"){
 		     <input class="easyui-textbox" name="fileType" style="width:90%" data-options="label:'电话:'"> 
 		     <!-- <input class="easyui-textbox" name="radarCounty64" style="width:90%" data-options="label:'用户名:',required:true"> -->
 		</form>
-	</div>
+
 <script src="${base!}/assets/js/countyreport.js"></script>
 	<script type="text/javascript">
 
@@ -35,10 +64,11 @@ layout("/layouts/platform.html"){
 	 // 基于准备好的dom，初始化echarts图表
 	var chartRadar1 = echarts.init(document.getElementById('amain')); 
 	 var chartBar2 = echarts.init(document.getElementById('bmain')); 
-	 var chartBar55 = echarts.init(document.getElementById('cmain')); 
+	 var chartBarp = echarts.init(document.getElementById('cmain'));
 //     var chartBart = echarts.init(document.getElementById('dmain'));
      chartRadar1.setOption(radarOption);
-
+     chartBar2.setOption(barOption_v);
+     chartBarp.setOption(barOption_h);
     var selXzqhdm="";
 
 
@@ -79,12 +109,12 @@ layout("/layouts/platform.html"){
             });
 
     });
-     function showScoreByCity1(year, xzqhdm,chartBar)
+     function showScoreByCity1(xzqhdm,chartBar)
      {
          // 基于准备好的dom，初始化echarts图表
          //var aname = xzqhmc+'一级指标得分比较';
          //$.get('monitor/getCountyScore1?year='+year+'&xzqhdm='+xzqhdm).done(function (data){
-         $.get('${base!}/platform/evaluate/getCountyScore1?xzqhdm=330102').done(function (data){
+         $.get('${base!}/platform/evaluate/getCountyScore1?xzqhdm='+xzqhdm).done(function (data){
              console.log('一级指标得分返回值')
              console.log(data);//前端调试控制台输出数据，看看是否符合要求
              chartBar.setOption({
@@ -99,9 +129,77 @@ layout("/layouts/platform.html"){
              window.onresize = chartRadar1.resize;
          });
      }
-     $(document).ready(function () {
-         showScoreByCity1(2018,${xzqh!},chartRadar1);
+     function showScoreByCity2(xzqhdm,chartBar)
+     {
+         //var aname = xzqhmc+'二级指标得分比较';
+         $.get('${base!}/platform/evaluate/getCountyScore2?xzqhdm='+xzqhdm).done(function (data){
+             console.log('二级指标得分返回值')
+             console.log(data);
 
+             chartBar.setOption({
+                 legend:{
+                     data:['得分','省均值','目标值']
+                 },
+                 yAxis:[{
+                     interval:5,
+                     max:function(value){
+                         return Math.ceil(value.max/5)*5;
+                     }
+                 }],
+                 series:[{
+                     name:'得分',
+                     data:data[0].value
+                 },{
+                     name:'目标值',
+                     data:data[1].value
+                 },{
+                     name:'省均值',
+                     data:data[2].value
+                 }]
+             });
+
+             window.onresize = chartBar2.resize;
+
+         });
+     }
+     function showScoreByCityp( xzqhdm,chartBar)
+     {
+         // 基于准备好的dom，初始化echarts图表
+
+         //var aname = xzqhmc+'五十四个指标得分比较';
+         $.get('${base!}/platform/evaluate/getCountyScorep?xzqhdm='+xzqhdm).done(function (data){
+             console.log('监测点得分返回值')
+             console.log(data);
+             var monitorname=[];
+             for(var i=0;i<data[0].value.length;i++){
+                 var name =i+1;
+                 monitorname.push(name);
+             }
+             chartBar.setOption({
+                 legend:{
+                     data:['得分','目标值','省均值']
+                 },
+
+                 yAxis:[{
+                     data:monitorname
+                 }],
+                 series:[{
+                     name:'得分',
+                     data:data[0].value
+                 },{
+                     name:'目标值',
+                     data:data[1].value
+                 },{
+                     name:'省均值',
+                     data:data[2].value
+                 }]
+             });
+         });
+     }
+     $(document).ready(function () {
+         showScoreByCity1(${xzqh!},chartRadar1);
+         showScoreByCity2(${xzqh!},chartBar2);
+         showScoreByCityp(${xzqh!},chartBarp);
      });
 
 	</script>
