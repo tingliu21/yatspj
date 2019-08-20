@@ -3,10 +3,7 @@ layout("/layouts/platform.html"){
 %>
 <section class="content-wrap bg-white">
 	<header class="header navbar bg-white shadow">
-		<div class="btn-group tool-button">
-			<p class="navbar-text">${xzqhmc!}监测指标</p>
 
-		</div>
 		<div class="pull-right">
 			<div class="btn-group tool-button">
 				<button class="btn btn-primary navbar-btn" id="export"  type="submit" data-pjax><i class="ti-share"></i> 导出报告</button>
@@ -32,6 +29,11 @@ layout("/layouts/platform.html"){
 					监测点
 				</a>
 			</li>
+			<li>
+				<a href="#citycomp" data-toggle="tab">
+					地市排名
+				</a>
+			</li>
 		</ul>
 
 		<!-- 每个tab页对应的内容 -->
@@ -45,7 +47,9 @@ layout("/layouts/platform.html"){
 			<div class="tab-pane fade" id="mpoint">
 				<div id="cmain" style="width: 800px; height: 1500px;"></div>
 			</div>
-
+			<div class="tab-pane fade" id="citycomp">
+				<div id="dmain" style="width: 800px; height: 500px;"></div>
+			</div>
 		</div>
 
 
@@ -53,13 +57,13 @@ layout("/layouts/platform.html"){
 
 
 		<!-- <form id="chartForm" style="display:none" method="post" enctype="multipart/form-data" action="monitor/exportPng"> -->
-		 <form id="chartForm" style="display:none" method="post" action="${base!}/platform/evaluate/exportCounty?xzqhdm=${xzqh!}">
+		 <form id="chartForm" style="display:none" method="post" action="${base!}/platform/evaluate/exportProvince?xzqhdm=${xzqh!}">
 		    <!-- <input id="imageValue1" name="radarCounty64" type="text" maxlength="50000" /> 
 		    <input id="imageValue2" name="fileType" type="text" value=".png" />-->
 		    <input id="radar1" name="radar1" type="text" maxlength="50000" />
 		    <input id="bar2" name="bar2" type="text" maxlength="50000" />
 		    <input id="barp" name="barp" type="text" maxlength="50000" />
-<!-- 		    <input id="imageValue1" name="bar_t" type="text" maxlength="50000" /> -->
+ 		    <input id="bar_city" name="bar_city" type="text" maxlength="50000" />
 		     <input class="easyui-textbox" name="fileType" style="width:90%" data-options="label:'电话:'"> 
 		     <!-- <input class="easyui-textbox" name="radarCounty64" style="width:90%" data-options="label:'用户名:',required:true"> -->
 		</form>
@@ -70,44 +74,42 @@ layout("/layouts/platform.html"){
 	 var chartRadar1 = echarts.init(document.getElementById('amain'));
 	 var chartBar2 = echarts.init(document.getElementById('bmain')); 
 	 var chartBarp = echarts.init(document.getElementById('cmain'));
-//     var chartBart = echarts.init(document.getElementById('dmain'));
+     var chartBart = echarts.init(document.getElementById('dmain'));
      chartRadar1.setOption(radarOption);
      chartBar2.setOption(barOption_v);
      chartBarp.setOption(barOption_h);
+     chartBart.setOption(barOption_v);
 
-
-
-
-     function showScoreByCity1(xzqhdm,chartBar)
+     function showAvgScore1(xzqhdm,chartBar)
      {
          // 基于准备好的dom，初始化echarts图表
          //var aname = xzqhmc+'一级指标得分比较';
          //$.get('monitor/getCountyScore1?year='+year+'&xzqhdm='+xzqhdm).done(function (data){
-         $.get('${base!}/platform/evaluate/getCountyScore1?xzqhdm='+xzqhdm).done(function (data){
+         $.get('${base!}/platform/evaluate/getAvgScore1?xzqhdm='+xzqhdm).done(function (data){
              console.log('一级指标得分返回值')
              console.log(data);//前端调试控制台输出数据，看看是否符合要求
              chartBar.setOption({
                  legend:{
-                     data:[ '得分', '目标值','浙江省' ]
+                     data:[ '浙江省', '目标值']
                  },
                  series:[{
 
                      data:data
                  }]
              });
-             window.onresize = chartRadar1.resize;
+             window.onresize = chartBar.resize;
          });
      }
-     function showScoreByCity2(xzqhdm,chartBar)
+     function showAvgScore2(xzqhdm,chartBar)
      {
          //var aname = xzqhmc+'二级指标得分比较';
-         $.get('${base!}/platform/evaluate/getCountyScore2?xzqhdm='+xzqhdm).done(function (data){
+         $.get('${base!}/platform/evaluate/getAvgScore2?xzqhdm='+xzqhdm).done(function (data){
              console.log('二级指标得分返回值')
              console.log(data);
 
              chartBar.setOption({
                  legend:{
-                     data:['得分','省均值','目标值']
+                     data:['浙江省','目标值']
                  },
                  yAxis:[{
                      interval:5,
@@ -116,27 +118,24 @@ layout("/layouts/platform.html"){
                      }
                  }],
                  series:[{
-                     name:'得分',
+                     name:'浙江省',
                      data:data[0].value
                  },{
                      name:'目标值',
                      data:data[1].value
-                 },{
-                     name:'省均值',
-                     data:data[2].value
                  }]
              });
 
-             window.onresize = chartBar2.resize;
+             window.onresize = chartBar.resize;
 
          });
      }
-     function showScoreByCityp( xzqhdm,chartBar)
+     function showAvgScorep( xzqhdm,chartBar)
      {
          // 基于准备好的dom，初始化echarts图表
 
          //var aname = xzqhmc+'五十四个指标得分比较';
-         $.get('${base!}/platform/evaluate/getCountyScorep?xzqhdm='+xzqhdm).done(function (data){
+         $.get('${base!}/platform/evaluate/getAvgScorep?xzqhdm='+xzqhdm).done(function (data){
              console.log('监测点得分返回值')
              console.log(data);
              var monitorname=[];
@@ -146,75 +145,96 @@ layout("/layouts/platform.html"){
              }
              chartBar.setOption({
                  legend:{
-                     data:['得分','目标值','省均值']
+                     data:['浙江省','目标值']
                  },
 
                  yAxis:[{
                      data:monitorname
                  }],
                  series:[{
-                     name:'得分',
+                     name:'浙江省',
                      data:data[0].value
                  },{
                      name:'目标值',
                      data:data[1].value
-                 },{
-                     name:'省均值',
-                     data:data[2].value
                  }]
              });
+             window.onresize = chartBar.resize;
+         });
+     }
+     function showCityTotalScore(xzqhdm,chartBar)
+     {
+         //var aname = xzqhmc+'二级指标得分比较';
+         $.get('${base!}/platform/evaluate/getCityTotalScore?xzqhdm='+xzqhdm).done(function (data){
+             console.log('省各地市得分返回值')
+             console.log(data);
+             var cname=[],mvalue=[];
+             for(var i = 0; i < data.length; i++){
+                 cname.push(data[i].name);
+                 mvalue.push(data[i].value);
+             }
+             chartBar.setOption({
+                 legend:{
+                     data:['浙江省各地市得分']
+                 },
+                 xAxis: [
+                     {
+                         type: 'category',
+                         data: cname,
+                         axisLabel:{
+                             interval: 0,
+                             rotate: 30
+                         }
+                     }
+                 ],
+                 yAxis:[{
+                     interval:10,
+                     max:function(value){
+                         return Math.ceil(value.max/10)*10;
+                     }
+                 }],
+                 series:[{
+                     name:'浙江省各地市得分',
+                     data:mvalue
+                 }]
+             });
+             window.onresize = chartBar.resize;
+
          });
      }
      $(document).ready(function () {
-         showScoreByCity1(${xzqh!},chartRadar1);
-         showScoreByCity2(${xzqh!},chartBar2);
-         showScoreByCityp(${xzqh!},chartBarp);
-
+         showAvgScore1(${xzqh!},chartRadar1);
+         showAvgScore2(${xzqh!},chartBar2);
+         showAvgScorep(${xzqh!},chartBarp);
+         showCityTotalScore(${xzqh!},chartBart);
          $("#export").on("click",function(){
-             var chartExportUrl = '${base!}/platform/evaluate/exportCounty?xzqhdm='+${xzqh!};
+             var chartExportUrl = '${base!}/platform/evaluate/exportProvince?xzqhdm='+${xzqh!};
              var picRadar1 = chartRadar1.getDataURL();//获取echarts图的base64编码，为png格式。
              var picBar2 = chartBar2.getDataURL();//获取echarts图的base64编码，为png格式。
              var picBarp = chartBarp.getDataURL();//获取echarts图的base64编码，为png格式。
-             //var picBart = chartBart.getDataURL();//获取echarts图的base64编码，为png格式。
+             var picBart = chartBart.getDataURL();//获取echarts图的base64编码，为png格式。
              $('#radar1').val(picRadar1);//将编码赋值给输入框
              $('#bar2').val(picBar2);//将编码赋值给输入框
              $('#barp').val(picBarp);//将编码赋值给输入框
-
+             $('#bart').val(picBarp);//将编码赋值给输入框
              $('#chartForm').submit();
-//             $('#chartForm').form('submit',{
-//                 url: chartExportUrl,
-//                 onSubmit: function(){
-//                     return true;
-//                     //return $(this).form('validate');
-//                 },
-//                 success: function(result){
-//                     var result = eval('('+result+')');
-//                     if (result.errorMsg){
-//                         $.messager.show({
-//                             title: 'Error',
-//                             msg: result.errorMsg
-//                         });
-//                     }
-//                 }
-//             });
 
          });
-//         $('#chartForm').ajaxForm({
-//             dataType: 'json',
-//             beforeSubmit: function (arr, form, options) {
-//                 form.find("button:submit").button("loading");
-//             },
-//             success: function (data, statusText, xhr, form) {
-//                 if (data.code == 0) {
-//                     Toast.success(data.msg);
-//
-//                 } else {
-//                     Toast.error(data.msg);
-//                 }
-//                 form.find("button:submit").button("reset");
-//             }
-//         });
+         $('#chartForm').ajaxForm({
+             dataType: 'json',
+             beforeSubmit: function (arr, form, options) {
+                 form.find("button:submit").button("loading");
+             },
+             success: function (data, statusText, xhr, form) {
+                 if (data.code == 0) {
+                     Toast.success(data.msg);
 
+                 } else {
+                     Toast.error(data.msg);
+                 }
+                 form.find("button:submit").button("reset");
+             }
+         });
      });
 
 	</script>

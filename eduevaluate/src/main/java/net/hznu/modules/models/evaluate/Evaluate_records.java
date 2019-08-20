@@ -10,6 +10,7 @@ import java.io.Serializable;
  * Created by liuting on 2019/8/14.
  */
 @Table("evaluate_records")
+@View("evaluate_record_view")
 public class Evaluate_records  extends Model implements Serializable {
 
     @Column
@@ -40,6 +41,13 @@ public class Evaluate_records  extends Model implements Serializable {
     @Comment("评估状态")
     @ColDefine(type = ColType.BOOLEAN)
     private boolean status;
+
+    @Column
+    @Readonly
+    private String unitcode;
+    @Column
+    @Readonly
+    private String xzqhmc;
 
     public String getId() {
         return id;
@@ -87,5 +95,21 @@ public class Evaluate_records  extends Model implements Serializable {
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public String getUnitcode() {
+        return unitcode;
+    }
+
+    public void setUnitcode(String unitcode) {
+        this.unitcode = unitcode;
+    }
+
+    public String getXzqhmc() {
+        return xzqhmc;
+    }
+
+    public void setXzqhmc(String xzqhmc) {
+        this.xzqhmc = xzqhmc;
     }
 }

@@ -4,8 +4,9 @@ layout("/layouts/platform.html"){
 <section class="content-wrap bg-white">
     <header class="header navbar bg-white shadow">
         <div class="btn-group tool-button">
-            <a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/add" data-pjax><i class="ti-plus"></i> 新建Evaluate_records</a>
-            <button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>
+            <p class="navbar-text">监测评估单位列表</p>
+                <!--<a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/add" data-pjax><i class="ti-plus"></i> 新建Evaluate_records</a>-->
+            <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>-->
         </div>
         <div class="pull-right">
             <div id="queue"></div>
@@ -21,9 +22,9 @@ layout("/layouts/platform.html"){
                 <thead>
                     <tr>
                             <th>学年</th>
-                            <th>单位ID</th>
+                            <th>行政区代码</th>
+                            <th>行政区名称</th>
                             <th>评估得分</th>
-                            <th>评估状态</th>
                             <th>操作</th>
                     </tr>
                 </thead>
@@ -85,12 +86,12 @@ layout("/layouts/platform.html"){
                     //d.nutz = $('#nutz').val();
                 }
             },
-            "order": [[0, "desc"]],
+            "order": [[1, "asc"]],
             "columns": [
                     {"data": "year", "bSortable": true},
-                    {"data": "unit.xzqhmc", "bSortable": true},
+                    {"data": "unitcode", "bSortable": true},
+                    {"data": "xzqhmc", "bSortable": true},
                     {"data": "score", "bSortable": true},
-                    {"data": "status", "bSortable": true},
             ],
             "columnDefs": [
                 {
