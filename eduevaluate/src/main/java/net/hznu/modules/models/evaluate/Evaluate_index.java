@@ -39,7 +39,7 @@ public class Evaluate_index extends Model implements Serializable{
     @Column
     @Comment("评估值")
     @ColDefine(type = ColType.FLOAT, width = 8)
-    private double value;
+    private Double value;
     @Column
     @Comment("评估值")
     @ColDefine(type = ColType.VARCHAR, width = 8)
@@ -48,7 +48,7 @@ public class Evaluate_index extends Model implements Serializable{
     @Column
     @Comment("评估分")
     @ColDefine(type = ColType.FLOAT, width = 8)
-    private double score;
+    private Double score;
 
     @Column
     @Readonly
@@ -111,11 +111,11 @@ public class Evaluate_index extends Model implements Serializable{
         this.indexname = indexname;
     }
 
-    public double getValue() {
+    public Double getValue() {
         return value;
     }
 
-    public void setValue(double value) {
+    public void setValue(Double value) {
         this.value = value;
     }
 
@@ -127,11 +127,11 @@ public class Evaluate_index extends Model implements Serializable{
         this.svalue = svalue;
     }
 
-    public double getScore() {
+    public Double getScore() {
         return score;
     }
 
-    public void setScore(double score) {
+    public void setScore(Double score) {
         this.score = score;
     }
 }

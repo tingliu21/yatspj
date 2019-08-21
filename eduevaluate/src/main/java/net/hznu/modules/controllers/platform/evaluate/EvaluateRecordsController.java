@@ -35,6 +35,7 @@ import org.nutz.mvc.upload.UploadAdaptor;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -183,7 +184,11 @@ public class EvaluateRecordsController {
         }
         return null;
     }
-
+    //上传评估结果
+    @At
+    @Ok("beetl:/platform/evaluate/records/upload.html")
+    @RequiresAuthentication
+    public void upload() {}
     //临时用来导入山娟计算的数据
     @AdaptBy(type = UploadAdaptor.class, args = {"ioc:fileUpload"})
     @POST
@@ -191,7 +196,7 @@ public class EvaluateRecordsController {
     @Ok("json")
     @RequiresAuthentication
     //AdaptorErrorContext必须是最后一个参数
-    public Object xlsfile(@Param("Filedata") TempFile tf, HttpServletRequest req, AdaptorErrorContext err) {
+    public Object xlsfile(@Param("Filedata") TempFile tf, @Param("year") int year,@Param("bscore") boolean bscore,HttpServletRequest req, AdaptorErrorContext err) {
         try {
             if (err != null && err.getAdaptorErr() != null) {
                 return NutMap.NEW().addv("code", 1).addv("msg", "文件不合法");
@@ -199,8 +204,10 @@ public class EvaluateRecordsController {
                 return Result.error("空文件");
             } else {
                 //导入数据库
+                InputStream is = tf.getInputStream();
+                evaluateRecordsService.excel2db(is, year,bscore);
                 //这里已经通过数据库把数据导入到evaluate_value_temp_2018，暂时先将数据库的记录读到evaluate_index
-                importIndexValue();
+                //importIndexValue();
 
                 return Result.success("上传成功", tf.getSubmittedFileName());
             }
