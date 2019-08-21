@@ -24,14 +24,12 @@ import net.hznu.modules.services.monitor.MonitorCatalogService;
 import net.hznu.modules.services.monitor.MonitorIndexService;
 import net.hznu.modules.services.sys.SysUnitService;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.subject.Subject;
 import org.nutz.dao.Cnd;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
-import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.annotation.*;
@@ -61,6 +59,50 @@ public class EvaluateIndexController {
 	@Inject
 	private SysUnitService sysUnitService;
 
+	@At
+	@Ok("beetl:/platform/evaluate/indexvalue.html")
+	@RequiresAuthentication
+	public String indexvalue(@Param("evaluateId") String evaluateId, HttpServletRequest req) {
+
+		if (StringUtils.isNotBlank(evaluateId)) {
+			req.setAttribute("evaluateId", evaluateId);
+			return "beetl:/platform/evaluate/indexvalue.html";
+		} else {
+			//获取当前用户id
+			Subject subject = SecurityUtils.getSubject();
+			Sys_user user = (Sys_user) subject.getPrincipal();
+
+			Sys_unit sysUnit = user.getUnit();
+			int level = sysUnit.getLevel();
+			if (level == 3) {
+				req.setAttribute("xzqhdm", sysUnit.getUnitcode());
+				return "beetl:/platform/evaluate/indexvalue.html";
+			} else {
+				return "redirect:/platform/evaluate/records";
+			}
+		}
+	}
+
+	@At
+	@Ok("json:full")
+	@RequiresAuthentication
+	public Object data(@Param("evaluateId") String evaluateId,@Param("year") int year,@Param("xzqhdm") String xzqhdm,@Param("catacode") String catacode, @Param("code") String code,
+						   @Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
+		Cnd cnd = Cnd.NEW();
+		if(StringUtils.isNotBlank(evaluateId)){
+			cnd = cnd.and("evaluateId","=",evaluateId);
+		}else if(StringUtils.isNotBlank(xzqhdm)){
+			cnd = cnd.and("unitcode","=",xzqhdm).and("year","=",year);
+		}
+		if(StringUtils.isBlank(catacode)){
+			cnd = cnd.and("catacode","like",catacode);
+		}
+		if(StringUtils.isNotBlank(code)){
+			cnd = cnd.and("code","like",code);
+		}
+
+		return evaluateIndexService.data(length, start, draw, order, columns, cnd, "");
+	}
 	//县监测级指标达成度
 	@At("/evaluate_county")
 	@Ok("re")

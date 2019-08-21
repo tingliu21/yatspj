@@ -1,0 +1,92 @@
+<%
+layout("/layouts/platform.html"){
+%>
+<section class="content-wrap bg-white">
+    <header class="header navbar bg-white shadow">
+        <div class="btn-group tool-button">
+            <p class="navbar-text">监测评估单位列表</p>
+            <!--<a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/add" data-pjax><i class="ti-plus"></i> 新建Evaluate_records</a>-->
+            <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>-->
+        </div>
+        <div class="pull-right">
+            <div class="btn-group tool-button">
+                <a class="btn btn-primary navbar-btn" href="" data-toggle="modal" data-target="#dialogImp"><i class="ti-import"></i>查询</a>
+            </div>
+        </div>
+    </header>
+    <div class=panel-body style="padding-top: 50px;">
+        <input type="hidden" id="evaluateId" value="${evaluateId!}"/>
+        <input type="hidden" id="xzqhdm" value="${xzqhdm!}"/>
+        <div class="table-responsive no-border">
+            <table class="table table-bordered table-striped mg-t datatable">
+                <thead>
+                <tr>
+                    <th>指标序号</th>
+                    <th>指标名称</th>
+                    <th>监测值</th>
+                    <th>评估得分</th>
+
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</section>
+
+<script language="JavaScript">
+    var datatable;
+    function initDatatable() {
+        datatable = $('.datatable').DataTable({
+            "dom": '<"toolbar">frtip',
+            "searching":false,
+            "processing": false,
+            "serverSide": true,
+            "select": true,
+            "ordering": true,
+            "language": {
+                "url": "${base}/assets/plugins/datatables/cn.json"
+            },
+            "preDrawCallback": function () {
+                sublime.showLoadingbar($(".main-content"));
+            },
+            "drawCallback": function () {
+                sublime.closeLoadingbar($(".main-content"));
+            },
+            "ajax": {
+                "url": "${base}/platform/evaluate/data",
+                "type": "post",
+                "data": function (d) {
+                    d.evaluateId = $('#evaluateId').val();
+                    d.xzqhdm = $('#xzqhdm').val();
+                }
+            },
+            "order": [[0, "asc"]],
+            "columns": [
+                {"data": "location", "bSortable": true},
+                {"data": "name", "bSortable": true},
+                {"data": "value", "bSortable": true},
+                {"data": "score", "bSortable": true},
+                {"data": "code","bSortable": true,"visible":false},
+            ],
+            "columnDefs": [
+                {
+
+                }
+            ]
+        });
+        datatable.on('click', 'tr', function () {
+            $(this).toggleClass('selected');
+        });
+        $("#searchBtn").on('click', function () {
+            datatable.ajax.reload();
+        });
+    }
+
+    $(function () {
+
+        initDatatable();
+
+    });
+</script>
+
+<%}%>

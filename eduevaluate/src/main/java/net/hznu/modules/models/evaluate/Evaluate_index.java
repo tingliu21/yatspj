@@ -52,10 +52,13 @@ public class Evaluate_index extends Model implements Serializable{
 
     @Column
     @Readonly
+    private int year;
+    @Column
+    @Readonly
     private int location;
     @Column
     @Readonly
-    private String indexname;
+    private String name;
 
     public String getId() {
         return id;
@@ -103,12 +106,12 @@ public class Evaluate_index extends Model implements Serializable{
     public void setLocation(int location) {
         this.location = location;
     }
-    public String getIndexname() {
-        return indexname;
+    public String getName() {
+        return name;
     }
 
-    public void setIndexname(String indexname) {
-        this.indexname = indexname;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Double getValue() {
@@ -133,5 +136,13 @@ public class Evaluate_index extends Model implements Serializable{
 
     public void setScore(Double score) {
         this.score = score;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
     }
 }

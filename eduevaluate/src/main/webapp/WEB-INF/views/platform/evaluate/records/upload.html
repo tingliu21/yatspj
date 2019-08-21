@@ -1,4 +1,3 @@
-
 <div class="modal-body no-p">
     <div class="row">
         <div class="col-xs-12">
@@ -77,6 +76,9 @@
                 data = JSON.parse(data);
                 if (data.code == 0) {
                     Toast.success(data.msg);
+                    $("#addForm").resetForm();
+                    $("#queue").html("");
+                    $("#dialogImp").modal("hide");
                 } else {
                     $("#queue").html("");
                     Toast.error(data.msg);
@@ -96,6 +98,7 @@
         $("#ok").on("click",function(){
             $('#file_upload').data('uploadifive').settings.formData = { 'year'  : $('#year').val(), 'bscore' : $('input:radio[name=bscore]:checked').val() };
             $('#file_upload').uploadifive('upload');
+
         });
 
 

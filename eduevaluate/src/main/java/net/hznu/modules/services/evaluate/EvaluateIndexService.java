@@ -2,15 +2,25 @@ package net.hznu.modules.services.evaluate;
 
 import net.hznu.common.base.Service;
 import net.hznu.common.chart.MonitorStat;
+import net.hznu.common.page.DataTableColumn;
+import net.hznu.common.page.DataTableOrder;
+import net.hznu.common.page.OffsetPager;
 import net.hznu.modules.models.evaluate.Evaluate_index;
 
+import net.hznu.modules.models.monitor.Monitor_index;
+import org.apache.commons.lang.StringUtils;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
 import org.nutz.dao.entity.Entity;
+import org.nutz.dao.pager.Pager;
 import org.nutz.dao.sql.Sql;
 import org.nutz.dao.sql.SqlCallback;
+import org.nutz.dao.util.cri.SqlExpression;
+import org.nutz.dao.util.cri.SqlExpressionGroup;
 import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.lang.Strings;
+import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 
@@ -27,6 +37,50 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
 
     public EvaluateIndexService(Dao dao) {
     	super(dao);
+    }
+    public NutMap data(int length, int start, int draw, List<DataTableOrder> orders, List<DataTableColumn> columns, Cnd cnd, String linkname) {
+        NutMap re = new NutMap();
+        if (orders != null && orders.size() > 0) {
+            for (DataTableOrder order : orders) {
+                DataTableColumn col = columns.get(order.getColumn());
+                cnd.orderBy(Sqls.escapeSqlFieldValue(col.getData()).toString(), order.getDir());
+            }
+        }
+        Pager pager = new OffsetPager(start, length);
+
+        re.put("recordsFiltered", count(cnd));
+        List<Evaluate_index> list = query(cnd, pager);
+        if (!Strings.isBlank(linkname)) {
+            this.dao().fetchLinks(list, linkname);
+        }
+        //遍历list，修改指标名称
+        for(Evaluate_index index :list){
+            String code = index.getCode();
+            if(code.length()>2){
+                SqlExpressionGroup group = new SqlExpressionGroup();
+                String t_code = code.substring(0,code.length()-2);
+                SqlExpression sqlExpression =Cnd.exps("code","=",t_code);
+                group.or(sqlExpression);
+                if(t_code.length()>2){
+                    t_code = t_code.substring(0,t_code.length()-2);
+                    sqlExpression =Cnd.exps("code","=",t_code);
+                    group.or(sqlExpression);
+                }
+                String fullname="";
+                //获取完整指标名称
+                List<Monitor_index> mindexList = dao().query(Monitor_index.class,cnd.where("year","=",index.getYear()).and(group).asc("code"));
+                for(Monitor_index mindex:mindexList){
+                    fullname = mindex.getName()+"/";
+                }
+                fullname = fullname+index.getName();
+                index.setName(fullname);
+
+            }
+        }
+        re.put("data", list);
+        re.put("draw", draw);
+        re.put("recordsTotal", length);
+        return re;
     }
 
     /**
