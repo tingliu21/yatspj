@@ -1,16 +1,47 @@
 <%
 layout("/layouts/platform.html"){
 %>
+<!--<link rel="stylesheet" href="${base!}/assets/plugins/select2/select2.css">-->
+
+<link href="${base!}/assets/plugins/select2/select2.min.css" rel="stylesheet" />
+<script src="${base!}/assets/plugins/select2/select2.min.js"></script>
+
 <section class="content-wrap bg-white">
     <header class="header navbar bg-white shadow">
-        <div class="btn-group tool-button">
-            <p class="navbar-text">监测评估单位列表</p>
-            <!--<a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/add" data-pjax><i class="ti-plus"></i> 新建Evaluate_records</a>-->
-            <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>-->
+        <div class="btn-group" style="padding-top: 5px;">
+            <div>
+                <label for="year">评估年度：</label>
+                <select id="year" name="year"  placeholder="选择评估年度" >
+                    <option value="2016">2016</option>
+                    <option value="2017">2017</option>
+                    <option value="2018" selected>2018</option>
+                </select>
+            </div>
         </div>
+        <div class="btn-group" style="padding-top: 5px;">
+
+            <div >
+                <select id="cataid" name="cataid" class=""   placeholder="选择监测指标" style="width: 100%">
+
+                </select>
+            </div>
+        </div>
+        <div class="btn-group" style="padding-top: 5px;">
+            <div >
+                <select id="indexid" name="indexid"  placeholder="选择监测点"  style="width: 100%">
+
+                </select>
+            </div>
+        </div>
+        <!--<div class="btn-group tool-button">-->
+            <!--<p class="navbar-text">监测评估单位列表</p>-->
+            <!---->
+            <!--&lt;!&ndash;<a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/add" data-pjax><i class="ti-plus"></i> 新建Evaluate_records</a>&ndash;&gt;-->
+            <!--&lt;!&ndash;<button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>&ndash;&gt;-->
+        <!--</div>-->
         <div class="pull-right">
             <div class="btn-group tool-button">
-                <a class="btn btn-primary navbar-btn" href="" data-toggle="modal" data-target="#dialogImp"><i class="ti-import"></i>查询</a>
+                <button class="btn btn-primary navbar-btn" href="" id="searchBtn"><i class="fa fa-sliders"></i>查询</button>
             </div>
         </div>
     </header>
@@ -58,6 +89,9 @@ layout("/layouts/platform.html"){
                 "data": function (d) {
                     d.evaluateId = $('#evaluateId').val();
                     d.xzqhdm = $('#xzqhdm').val();
+                    d.year=$('#year').val();
+                    d.catacode=$('#cataid').val();
+                    d.code=$('#indexid').val();
                 }
             },
             "order": [[0, "asc"]],
@@ -82,9 +116,75 @@ layout("/layouts/platform.html"){
         });
     }
 
-    $(function () {
+    //绑定字典内容到指定的Select控件
+    function BindSelect(ctrlName, url) {
+        var control = $('#' + ctrlName);
+        //设置Select2的处理
+        control.select2({
 
+            placeholder: "请选择监测指标",
+            placeholderOption: "first",
+            allowClear: true,
+            theme: "classic",
+            width: 'resolve', // need to override the changed default
+
+            escapeMarkup: function (m) {
+                return m;
+            }
+
+        });
+
+        //绑定Ajax的内容
+        $.getJSON(url, function (data) {
+            control.empty();//清空下拉框
+            $.each(data, function (i, item) {
+                control.append("<option value='" + item.id + "'>" + item.text + "</option>");
+            });
+        });
+    }
+
+    $(function () {
         initDatatable();
+        //绑定添加界面的公司、部门、直属经理
+        BindSelect("cataid", "/platform/monitor/catalog/tree2?year="+$("#year").val());
+        $("#cataid").on("change", function (e) {
+            var catacode = $("#cataid").val();
+            BindSelect("indexid", "/platform/monitor/index/tree?year="+$("#year").val()+"&catacode="+ catacode);
+        });
+
+
+//        $("#cataid").select2({
+//            placeholder:'请选择',
+//            allowClear:true,
+//            data: data,
+//            ajax:{
+//                url:"",
+//                dataType:'json',
+//                delay:250,
+//                data:function (params) {
+//                    return{
+//                        q:params.term,
+//                    };
+//
+//                },
+//                processResults : function(data) {
+//                    // 是否隐藏稳定环境的选项
+//                    var jsonData = data['respData'];
+//
+//                    return {
+//                        results : $.map(jsonData, function(item) {
+//                            var i = 1;
+//                            return {
+//                                text : item,
+//                                id : i++
+//                            }
+//                        })
+//                    };
+//                },
+//            }
+
+//        })
+
 
     });
 </script>

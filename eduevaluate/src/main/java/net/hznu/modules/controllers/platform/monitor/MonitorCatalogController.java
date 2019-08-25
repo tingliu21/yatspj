@@ -135,16 +135,23 @@ public class MonitorCatalogController {
 	@Ok("json")
 	@RequiresAuthentication
 	//仅列出2级指标 add by Liut 2019-6-10
-	public Object tree2(String evatype,@Param("pid") String pid) {
-		Cnd cnd = Cnd.where("parentId", "=", Strings.sBlank(pid)).and("level","<",3);
+	public Object tree2(int year) {
+		Cnd cnd = Cnd.where("year", "=", year);
 
 		List<Monitor_catalog> list = monitorCatalogService.query(cnd.asc("catacode"));
 		List<Map<String, Object>> tree = new ArrayList<>();
 		for (Monitor_catalog catalog : list) {
 			Map<String, Object> obj = new HashMap<>();
-			obj.put("id", catalog.getId());
-			obj.put("text", catalog.getName());
-			obj.put("children", catalog.isHasChildren());
+			obj.put("id", catalog.getCatacode());
+			String strName = "";
+			int i = catalog.getLevel();
+			while(i>1){
+				strName+="&nbsp;&nbsp;";
+				i--;
+			}
+			strName += catalog.getName();
+			obj.put("text", strName);
+
 			tree.add(obj);
 		}
 		return tree;

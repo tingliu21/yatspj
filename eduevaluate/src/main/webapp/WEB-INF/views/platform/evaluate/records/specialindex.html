@@ -1,0 +1,102 @@
+<%
+layout("/layouts/platform.html"){
+%>
+<section class="content-wrap bg-white">
+    <header class="header navbar bg-white shadow">
+        <div class="btn-group tool-button">
+            <p class="navbar-text">评估报告填写列表</p>
+                <!--<a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/add" data-pjax><i class="ti-plus"></i> 新建Evaluate_records</a>-->
+            <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>-->
+        </div>
+        <div class="pull-right">
+
+        </div>
+    </header>
+    <div class=panel-body style="padding-top: 50px;">
+        <div class="table-responsive no-border">
+            <table class="table table-bordered table-striped mg-t datatable">
+                <thead>
+                    <tr>
+                            <th>学年</th>
+                            <th>行政区ID</th>
+                            <th>评估得分</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</section>
+
+<div id="dialogDetail" class="modal fade bs-modal-sm" tabindex="-3" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<script language="JavaScript">
+    var datatable;
+    function initDatatable() {
+        datatable = $('.datatable').DataTable({
+            "dom": '<"toolbar">frtip',
+            "searching":false,
+            "processing": false,
+            "serverSide": true,
+            "select": true,
+            "ordering": true,
+            "language": {
+                "url": "${base}/assets/plugins/datatables/cn.json"
+            },
+            "preDrawCallback": function () {
+                sublime.showLoadingbar($(".main-content"));
+            },
+            "drawCallback": function () {
+                sublime.closeLoadingbar($(".main-content"));
+            },
+            "ajax": {
+                "url": "${base}/platform/evaluate/records/specdata",
+                "type": "post",
+                "data": function (d) {
+                    //d.nutz = $('#nutz').val();
+                }
+            },
+            "order": [[1, "asc"]],
+            "columns": [
+                    {"data": "year", "bSortable": true},
+                    {"data": "unitid", "bSortable": true},
+                    {"data": "score", "bSortable": true},
+                    {"data": "status", "bSortable": true},
+            ],
+            "columnDefs": [
+                {
+                    "render": function (data, type, row) {
+                        html ='<div class="btn-group tool-button">' +
+                            '<a class="btn btn-primary" href="${base}/platform/evaluate/special/?evaluateId=' + row.id + '" data-pjax>评估报告填写</a>' +
+                            '</div>';
+                        return html
+                    },
+                    "targets": 4
+                }
+            ]
+        });
+        datatable.on('click', 'tr', function () {
+            $(this).toggleClass('selected');
+        });
+        $("#searchBtn").on('click', function () {
+            datatable.ajax.reload();
+        });
+    }
+
+
+    $(function () {
+
+        initDatatable();
+        $("#dialogDetail").on("hidden.bs.modal", function () {
+            $(this).removeData("bs.modal");
+        });
+    });
+</script>
+
+<%}%>

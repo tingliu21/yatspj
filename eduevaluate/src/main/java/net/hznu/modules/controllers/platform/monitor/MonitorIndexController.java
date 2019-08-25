@@ -151,16 +151,16 @@ public class MonitorIndexController {
 	@At({"/tree","/tree/?"})
 	@Ok("json")
 	@RequiresAuthentication
-	public Object tree(String evatype,@Param("pid") String pid) {
-		Cnd cnd = Cnd.where("parentId", "=", Strings.sBlank(pid));
+	public Object tree(int year,@Param("catacode") String catacode) {
+		Cnd cnd = Cnd.where("year", "=", year).and("catacode","like",catacode+"%").and("level","=",1);
 
 		List<Monitor_index> list = monitorIndexService.query(cnd.asc("code"));
 		List<Map<String, Object>> tree = new ArrayList<>();
 		for (Monitor_index index : list) {
 			Map<String, Object> obj = new HashMap<>();
-			obj.put("id", index.getId());
-			obj.put("text", index.getName());
-			obj.put("children", index.isHasChildren());
+			obj.put("id", index.getCode());
+			obj.put("text", index.getLocation()+"."+index.getName());
+
 			tree.add(obj);
 		}
 		return tree;

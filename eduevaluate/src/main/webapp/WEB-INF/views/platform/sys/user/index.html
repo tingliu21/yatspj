@@ -190,6 +190,8 @@ layout("/layouts/platform.html"){
                                 '<li class="divider"></li>' +
                                 '<li><a href="javascript:;" onclick="enableUser(\'' + row.id + '\')">启用</a></li>' +
                                 '<li><a href="javascript:;" onclick="disableUser(\'' + row.id + '\')">禁用</a></li>' +
+                                '<li class="divider"></li>' +
+                                '<li><a href="${base}/platform/evaluate/special/assignReport/' + row.id + '" data-pjax>分配评估报告</a></li>' +
                                 '</ul></div>';
                     },
                     "targets": 4

@@ -64,8 +64,10 @@ public class EvaluateIndexController {
 	@RequiresAuthentication
 	public String indexvalue(@Param("evaluateId") String evaluateId, HttpServletRequest req) {
 
+		List<Monitor_catalog> cataList = monitorCatalogService.query(Cnd.where("level","=",1).asc("catacode"));
 		if (StringUtils.isNotBlank(evaluateId)) {
 			req.setAttribute("evaluateId", evaluateId);
+			req.setAttribute("cataList",cataList);
 			return "beetl:/platform/evaluate/indexvalue.html";
 		} else {
 			//获取当前用户id
@@ -76,6 +78,7 @@ public class EvaluateIndexController {
 			int level = sysUnit.getLevel();
 			if (level == 3) {
 				req.setAttribute("xzqhdm", sysUnit.getUnitcode());
+				req.setAttribute("cataList",cataList);
 				return "beetl:/platform/evaluate/indexvalue.html";
 			} else {
 				return "redirect:/platform/evaluate/records";
@@ -94,11 +97,11 @@ public class EvaluateIndexController {
 		}else if(StringUtils.isNotBlank(xzqhdm)){
 			cnd = cnd.and("unitcode","=",xzqhdm).and("year","=",year);
 		}
-		if(StringUtils.isBlank(catacode)){
-			cnd = cnd.and("catacode","like",catacode);
+		if(StringUtils.isNotBlank(catacode)){
+			cnd = cnd.and("catacode","like",catacode+"%");
 		}
 		if(StringUtils.isNotBlank(code)){
-			cnd = cnd.and("code","like",code);
+			cnd = cnd.and("code","like",code+"%");
 		}
 
 		return evaluateIndexService.data(length, start, draw, order, columns, cnd, "");

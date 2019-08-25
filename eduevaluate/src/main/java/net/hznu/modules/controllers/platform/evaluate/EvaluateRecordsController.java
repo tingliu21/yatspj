@@ -1,6 +1,7 @@
 package net.hznu.modules.controllers.platform.evaluate;
 
 import net.hznu.common.annotation.SLog;
+import net.hznu.common.base.Globals;
 import net.hznu.common.base.Result;
 import net.hznu.common.filter.PrivateFilter;
 import net.hznu.common.page.DataTableColumn;
@@ -8,16 +9,23 @@ import net.hznu.common.page.DataTableOrder;
 import net.hznu.modules.models.evaluate.EvaluateIndexTpl;
 import net.hznu.modules.models.evaluate.Evaluate_index;
 import net.hznu.modules.models.evaluate.Evaluate_records;
+import net.hznu.modules.models.evaluate.Evaluate_special;
 import net.hznu.modules.models.monitor.Monitor_index;
 import net.hznu.modules.models.sys.Sys_unit;
+import net.hznu.modules.models.sys.Sys_user;
 import net.hznu.modules.services.evaluate.EvaluateIndexService;
 import net.hznu.modules.services.evaluate.EvaluateRecordsService;
+import net.hznu.modules.services.evaluate.EvaluateSpecialService;
 import net.hznu.modules.services.evaluate.EvaluateindextplService;
 import net.hznu.modules.services.monitor.MonitorIndexService;
 import net.hznu.modules.services.sys.SysUnitService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.nutz.dao.Cnd;
+import org.nutz.dao.Sqls;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.json.Json;
@@ -36,9 +44,7 @@ import org.nutz.mvc.upload.UploadAdaptor;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @IocBean
 @At("/platform/evaluate/records")
@@ -57,6 +63,9 @@ public class EvaluateRecordsController {
     private EvaluateindextplService evaluateindextplService;
     @Inject
     private SysUnitService sysUnitService;
+    @Inject
+    private EvaluateSpecialService evaluateSpecialService;
+
 
     @At("")
     @Ok("beetl:/platform/evaluate/records/index.html")
@@ -64,7 +73,12 @@ public class EvaluateRecordsController {
     public void index() {
 
     }
+    @At("/special")
+    @Ok("beetl:/platform/evaluate/records/specialindex.html")
+    @RequiresAuthentication
+    public void specindex( HttpServletRequest req) {
 
+    }
     @At
     @Ok("json:full")
     @RequiresAuthentication
@@ -72,7 +86,32 @@ public class EvaluateRecordsController {
         Cnd cnd = Cnd.NEW();
         return evaluateRecordsService.data(length, start, draw, order, columns, cnd, "unit");
     }
+    //获取专家评审列表
+    @At
+    @Ok("json:full")
+    @RequiresPermissions("evaluate.verify.special")
+    public Object specdata(@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
+        String sql = "SELECT a.* FROM evaluate_records a WHERE year= "+ Globals.EvaluateYear;
 
+        //获取专家id
+        Subject subject = SecurityUtils.getSubject();
+        Sys_user user = (Sys_user) subject.getPrincipal();
+        // 系统管理员可以审核所有的报告
+        if(!subject.hasRole("sysadmin")) {
+            //专家只审核自己分配的学校
+            sql += " and a.id IN(SELECT b.evaluateid FROM evaluate_special b where b.specialid='"+user.getId()+ "')";
+
+        }
+
+        String s = sql;
+        if (order != null && order.size() > 0) {
+            for (DataTableOrder o : order) {
+                DataTableColumn col = columns.get(o.getColumn());
+                s += " order by a." + Sqls.escapeSqlFieldValue(col.getData()).toString() + " " + o.getDir();
+            }
+        }
+        return evaluateRecordsService.data(length, start, draw, Sqls.create(sql), Sqls.create(s));
+    }
     @At
     @Ok("beetl:/platform/evaluate/records/add.html")
     @RequiresAuthentication
