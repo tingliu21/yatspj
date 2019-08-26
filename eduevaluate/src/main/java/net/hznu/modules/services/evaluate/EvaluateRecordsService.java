@@ -167,6 +167,7 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
                                 }
                                 Evaluate_index data =  dao().fetch(Evaluate_index.class,Cnd.where("evaluateid","=",records.getId()).and("code","=",dt_cd));
                                 if(data==null){
+                                    data = new Evaluate_index();
                                     data.setEvaluateId(records.getId());
                                     data.setCode(dt_cd);
                                     //获取监测点id

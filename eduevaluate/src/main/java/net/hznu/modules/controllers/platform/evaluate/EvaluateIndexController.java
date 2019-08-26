@@ -60,14 +60,14 @@ public class EvaluateIndexController {
 	private SysUnitService sysUnitService;
 
 	@At
-	@Ok("beetl:/platform/evaluate/indexvalue.html")
+	@Ok("re")
 	@RequiresAuthentication
 	public String indexvalue(@Param("evaluateId") String evaluateId, HttpServletRequest req) {
 
-		List<Monitor_catalog> cataList = monitorCatalogService.query(Cnd.where("level","=",1).asc("catacode"));
+
 		if (StringUtils.isNotBlank(evaluateId)) {
 			req.setAttribute("evaluateId", evaluateId);
-			req.setAttribute("cataList",cataList);
+
 			return "beetl:/platform/evaluate/indexvalue.html";
 		} else {
 			//获取当前用户id
@@ -78,7 +78,7 @@ public class EvaluateIndexController {
 			int level = sysUnit.getLevel();
 			if (level == 3) {
 				req.setAttribute("xzqhdm", sysUnit.getUnitcode());
-				req.setAttribute("cataList",cataList);
+
 				return "beetl:/platform/evaluate/indexvalue.html";
 			} else {
 				return "redirect:/platform/evaluate/records";

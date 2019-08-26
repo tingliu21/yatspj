@@ -131,11 +131,11 @@ public class MonitorCatalogController {
 		}
 		return tree;
 	}
-	@At({"/tree2","/tree2/?"})
+	@At
 	@Ok("json")
 	@RequiresAuthentication
 	//仅列出2级指标 add by Liut 2019-6-10
-	public Object tree2(int year) {
+	public Object tree2(@Param("year") int year) {
 		Cnd cnd = Cnd.where("year", "=", year);
 
 		List<Monitor_catalog> list = monitorCatalogService.query(cnd.asc("catacode"));

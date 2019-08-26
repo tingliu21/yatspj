@@ -92,14 +92,14 @@ public class MonitorValueModule {
 			}
 
 			String strSql = "SELECT xzqhdm,xzqhmc,index_0101, index_0102, index_0103, index_0201, index_0202,"
-					+ "index_0203,index_0204,index_0301,index_0302,index_0303,index_0401,index_0402,index_0501 "
+					+ "index_0203,index_0301,index_0302,index_0401,index_0402,index_0501 "
 					+ " FROM v_xzqh_monitor2 where xzqhdm like '"+statXZQ+"%'";
 			Sql sql = Sqls.create(strSql);
 			sql.setCallback(new SqlCallback() {
 				public Object invoke(Connection connection, ResultSet resultSet, Sql sql) throws SQLException {
 
 					MonitorStat monitorStat = new MonitorStat();
-					double[] value = new double[13];
+					double[] value = new double[11];
 					while (resultSet.next()) {
 						monitorStat.setName(resultSet.getString("xzqhmc"));
 						
@@ -116,20 +116,18 @@ public class MonitorValueModule {
 						value[4] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 						bg = new BigDecimal(resultSet.getDouble("index_0203"));
 						value[5] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-						bg = new BigDecimal(resultSet.getDouble("index_0204"));
-						value[6] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+					
 						bg = new BigDecimal(resultSet.getDouble("index_0301"));
-						value[7] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+						value[6] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 						bg = new BigDecimal(resultSet.getDouble("index_0302"));
-						value[8] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-						bg = new BigDecimal(resultSet.getDouble("index_0303"));
-						value[9] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+						value[7] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+					
 						bg = new BigDecimal(resultSet.getDouble("index_0401"));
-						value[10] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+						value[8] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 						bg = new BigDecimal(resultSet.getDouble("index_0402"));
-						value[11] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+						value[9] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 						bg = new BigDecimal(resultSet.getDouble("index_0501"));
-						value[12] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+						value[10] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 						
 						monitorStat.setValue(value);
 						statResult.add(monitorStat);
@@ -139,10 +137,10 @@ public class MonitorValueModule {
 			});
 			dao.execute(sql);
 			@SuppressWarnings("static-access")
-			List<DDMindex> index1List = dao.query(DDMindex.class, Cnd.where("ilevel", "=", 2).asc("jczbdm"));
+			List<DDMindex> index1List = dao.query(DDMindex.class, Cnd.where("ilevel", "=", 2).and("year","=",year).asc("jczbdm"));
 			MonitorStat monitorStat = new MonitorStat();
 			monitorStat.setName("目标值");
-			double[] value = new double[13];
+			double[] value = new double[11];
 			// 循环遍历13个二级指标，因为之前的返回结果已经排序过，所以就依次给value数值赋值即可。
 			for (int i = 0; i < index1List.size(); i++) {
 				DDMindex index1 = index1List.get(i);
@@ -153,7 +151,7 @@ public class MonitorValueModule {
 			statResult.add(monitorStat);
 			
 			String strSql1 = "SELECT xzqh.xzqhdm,xzqh.xzqhmc,avg(index_0101) as index1, avg(index_0102) as index2, avg(index_0103) as index3, avg(index_0201) as index4, avg(index_0202) as index5,"
-					+ "avg(index_0203) as index6,avg(index_0204) as index7 ,avg(index_0301) as index8,avg(index_0302) as index9,avg(index_0303) as index10,avg(index_0401) as index11,avg(index_0402) as index12,avg(index_0501) as index13   "
+					+ "avg(index_0203) as index6 ,avg(index_0301) as index7,avg(index_0302) as index8,avg(index_0401) as index9,avg(index_0402) as index10,avg(index_0501) as index11   "
 					+ " FROM v_xzqh_monitor2,xzqh where xzqh.xzqhdm= '330000' Group by xzqh.xzqhdm,xzqh.xzqhmc";
 			Sql sql1 = Sqls.create(strSql1);
 			sql1.setCallback(new SqlCallback() {
@@ -187,10 +185,10 @@ public class MonitorValueModule {
 						value[9] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 						bg = new BigDecimal(resultSet.getDouble("index11"));
 						value[10] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-						bg = new BigDecimal(resultSet.getDouble("index12"));
-						value[11] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-						bg = new BigDecimal(resultSet.getDouble("index13"));
-						value[12] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+//						bg = new BigDecimal(resultSet.getDouble("index12"));
+//						value[11] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+//						bg = new BigDecimal(resultSet.getDouble("index13"));
+//						value[12] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 						
 						monitorStat.setValue(value);
 					}
@@ -252,7 +250,7 @@ public class MonitorValueModule {
 				dao.execute(sql);
 				
 				@SuppressWarnings("static-access")
-				List<DDMindex> index1List = dao.query(DDMindex.class, Cnd.where("ilevel", "=", 1).asc("jczbdm"));
+				List<DDMindex> index1List = dao.query(DDMindex.class, Cnd.where("ilevel", "=", 1).and("year","=",year).asc("jczbdm"));
 				MonitorStat monitorStat = new MonitorStat();
 				monitorStat.setName("目标值");
 				double[] value1 = new double[5];
@@ -317,7 +315,7 @@ public class MonitorValueModule {
 				
 					String strSql = "SELECT xzqhdm,xzqhmc,m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15,m16,m17,m18,"
 							+ "m19,m20,m21,m22,m23,m24,m25,m26,m27,m28,m29,m30,m31,m32,m33,m34,m35,m36,m37,m38,m39,m40,m41,m42,m43,m44,"
-							+ "m45,m46,m47,m48,m49,m50,m51,m52,m53,m54 FROM v_xzqh_monitor_crosstab"
+							+ "m45,m46,m47 FROM v_xzqh_monitor_crosstab"
 							+ " WHERE  xzqhdm like '"+statXZQ+"%'";
 					Sql sql = Sqls.create(strSql);
 					sql.setCallback(new SqlCallback() {
@@ -327,8 +325,8 @@ public class MonitorValueModule {
 							while (resultSet.next()) {
 								MonitorStat monitorValue = new MonitorStat();
 								monitorValue.setName(resultSet.getString("xzqhmc"));
-								double[] value = new double[54];
-								for (int i = 0; i < 54; i++) {
+								double[] value = new double[47];
+								for (int i = 0; i < 47; i++) {
 									BigDecimal bg = new BigDecimal(resultSet.getDouble("m" + (i + 1)));
 									value[i] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 								}
@@ -340,14 +338,14 @@ public class MonitorValueModule {
 					});
 					dao.execute(sql);
 
-					strSql = "select sum(weight) as score,mindex_id from monitor_index where mindex_id <55 group by mindex_id order by mindex_id";
+					strSql = "select sum(weight) as score,mindex_id from monitor_index where mindex_id <48 group by mindex_id order by mindex_id";
 					sql = Sqls.create(strSql);
 					sql.setCallback(new SqlCallback() {
 						public Object invoke(Connection connection, ResultSet resultSet, Sql sql) throws SQLException {
 
 							MonitorStat monitorStat = new MonitorStat();
 							monitorStat.setName("目标值");
-							double[] value = new double[54];
+							double[] value = new double[47];
 
 							while (resultSet.next()) {
 								int i = resultSet.getInt("mindex_id");
@@ -366,8 +364,10 @@ public class MonitorValueModule {
 							+ " avg(m9) as p9, avg(m10) as p10, avg(m11) as p11, avg(m12) as p12, avg(m13) as p13, avg(m14) as p14, avg(m15) as p15, avg(m16) as p16, avg(m17) as p17, avg(m18) as p18, "
 							+ " avg(m19) as p19, avg(m20) as p20, avg(m21) as p21, avg(m22) as p22, avg(m23) as p23, avg(m24) as p24, avg(m25) as p25, avg(m26) as p26, avg(m27) as p27, avg(m28) as p28, "
 							+ " avg(m29) as p29, avg(m30) as p30, avg(m31) as p31, avg(m32) as p32, avg(m33) as p33, avg(m34) as p34, avg(m35) as p35, avg(m36) as p36, avg(m37) as p37, avg(m38) as p38, "
-							+ " avg(m39) as p39, avg(m40) as p40, avg(m41) as p41, avg(m42) as p42, avg(m43) as p43, avg(m44) as p44, avg(m45) as p45, avg(m46) as p46, avg(m47) as p47, avg(m48) as p48, "
-							+ " avg(m49) as p49, avg(m50) as p50, avg(m51) as p51, avg(m52) as p52, avg(m53) as p53, avg(m54) as p54, avg(m55) as p55 FROM v_xzqh_monitor_crosstab, xzqh  "
+							+ " avg(m39) as p39, avg(m40) as p40, avg(m41) as p41, avg(m42) as p42, avg(m43) as p43, avg(m44) as p44, avg(m45) as p45, avg(m46) as p46, avg(m47) as p47"
+//							+ ", avg(m48) as p48, "
+//							+ " avg(m49) as p49, avg(m50) as p50, avg(m51) as p51, avg(m52) as p52, avg(m53) as p53, avg(m54) as p54, avg(m55) as p55 "
+							+ " FROM v_xzqh_monitor_crosstab, xzqh  "
 							+ " WHERE  xzqh.xzqhdm= '330000' Group by xzqh.xzqhdm,xzqh.xzqhmc";
 					Sql sql1 = Sqls.create(strSql1);
 					sql1.setCallback(new SqlCallback() {
@@ -376,8 +376,8 @@ public class MonitorValueModule {
 							MonitorStat monitorStat = new MonitorStat();
 							if (resultSet.next()) {
 								monitorStat.setName(resultSet.getString("xzqhmc"));
-								double[] value = new double[54];
-								for (int i = 0; i < 54; i++) {
+								double[] value = new double[47];
+								for (int i = 0; i < 47; i++) {
 									BigDecimal bg = new BigDecimal(resultSet.getDouble("p" + (i + 1)));
 									value[i] = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 								}
