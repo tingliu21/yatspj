@@ -4,7 +4,8 @@ layout("/layouts/platform.html"){
 <section class="content-wrap bg-white">
 	<header class="header navbar bg-white shadow">
 		<div class="btn-group tool-button">
-			<p class="navbar-text">${xzqhmc!}监测指标</p>
+
+			<!--<p class="navbar-text">${xzqhmc!}监测指标</p>-->
 
 		</div>
 		<div class="pull-right">
@@ -53,7 +54,7 @@ layout("/layouts/platform.html"){
 
 
 		<!-- <form id="chartForm" style="display:none" method="post" enctype="multipart/form-data" action="monitor/exportPng"> -->
-		 <form id="chartForm" style="display:none" method="post" action="${base!}/platform/evaluate/exportCounty?xzqhdm=${xzqh!}">
+		 <form id="chartForm" style="display:none" method="post" action="${base!}/platform/evaluate/exportCounty?evaluateId=${evaluateId!}">
 		    <!-- <input id="imageValue1" name="radarCounty64" type="text" maxlength="50000" /> 
 		    <input id="imageValue2" name="fileType" type="text" value=".png" />-->
 		    <input id="radar1" name="radar1" type="text" maxlength="50000" />
@@ -157,21 +158,21 @@ layout("/layouts/platform.html"){
                      data:data[0].value
                  },{
                      name:'目标值',
-                     data:data[1].value
+                     data:data[2].value
                  },{
                      name:'省均值',
-                     data:data[2].value
+                     data:data[1].value
                  }]
              });
          });
      }
      $(document).ready(function () {
-         showScoreByCity1(${xzqh!},chartRadar1);
-         showScoreByCity2(${xzqh!},chartBar2);
-         showScoreByCityp(${xzqh!},chartBarp);
+         showScoreByCity1('${xzqh!}',chartRadar1);
+         showScoreByCity2('${xzqh!}',chartBar2);
+         showScoreByCityp('${xzqh!}',chartBarp);
 
          $("#export").on("click",function(){
-             var chartExportUrl = '${base!}/platform/evaluate/exportCounty?xzqhdm='+${xzqh!};
+             var chartExportUrl = '${base!}/platform/evaluate/exportCounty?evaluateId=${evaluateId!}';
              var picRadar1 = chartRadar1.getDataURL();//获取echarts图的base64编码，为png格式。
              var picBar2 = chartBar2.getDataURL();//获取echarts图的base64编码，为png格式。
              var picBarp = chartBarp.getDataURL();//获取echarts图的base64编码，为png格式。

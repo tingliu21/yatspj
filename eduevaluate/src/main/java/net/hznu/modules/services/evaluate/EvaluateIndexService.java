@@ -8,6 +8,7 @@ import net.hznu.common.page.OffsetPager;
 import net.hznu.modules.models.evaluate.Evaluate_index;
 
 import net.hznu.modules.models.evaluate.Evaluate_records;
+import net.hznu.modules.models.evaluate.Evaluate_special;
 import net.hznu.modules.models.monitor.Monitor_catalog;
 import net.hznu.modules.models.monitor.Monitor_index;
 import net.hznu.modules.models.sys.Sys_config;
@@ -217,22 +218,41 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
         }else
             return null;
     }
-
     /**
-     * 组装word文档中需要显示数据的集合
+     * 组装word文档中需要显示表格数据的集合
      * @return
      */
-    public Map<String, Object> packageObject(String xzqhdm, String xzqhmc, int year) {
-        if (xzqhdm.trim() != "" && year!=0) {
+    public Map<String, Object> packageParaObject(String evaluateId) {
+        if (StringUtils.isNotBlank(evaluateId)) {
             Map<String,Object> params = new HashMap<String,Object>();
             //报告生成日期
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy 年 MM 月 dd 日");
             params.put("${date}",sdf.format(new Date()));
 
+            Evaluate_special specialReport = dao().fetch(Evaluate_special.class,evaluateId);
+            params.put("${remark1}",specialReport.getRemark1());
+            params.put("${remark2}",specialReport.getRemark2());
+            params.put("${remarkp}",specialReport.getRemarkp());
+
+            //评语建议
+
             //报告行政区划信息
 //    		String pxzqhdm = xzqhdm.substring(0,4)+"00";
 //    		Xzqh pxzqh = dao.fetch(Xzqh.class,pxzqhdm);
 //    		params.put("${name}", pxzqh.getXzqhmc()+xzqhmc);
+
+
+            return params;
+        }else
+            return null;
+    }
+    /**
+     * 组装word文档中需要显示表格数据的集合
+     * @return
+     */
+    public Map<String, Object> packageTableObject(String xzqhdm, String xzqhmc, int year) {
+        if (xzqhdm.trim() != "" && year!=0) {
+            Map<String,Object> params = new HashMap<String,Object>();
 
             //省平均值
             List<Evaluate_index> mValueList = getAvgEvaluateIndex(year,xzqhdm.substring(0,2)+"0000");
@@ -247,21 +267,26 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
                 params.put(strKey,  bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
             }
             params.put("${as_t}", new BigDecimal(tScore).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
-            //县得分
+            //县评估值及得分
             mValueList = query(Cnd.where("year","=",year).and("unitcode","=",xzqhdm));
             tScore =0.0;
             for(Evaluate_index mValue:mValueList){
                 String strKey = String.format("${s%s}", mValue.getCode());
-                double value = mValue.getScore();
-                tScore += value;
-                // 保留2位小数
-                BigDecimal bg = new BigDecimal(value);
-                params.put(strKey, bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                Double value = mValue.getScore();
+                if(value!=null){
+                    tScore += value;
+                    // 保留2位小数
+                    BigDecimal bg = new BigDecimal(value);
+                    params.put(strKey, bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                }
+                //县评估值
+                strKey = String.format("${v%s}", mValue.getCode());
+                if(StringUtils.isNotBlank(mValue.getSvalue())) {
+                    params.put(strKey, mValue.getSvalue());
+                }
             }
             params.put("${s_t}", new BigDecimal(tScore).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 
-            // 获取评语模板
-            // 评语
 
             return params;
         }else

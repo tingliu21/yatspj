@@ -114,7 +114,7 @@ public class EvaluateIndexController {
 	public String evaluate_county(@Param("evaluateId") String evaluateId, HttpServletRequest req) {
 		if (StringUtils.isNotBlank(evaluateId)) {
 			Evaluate_records record = evaluateRecordsService.fetch(evaluateId);
-
+			req.setAttribute("evaluateId",evaluateId);
 			req.setAttribute("xzqh", record.getUnitcode());
 			req.setAttribute("xzqhmc",record.getXzqhmc());
 			return "beetl:/platform/evaluate/evaluate_county.html";
@@ -126,6 +126,8 @@ public class EvaluateIndexController {
 			Sys_unit sysUnit = user.getUnit();
 			int level = sysUnit.getLevel();
 			if (level == 3) {
+				Evaluate_records record = evaluateRecordsService.fetch(Cnd.where("year","=",Globals.EvaluateYear).and("unitcode","=",sysUnit.getUnitcode()));
+				req.setAttribute("evaluateId",record.getId());
 				req.setAttribute("xzqh", sysUnit.getUnitcode());
 				req.setAttribute("xzqhmc",sysUnit.getXzqhmc());
 				return "beetl:/platform/evaluate/evaluate_county.html";
@@ -320,7 +322,7 @@ public class EvaluateIndexController {
 
 		return result;
 	}
-	//getCityTotalScore
+	//地市的总分排名
 	@At
 	@Ok("json")
 	@RequiresAuthentication
@@ -329,14 +331,16 @@ public class EvaluateIndexController {
 
 		return monitorSumValueList;
 	}
+	//导出县报告
 	@At
 	@Ok("void")
-	public void exportCounty(HttpServletResponse resp, HttpServletRequest req, @Param("xzqhdm") String xzqh,
+	public void exportCounty(HttpServletResponse resp, HttpServletRequest req, @Param("evaluateId") String evaluateId,
 						  @Param("radar1") String picRadar1, @Param("bar2") String picBar2, @Param("barp") String picBarp) {
 		log.debug("导出word文件开始>>>>>>>>>>>>>");
 		//获取行政区划信息
-		Sys_unit unit = sysUnitService.query(Cnd.where("unitcode","=",xzqh)).get(0);
-		Map<String,Object> params = evaluateIndexService.packageObject(xzqh,unit.getXzqhmc(),Globals.EvaluateYear);
+		Evaluate_records record = evaluateRecordsService.fetch(evaluateId);
+		Map<String,Object> paramsPara = evaluateIndexService.packageParaObject(evaluateId);
+		Map<String,Object> paramsTable = evaluateIndexService.packageTableObject(record.getUnitcode(),record.getXzqhmc(),Globals.EvaluateYear);
 
 		// 传递过正中  "+" 变为了 " "
 		picRadar1 = picRadar1.replaceAll(" ", "+");
@@ -356,19 +360,19 @@ public class EvaluateIndexController {
 		chart.setFileType("png");
 		chart.setHeight(350);
 		chart.setWidth(350);
-		params.put("${radar1}", chart);
+		paramsPara.put("${radar1}", chart);
 		chart = new StatChart();
 		chart.setFilePath(picBar2Path);
 		chart.setFileType("png");
 		chart.setHeight(270);
 		chart.setWidth(420);
-		params.put("${bar2}", chart);
+		paramsPara.put("${bar2}", chart);
 		chart = new StatChart();
 		chart.setFilePath(picBar55Path);
 		chart.setFileType("png");
 		chart.setHeight(710);
 		chart.setWidth(420);
-		params.put("${bar55}", chart);
+		paramsPara.put("${bar55}", chart);
 //		chart = new StatChart();
 //		chart.setFilePath(picBartPath);
 //		chart.setFileType("png");
@@ -380,16 +384,12 @@ public class EvaluateIndexController {
 		System.out.println(getClass().getClassLoader().getResource("template/Countytemplate_"+Globals.EvaluateYear+".docx"));
 		InputStream is = getClass().getClassLoader().getResourceAsStream("template/Countytemplate_"+Globals.EvaluateYear+".docx");
 		try {
-			String filename = "浙江省县（市、区）教育现代化发展水平报告_"+unit.getXzqhmc()+".docx";
+			String filename = "浙江省县（市、区）教育现代化发展水平报告_"+evaluateId+".docx";
 			filename = URLEncoder.encode(filename, "UTF-8");
 
 			XwpfUtil xwpfUtil = new XwpfUtil();
-			xwpfUtil.exportWord(params,is,resp,xwpfUtil,filename);
-//			xwpfUtil.exportWord(resp);
-//			resp.setContentType("text/pain");
-//			resp.setHeader("Content-Disposition","attachment;filename=problems.txt");
-//			resp.getOutputStream().flush();
-//			resp.getOutputStream().close();
+			xwpfUtil.exportWord(paramsPara,paramsTable,is,resp,xwpfUtil,filename);
+
 			log.debug("导出word文件完成>>>>>>>>>>>>>");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block

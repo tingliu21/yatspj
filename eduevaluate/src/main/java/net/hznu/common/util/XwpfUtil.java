@@ -42,15 +42,15 @@ public class XwpfUtil {
 	 * @param response
 	 * @param xwpfUtil
 	 */
-	public void exportWord(Map<String, Object> params, InputStream is,
+	public void exportWord(Map<String, Object> paramsPara,Map<String, Object> paramsTable, InputStream is,
 			 HttpServletResponse response,
 			XwpfUtil xwpfUtil,String filename) {
 		
 		try {
 			XWPFDocument doc=new XWPFDocument(is);
 		
-			xwpfUtil.replaceInPara(doc,params);
-			xwpfUtil.replaceInTable(doc,params);
+			xwpfUtil.replaceInPara(doc,paramsPara);
+			xwpfUtil.replaceInTable(doc,paramsTable);
 			OutputStream os = response.getOutputStream();
 //			response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 			response.setContentType("application/vnd.ms-excel");
@@ -113,7 +113,7 @@ public class XwpfUtil {
 			for (int i = 0; i < runs.size(); i++) {
 				XWPFRun run = runs.get(i);
 				String runText = run.toString().trim();
-				if (StringUtils.isNotBlank(runText)&&'$' == runText.charAt(0)&&'{' == runText.charAt(1)) {
+				if (StringUtils.isNotBlank(runText)&&'$' == runText.charAt(0)) {
 					start = i;
 				}
 				if (StringUtils.isNotBlank(runText)&&(start != -1)) {
@@ -154,7 +154,17 @@ public class XwpfUtil {
             		}else {//文本替换
             			String value = String.valueOf(oValue);
             			if(value!=""){
-                    		para.createRun().setText(value) ;
+            				int iNewLine = value.indexOf("\n");
+            				if(iNewLine!=-1){
+            					XWPFRun run = para.createRun();
+								run.setText(value.substring(0,iNewLine));
+								run.addCarriageReturn();
+								run.addTab();
+								run.setText(value.substring(iNewLine,value.length()));
+
+							}else {
+								para.createRun().setText(value);
+							}
                     	}
             		} 
             		
