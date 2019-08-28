@@ -7,6 +7,7 @@ import net.hznu.common.page.DataTableColumn;
 import net.hznu.common.page.DataTableOrder;
 import net.hznu.modules.models.evaluate.Evaluate_special;
 import net.hznu.modules.models.sys.Sys_user;
+import net.hznu.modules.services.evaluate.EvaluateRecordsService;
 import net.hznu.modules.services.evaluate.EvaluateSpecialService;
 import net.hznu.modules.services.sys.SysUserService;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +23,7 @@ import org.nutz.log.Logs;
 import org.nutz.mvc.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 @IocBean
@@ -33,6 +35,8 @@ public class EvaluateSpecialController {
 	private EvaluateSpecialService evaluateSpecialService;
 	@Inject
 	private SysUserService sysUserService;
+	@Inject
+	private EvaluateRecordsService evaluateRecordsService;
 
 	@At("")
 	@Ok("beetl:/platform/evaluate/special/index.html")
@@ -107,7 +111,9 @@ public class EvaluateSpecialController {
 	public Object delEvaluate(@Param("evaIds") String evaIds, @Param("userid") String userid, HttpServletRequest req) {
 		try {
 			String[] ids = StringUtils.split(evaIds, ",");
-			evaluateSpecialService.dao().clear("evaluate_special", Cnd.where("evaluateId", "in", ids).and("specialid", "=", userid));
+
+			//evaluateSpecialService.dao().clear("evaluate_special", Cnd.where("evaluateId", "in", ids).and("specialid", "=", userid));
+			evaluateSpecialService.update(org.nutz.dao.Chain.make("specialId", null),Cnd.where("evaluateId","in",ids));
 			Sys_user user = sysUserService.fetch(userid);
 			req.setAttribute("name", user.getNickname());
 			return Result.success("system.success");
@@ -125,7 +131,9 @@ public class EvaluateSpecialController {
 			String[] ids = StringUtils.split(evaIds, ",");
 			for (String s : ids) {
 				if (!Strings.isEmpty(s)) {
-					evaluateSpecialService.insert("evaluate_special", org.nutz.dao.Chain.make("evaluateId", s).add("specialId", userid));
+					//原来在分配专家的时候才插入数据，现在改为数据导入的时候就有evaluate_special记录
+//					evaluateSpecialService.insert("evaluate_special", org.nutz.dao.Chain.make("evaluateId", s).add("specialId", userid));
+					evaluateSpecialService.update(org.nutz.dao.Chain.make("specialId", userid),Cnd.where("evaluateId","=",s));
 				}
 			}
 			Sys_user user = sysUserService.fetch(userid);
@@ -140,57 +148,21 @@ public class EvaluateSpecialController {
 	 */
 
 
-
-    @At("/edit/?")
-    @Ok("beetl:/platform/evaluate/special/edit.html")
-    @RequiresAuthentication
-    public Object edit(String id) {
-		return evaluateSpecialService.fetch(id);
-    }
-
     @At
     @Ok("json")
-    @SLog(tag = "修改Evaluate_special", msg = "ID:${args[0].id}")
-    public Object editDo(@Param("..") Evaluate_special evaluateSpecial, HttpServletRequest req) {
+    @SLog(tag = "修改评估报告", msg = "ID:${args[0].evaluateId}")
+    public Object editDo(@Param("..") Evaluate_special evaluateSpecial, @Param("bSubmit") boolean bSubmit,HttpServletRequest req) {
 		try {
 
 			evaluateSpecial.setOpAt((int) (System.currentTimeMillis() / 1000));
 			evaluateSpecialService.updateIgnoreNull(evaluateSpecial);
-			return Result.success("system.success");
-		} catch (Exception e) {
-			return Result.error("system.error");
-		}
-    }
-
-
-    @At({"/delete","/delete/?"})
-    @Ok("json")
-    @SLog(tag = "删除Evaluate_special", msg = "ID:${args[2].getAttribute('id')}")
-    public Object delete(String id, @Param("ids") String[] ids ,HttpServletRequest req) {
-		try {
-			if(ids!=null&&ids.length>0){
-				evaluateSpecialService.delete(ids);
-    			req.setAttribute("id", org.apache.shiro.util.StringUtils.toString(ids));
-			}else{
-				evaluateSpecialService.delete(id);
-    			req.setAttribute("id", id);
+			if(bSubmit){
+				evaluateRecordsService.update(org.nutz.dao.Chain.make("status",true),Cnd.where("id","=",evaluateSpecial.getEvaluateId()));
 			}
 			return Result.success("system.success");
 		} catch (Exception e) {
 			return Result.error("system.error");
 		}
-    }
-
-
-    @At("/detail/?")
-    @Ok("beetl:/platform/evaluate/special/detail.html")
-    @RequiresAuthentication
-	public Object detail(String id) {
-		if (!Strings.isBlank(id)) {
-			return evaluateSpecialService.fetch(id);
-
-		}
-		return null;
     }
 
 }

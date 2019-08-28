@@ -7,7 +7,10 @@ import net.hznu.common.page.DataTableOrder;
 import net.hznu.common.page.OffsetPager;
 import net.hznu.modules.models.evaluate.Evaluate_index;
 
+import net.hznu.modules.models.evaluate.Evaluate_records;
+import net.hznu.modules.models.monitor.Monitor_catalog;
 import net.hznu.modules.models.monitor.Monitor_index;
+import net.hznu.modules.models.sys.Sys_config;
 import org.apache.commons.lang.StringUtils;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
@@ -38,6 +41,17 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
     public EvaluateIndexService(Dao dao) {
     	super(dao);
     }
+
+    /**
+     * @param length   页大小
+     * @param start    start
+     * @param draw     draw
+     * @param orders   排序
+     * @param columns  字段
+     * @param cnd      查询条件
+     * @param linkname 关联查询
+     * @return 返回指标列表，其中指标名称含完整路径
+     */
     public NutMap data(int length, int start, int draw, List<DataTableOrder> orders, List<DataTableColumn> columns, Cnd cnd, String linkname) {
         NutMap re = new NutMap();
         if (orders != null && orders.size() > 0) {
@@ -253,5 +267,147 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
         }else
             return null;
     }
+    public void generateRemark(Evaluate_records evaluate){
+        //获取各级指标评语模版
+        Map<String, String> tplConfig = new HashMap<> ();
+        List<Sys_config> configList = dao().query(Sys_config.class, Cnd.where("configkey","like","tpl%"));
+        for (Sys_config sysConfig : configList) {
+            tplConfig.put(sysConfig.getConfigKey(), sysConfig.getConfigValue());
+        }
+
+        //评估相关信息
+        String xzqh = evaluate.getUnitcode();
+        int year = evaluate.getYear();
+        String proXZQH = xzqh.substring(0, 2) + "0000";
+
+        String remark1,remark2,remarkp,strLoop;
+        int num_0=0,num_b=0,num_s =0;
+        String str_0="",str_b="",str_s="";
+
+        //获取指标值
+        //总分
+        double as_t = score(Sqls.create("select avg(score) :: numeric(5,2) FROM evaluate_records where year=@year").setParam("year",year));
+        remark1 =tplConfig.get("tpl1").replace("@year",String.valueOf(year)).replace("@s_t",String.valueOf(evaluate.getScore()));
+        if(evaluate.getScore()>as_t){
+            remark1 = remark1.replace("@c_t","高").replace("@ad_t",String.valueOf(evaluate.getScore()-as_t));
+        }else if(evaluate.getScore()<as_t){
+            remark1 = remark1.replace("@c_t","低").replace("@ad_t",String.valueOf(as_t-evaluate.getScore()));
+        }else{
+            remark1 = remark1.replace("@c_t","等").replace("@ad_t","");
+        }
+
+        double[] values_c,values_p;
+        List<String> fieldnames = new ArrayList<>();
+        String viewname = "v_xzqh_evaluate1_" + year;
+        //获取一级指标
+        List<Monitor_catalog> catalogs = dao().query(Monitor_catalog.class,Cnd.where("level", "=", 1).
+                and("year", "=", year).and("weights", ">", 0).asc("catacode"));
+        for (Monitor_catalog catalog : catalogs) {
+            String fieldname = "index_" + catalog.getCatacode();
+            fieldnames.add(fieldname);
+        }
+        //县得分
+        values_c = getScoreByXZQH(viewname, fieldnames, xzqh).get(0).getValue();
+        //省均值
+        values_p = getAvgScoreByXZQH(viewname, fieldnames, proXZQH).getValue();
+
+        //一级指标达成度说明
+        strLoop= "";
+        for(int i=0;i<values_c.length;i++){
+            strLoop += tplConfig.get("tpl1_l").replace("@n_i",catalogs.get(i).getName()).replace("@s_i",String.format("%.2f",values_c[i]));
+            if(values_c[i]>values_p[i]){
+                strLoop = strLoop.replace("@c_i","高").replace("@d_i",String.format("%.2f",values_c[i]-values_p[i]));
+            }else if(values_c[i]<values_p[i]){
+                strLoop = strLoop.replace("@c_i","低").replace("@d_i",String.format("%.2f",values_p[i]-values_c[i]));
+            }else{
+                strLoop = strLoop.replace("@c_i","等").replace("@d_i","");
+            }
+        }
+        //去掉末尾的分号；
+        strLoop = strLoop.substring(0,strLoop.length()-1);
+        remark1 = remark1.replace("@tpl1_l",strLoop);
+        //二级指标评语
+        viewname = "v_xzqh_evaluate2_" + year;
+        catalogs = dao().query(Monitor_catalog.class,Cnd.where("level", "=", 2).
+                and("year", "=", year).and("weights", ">", 0).asc("catacode"));
+        fieldnames = new ArrayList<>(catalogs.size());
+        for (Monitor_catalog catalog : catalogs) {
+            String fieldname = "index_" + catalog.getCatacode();
+            fieldnames.add(fieldname);
+
+        }
+        //县得分
+        values_c = getScoreByXZQH(viewname, fieldnames, xzqh).get(0).getValue();
+        //省均值
+        values_p = getAvgScoreByXZQH(viewname, fieldnames, proXZQH).getValue();
+        //二级指标达成度说明
+        strLoop= "";
+        for(int i=0;i<values_c.length;i++){
+
+            if(values_c[i]>values_p[i]){
+                num_b++;
+                str_b += tplConfig.get("tpl2_d_l").replace("@n_i",catalogs.get(i).getName()).replace("@c_i","高").replace("@d_i",String.format("%.2f",values_c[i]-values_p[i]));
+
+            }else if(values_c[i]<values_p[i]){
+                num_s++;
+                str_s += tplConfig.get("tpl2_d_l").replace("@n_i",catalogs.get(i).getName()).replace("@c_i","低").replace("@d_i",String.format("%.2f",values_p[i]-values_c[i]));
+
+            }
+        }
+        //去掉末尾的分号；
+        if(str_b!="") {
+            str_b = str_b.substring(0,str_b.length()-1);
+            strLoop = tplConfig.get("tpl2_l").replace("@c_i","高").replace("@cnt",String.valueOf(num_b)).replace("@tpl2_d_l",str_b);
+        }
+        if(str_s!="") {
+            str_s = str_s.substring(0,str_s.length()-1);
+            strLoop	+=	tplConfig.get("tpl2_l").replace("@c_i","低").replace("@cnt",String.valueOf(num_s)).replace("@tpl2_d_l",str_s);
+            strLoop = strLoop.substring(0,strLoop.length()-1);
+        }
+        remark2= tplConfig.get("tpl2").replace("@cnt",String.valueOf(fieldnames.size())).replace("@tpl2_l",strLoop);
+        //监测点评语
+        viewname = "v_xzqh_evaluate_crosstab_" +year;
+        List<Monitor_index> indexList = dao().query(Monitor_index.class,Cnd.where("level", "=", 1).
+                and("year", "=", year).and("weights", ">", 0).asc("location"));
+        fieldnames = new ArrayList<>(indexList.size());
+        for (Monitor_index index : indexList) {
+            String fieldname = "m" + index.getLocation();
+            fieldnames.add(fieldname);
+        }
+        //县得分
+        values_c = getScoreByXZQH(viewname, fieldnames, xzqh).get(0).getValue();
+        //省均值
+        values_p = getAvgScoreByXZQH(viewname, fieldnames, proXZQH).getValue();
+        //监测点达成度说明
+        strLoop= "";
+        num_s =0;str_s="";
+        for(int i=0;i<values_c.length;i++){
+            if(values_c[i]==0){
+                num_0++;
+                str_0 += tplConfig.get("tplp_l").replace("@n_i",indexList.get(i).getName());
+            }else if(values_c[i]<values_p[i]){
+                num_s++;
+                str_s += tplConfig.get("tplp_l").replace("@n_i",indexList.get(i).getName());
+            }
+        }
+        //去掉末尾顿号；
+        if(str_0!="") {
+            str_0 = str_0.substring(0,str_0.length()-1);
+            strLoop = tplConfig.get("tplp_0").replace("@cnt_0",String.valueOf(num_0)).replace("@tplp_l",str_0);
+        }
+        remarkp = tplConfig.get("tplp").replace("@tplp_0",strLoop);
+        strLoop="";
+        if(str_s!="") {
+            str_s = str_s.substring(0,str_s.length()-1);
+            strLoop	= tplConfig.get("tplp_s").replace("@cnt_s",String.valueOf(num_s)).replace("@tplp_l",str_s);
+
+        }
+        remarkp = remarkp.replace("@cnt",String.valueOf(fieldnames.size())).replace("@tplp_s",strLoop);
+
+        dao().execute(Sqls.create("insert into evaluate_special(evaluateid,remark1,remark2,remarkp) values (@evaluateid,@remark1,@remark2,@remarkp)")
+                .setParam("evaluateid",evaluate.getId()).setParam("remark1",remark1).setParam("remark2",remark2).setParam("remarkp",remarkp));
+
+    }
+
 }
 

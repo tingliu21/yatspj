@@ -78,7 +78,7 @@ public class EvaluateIndexController {
 			int level = sysUnit.getLevel();
 			if (level == 3) {
 				req.setAttribute("xzqhdm", sysUnit.getUnitcode());
-
+				//req.setAttribute("cataList",cataList);
 				return "beetl:/platform/evaluate/indexvalue.html";
 			} else {
 				return "redirect:/platform/evaluate/records";

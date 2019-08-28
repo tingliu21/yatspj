@@ -245,6 +245,14 @@ public class EvaluateRecordsController {
                 //导入数据库
                 InputStream is = tf.getInputStream();
                 evaluateRecordsService.excel2db(is, year,bscore);
+                if(bscore) {
+                   //导入分值时，生成评语
+                    evaluateSpecialService.clear();
+                   List<Evaluate_records> recordsList = evaluateRecordsService.query(Cnd.where("year", "=", year));
+                   for (Evaluate_records record : recordsList) {
+                       evaluateIndexService.generateRemark(record);
+                   }
+                }
                 //这里已经通过数据库把数据导入到evaluate_value_temp_2018，暂时先将数据库的记录读到evaluate_index
                 //importIndexValue();
 

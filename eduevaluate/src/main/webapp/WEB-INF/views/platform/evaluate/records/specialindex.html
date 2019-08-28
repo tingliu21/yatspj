@@ -78,6 +78,16 @@ layout("/layouts/platform.html"){
                         return html
                     },
                     "targets": 4
+                },
+                {
+                    "render": function (data, type, row) {
+                        if (data) {
+                            return '<i id="disable_' + row.id + '" class="fa fa-circle text-success ml5"></i>已完成';
+                        } else {
+                            return '<i id="disable_' + row.id + '" class="fa fa-circle text-danger ml5"></i>未完成';
+                        }
+                    },
+                    "targets": 3
                 }
             ]
         });

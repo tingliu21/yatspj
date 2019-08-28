@@ -5,11 +5,12 @@ layout("/layouts/platform.html"){
 <script src="${base!}/assets/plugins/ueditor/ueditor.all.min.js"></script>
 <header class="header navbar bg-white shadow">
     <div class="btn-group tool-button">
-        <a class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/special" data-pjax><i class="ti-angle-left"></i> 返回</a>
+        <a class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/special" id="goback" data-pjax><i class="ti-angle-left"></i> 返回</a>
     </div>
     <div class="pull-right">
         <div class="btn-group tool-button">
             <button class="btn btn-primary navbar-btn" type="button" id="save"> 保存</button>
+            <button class="btn btn-primary navbar-btn" type="button" id="sub" onclick="sub()"> 保存并提交</button>
         </div>
     </div>
 </header>
@@ -17,31 +18,112 @@ layout("/layouts/platform.html"){
 <div class="content-wrap">
         <div class="wrapper" style="min-height:500px;height: 100%;">
             <form id="addForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
-                  action="${base}/platform/cms/article/editDo" method="post">
-                <input id="id" name="id" value="${obj.id!}" type="hidden">
+                  action="${base}/platform/evaluate/special/editDo" method="post">
+                <input id="evaluateId" name="evaluateId" value="${obj.evaluateId!}" type="hidden">
+                <input id="bSubmit" name="bSubmit" value="false" type="hidden">
                 <div class="col-lg-12">
                     <div class="form-group">
-                        <label for="content" class="col-sm-2 control-label">报告内容</label>
-
+                        <label for="remark1" class="col-sm-2 control-label">一级指标达成情况</label>
                         <div class="col-sm-8">
-                            <textarea id="content" name="content" style="width:100%;height:200px;">${obj.remark!}</textarea>
+                            <textarea id="remark1" name="remark1" class="form-control" data-parsley-required="true" style="width:100%;height:100px;" placeholder="一级指标达成情况">${obj.remark1!}</textarea>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="remark2" class="col-sm-2 control-label">二级指标达成情况</label>
+                        <div class="col-sm-8">
+                            <textarea id="remark2" name="remark2" class="form-control" data-parsley-required="true" style="width:100%;height:100px;" placeholder="二级指标达成情况">${obj.remark2!}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="remarkp" class="col-sm-2 control-label">监测点达成情况</label>
+                        <div class="col-sm-8">
+                            <textarea id="remarkp" name="remarkp" class="form-control" data-parsley-required="true" style="width:100%;height:200px;" placeholder="监测点达成情况">${obj.remarkp!}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="suggestion" class="col-sm-2 control-label">建议</label>
+
+                        <div class="col-sm-8">
+                            <textarea id="suggestion" name="suggestion"  style="width:100%;height:200px;">${obj.suggestion!}</textarea>
+                        </div>
+                    </div>
+
                 </div>
             </form>
         </div>
 
     </div>
 </section>
-
+<div id="dialogSubmit" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">提交修改报告</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        提交后无法再修改，确定提交吗？ <br/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                <button id="ok" type="button" class="btn btn-primary" data-loading-text="正在提交...">确 定</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script language="JavaScript">
 
     var ue;
+    function sub() {
+        var dialog = $("#dialogSubmit");
+        dialog.modal("show");
+        dialog.find("#ok").unbind("click");
+        dialog.find("#ok").bind("click", function (event) {
+            var btn = $(this);
+            btn.button("loading");
+            $('#bSubmit').val(true);
+            $('#addForm').submit();
+            //重置按钮状态，关闭提示框
+            btn.button("reset");
+            dialog.modal("hide");
+        });
+    }
+
     $(document).ready(function () {
         setTimeout(function () {
             ue= new baidu.editor.ui.Editor();
-            ue.render('content');
+            ue.render('suggestion');
         },500);
+
+        $("#save").on("click",function(){
+            $("#footer_content").val(ue.getContent());
+            $('#addForm').submit();
+        });
+        $('#addForm').ajaxForm({
+            dataType: 'json',
+            beforeSubmit: function (arr, form, options) {
+
+            },
+            success: function (data, statusText, xhr, form) {
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+                    if($("#bSubmit").val()){
+                        //点击提交后返回评估指标列表页
+                        setTimeout(function () {
+                            $("#goback").trigger("click");
+                        }, 1000);
+                    }
+
+                } else {
+                    Toast.error(data.msg);
+                }
+
+            }
+        });
     });
 </script>
 
