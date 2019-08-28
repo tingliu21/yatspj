@@ -6,8 +6,10 @@ import net.hznu.common.filter.PrivateFilter;
 import net.hznu.common.page.DataTableColumn;
 import net.hznu.common.page.DataTableOrder;
 import net.hznu.modules.models.evaluate.Evaluate_special;
+import net.hznu.modules.models.sys.Sys_unit;
 import net.hznu.modules.models.sys.Sys_user;
 import net.hznu.modules.services.evaluate.EvaluateSpecialService;
+import net.hznu.modules.services.sys.SysUnitService;
 import net.hznu.modules.services.sys.SysUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -33,13 +35,31 @@ public class EvaluateSpecialController {
 	private EvaluateSpecialService evaluateSpecialService;
 	@Inject
 	private SysUserService sysUserService;
-
+	@Inject
+	private SysUnitService sysUnitService;
 	@At("")
 	@Ok("beetl:/platform/evaluate/special/index.html")
 	@RequiresAuthentication
 	public Object index(@Param("evaluateId") String evaluateId, HttpServletRequest req) {
 
 		return evaluateSpecialService.fetch(evaluateId);
+	}
+
+	@At
+	@Ok("json")
+	@RequiresAuthentication
+	public Object data(@Param("unitid") String unitid, @Param("loginname") String loginname, @Param("nickname") String nickname, @Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
+		Cnd cnd = Cnd.NEW();
+		/*if (!Strings.isBlank(unitid) && !"root".equals(unitid))
+			cnd.and("unitid", "=", unitid);*/
+			Sys_unit unit = sysUnitService.fetch(Cnd.where("aliasname","=","Special"));
+			cnd.and("unitid", "=", unit.getId());
+			if (!Strings.isBlank(loginname))
+				cnd.and("loginname", "like", "%" + loginname + "%");
+			if (!Strings.isBlank(nickname))
+				cnd.and("nickname", "like", "%" + nickname + "%");
+			return sysUserService.data(length, start, draw, order, columns, cnd, null);
+
 	}
 
 	/**
@@ -52,7 +72,15 @@ public class EvaluateSpecialController {
 	@Ok("beetl:/platform/evaluate/special/assignReport.html")
 	@RequiresAuthentication
 	public Object assignReport(String userId, HttpServletRequest req) {
+
 		return sysUserService.fetch(userId);
+	}
+
+	@At("/assign")
+	@Ok("beetl:/platform/evaluate/special/assign.html")
+	@RequiresAuthentication
+	public void assign() {
+
 	}
 
 	@At
