@@ -9,7 +9,6 @@ import net.hznu.common.page.DataTableOrder;
 import net.hznu.modules.models.evaluate.EvaluateIndexTpl;
 import net.hznu.modules.models.evaluate.Evaluate_index;
 import net.hznu.modules.models.evaluate.Evaluate_records;
-import net.hznu.modules.models.evaluate.Evaluate_special;
 import net.hznu.modules.models.monitor.Monitor_index;
 import net.hznu.modules.models.sys.Sys_unit;
 import net.hznu.modules.models.sys.Sys_user;
@@ -29,22 +28,19 @@ import org.nutz.dao.Sqls;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.json.Json;
-import org.nutz.lang.Files;
 import org.nutz.lang.Strings;
-import org.nutz.lang.random.R;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
-import org.nutz.mvc.adaptor.WhaleAdaptor;
 import org.nutz.mvc.annotation.*;
 import org.nutz.mvc.impl.AdaptorErrorContext;
 import org.nutz.mvc.upload.TempFile;
 import org.nutz.mvc.upload.UploadAdaptor;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @IocBean
 @At("/platform/evaluate/records")
@@ -227,7 +223,8 @@ public class EvaluateRecordsController {
     @At
     @Ok("beetl:/platform/evaluate/records/upload.html")
     @RequiresAuthentication
-    public void upload() {}
+    public void upload() {
+    }
     //临时用来导入山娟计算的数据
     @AdaptBy(type = UploadAdaptor.class, args = {"ioc:fileUpload"})
     @POST
@@ -246,12 +243,15 @@ public class EvaluateRecordsController {
                 InputStream is = tf.getInputStream();
                 evaluateRecordsService.excel2db(is, year,bscore);
                 if(bscore) {
-                   //导入分值时，生成评语
+                    //导入分值时，生成评语
                     evaluateSpecialService.clear();
-                   List<Evaluate_records> recordsList = evaluateRecordsService.query(Cnd.where("year", "=", year));
-                   for (Evaluate_records record : recordsList) {
-                       evaluateIndexService.generateRemark(record);
-                   }
+                    List<Evaluate_records> recordsList = evaluateRecordsService.query(Cnd.where("year", "=", year));
+                    for (Evaluate_records record : recordsList) {
+                        evaluateIndexService.generateRemark(record);
+                    }
+                }else{
+                //通过value字段和sql语句得到svalue字段
+                    evaluateRecordsService.UpdateIndexSvalue();
                 }
                 //这里已经通过数据库把数据导入到evaluate_value_temp_2018，暂时先将数据库的记录读到evaluate_index
                 //importIndexValue();

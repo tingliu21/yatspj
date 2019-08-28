@@ -1,6 +1,5 @@
 package net.hznu.modules.services.evaluate;
 
-import io.jsonwebtoken.lang.Strings;
 import net.hznu.common.base.Service;
 import net.hznu.common.chart.MonitorSumValue;
 import net.hznu.modules.models.evaluate.Evaluate_index;
@@ -23,7 +22,6 @@ import org.nutz.log.Log;
 import org.nutz.log.Logs;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -202,6 +200,18 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
             }
         }
         is.close();
+    }
+
+
+    /**
+     * 执行sql使value转换为svalue
+     * @param value
+     * @return
+     * @throws Exception
+     */
+    public void UpdateIndexSvalue() {
+        Sql sql = Sqls.create("SELECT update_evaluate_svalue()");
+        dao().execute(sql);
     }
 
     private String getValue(Cell cell){

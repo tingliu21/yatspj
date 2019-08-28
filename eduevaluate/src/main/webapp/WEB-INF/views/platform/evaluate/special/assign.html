@@ -1,0 +1,136 @@
+<%
+layout("/layouts/platform.html"){
+%>
+<section class="content-wrap bg-white">
+    <header class="header navbar bg-white shadow">
+        <div class="pull-right offscreen-right">
+            <button class="btn btn-primary navbar-btn" onclick="sublime.toggleFilter('.cd-panel')"><i
+                    class="fa fa-sliders"></i> 筛选
+            </button>
+        </div>
+    </header>
+    <div class=panel-body style="padding-top: 50px;">
+        <div class="table-responsive no-border">
+            <input id="unitid" type="hidden">
+            <table class="table table-bordered table-striped mg-t datatable">
+                <thead>
+                <tr>
+                    <th>用户名</th>
+                    <th>姓名/昵称</th>
+                    <th>状态</th>
+                    <th>操作</th>
+            </table>
+        </div>
+    </div>
+</section>
+<div class="cd-panel from-right">
+    <header class="cd-panel-header">
+        <h4>高级筛选</h4>
+    </header>
+    <div class="cd-panel-container">
+        <div class="cd-panel-content shadow">
+            <div class="form-group">
+                <label for="loginname">用户名</label>
+                <input type="text" id="loginname" name="loginname" onclick="this.value=''" class="form-control" placeholder="用户名" autofocus>
+            </div>
+            <div class="form-group">
+                <label for="nickname">姓名/昵称</label>
+                <input type="text" id="nickname" name="nickname" onclick="this.value=''" class="form-control" placeholder="姓名/昵称">
+            </div>
+            <button id="searchBtn" type="button" class="btn btn-default">查询</button>
+        </div>
+    </div>
+</div>
+
+
+
+<script language="JavaScript">
+    var datatable;
+    function initDatatable() {
+        datatable = $('.datatable').DataTable({
+            "dom": '<"toolbar">frtip',
+            "searching":false,
+            "processing": false,
+            "serverSide": true,
+            "select": true,
+            "ordering": true,
+            "language": {
+                "url": "${base}/assets/plugins/datatables/cn.json"
+            },
+            "preDrawCallback": function () {
+                sublime.showLoadingbar($(".main-content"));
+            },
+            "drawCallback": function () {
+                sublime.closeLoadingbar($(".main-content"));
+            },
+            "ajax": {
+                "url": "${base}/platform/evaluate/special/data",
+                "type": "post",
+                "data": function (d) {
+                    d.unitid = $('#unitid').val();
+                    d.loginname = $('#loginname').val();
+                    d.nickname = $('#nickname').val();
+                }
+            },
+            "order": [[0, "desc"]],
+            "columns": [
+                {"data": "loginname", "bSortable": true},
+                {"data": "nickname", "bSortable": true},
+                {"data": "disabled", "bSortable": true}
+            ],
+            "columnDefs": [
+                {
+                    "render": function (data, type, row) {
+                        html ='<div class="btn-group tool-button">' +
+                            '<a href="${base}/platform/evaluate/special/assignReport/' + row.id + '" data-pjax>分配评估报告</a>' +
+                            '</div>';
+                        return html
+                    },
+                    "targets": 3
+                },
+                {
+                    "render": function (data, type, row) {
+                        if (!data) {
+                            return '<i id="disable_' + row.id + '" class="fa fa-circle text-success ml5"></i>';
+                        } else {
+                            return '<i id="disable_' + row.id + '" class="fa fa-circle text-danger ml5"></i>';
+                        }
+                    },
+                    "targets": 2
+                }
+            ]
+        });
+        datatable.on('click', 'tr', function () {
+            $(this).toggleClass('selected');
+        });
+        $("#searchBtn").on('click', function () {
+            datatable.ajax.reload();
+        });
+    }
+
+    function enableUser(id) {
+        $.post("${base}/platform/sys/user/enable/" + id, {}, function (data) {
+            if (data.code == 0) {
+                $("#disable_" + id).attr("class", "fa fa-circle text-success ml5");
+            } else {
+                Toast.error(data.msg);
+            }
+        }, "json");
+    }
+    function disableUser(id) {
+        $.post("${base}/platform/sys/user/disable/" + id, {}, function (data) {
+            if (data.code == 0) {
+                $("#disable_" + id).attr("class", "fa fa-circle text-danger ml5");
+            } else {
+                Toast.error(data.msg);
+            }
+        }, "json");
+    }
+
+    $(document).ready(function () {
+        initDatatable();
+
+    });
+
+</script>
+<%}%>
