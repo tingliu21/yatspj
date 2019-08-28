@@ -314,9 +314,9 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
         double as_t = score(Sqls.create("select avg(score) :: numeric(5,2) FROM evaluate_records where year=@year").setParam("year",year));
         remark1 =tplConfig.get("tpl1").replace("@year",String.valueOf(year)).replace("@s_t",String.valueOf(evaluate.getScore()));
         if(evaluate.getScore()>as_t){
-            remark1 = remark1.replace("@c_t","高").replace("@ad_t",String.valueOf(evaluate.getScore()-as_t));
+            remark1 = remark1.replace("@c_t","高").replace("@ad_t",String.format("%.2f",evaluate.getScore()-as_t));
         }else if(evaluate.getScore()<as_t){
-            remark1 = remark1.replace("@c_t","低").replace("@ad_t",String.valueOf(as_t-evaluate.getScore()));
+            remark1 = remark1.replace("@c_t","低").replace("@ad_t",String.format("%.2f",as_t-evaluate.getScore()));
         }else{
             remark1 = remark1.replace("@c_t","等").replace("@ad_t","");
         }
