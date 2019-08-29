@@ -301,17 +301,17 @@ public class Service<T> extends EntityService<T> {
 
     }
     /**
-     * 计算指标代码
+     * 计算指标代码,仅供Monitor_catalog和Monitor_index2个表使用
      *
      * @param tableName
      * @param cloName
      * @param value
      * @return
      */
-    public String getSubCode(String tableName, String cloName, String value) {
+    public String getSubCode(String tableName, int year,String cloName, String value) {
         final String val = Strings.sNull(value);
         Sql sql = Sqls.create("select " + cloName + " from " + tableName
-                + " where " + cloName + " like '" + val + "__' order by "
+                + " where year="+year+" and " + cloName + " like '" + val + "__' order by "
                 + cloName + " desc");
         sql.setCallback(new SqlCallback() {
             public Object invoke(Connection conn, ResultSet rs, Sql sql)

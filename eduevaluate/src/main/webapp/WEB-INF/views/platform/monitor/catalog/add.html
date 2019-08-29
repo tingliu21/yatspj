@@ -12,6 +12,7 @@ layout("/layouts/platform.html"){
         <section class="panel panel-form">
             <form id="addForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
                   action="${base}/platform/monitor/catalog/addDo" method="post">
+                <input type="hidden" name="year" value="<%if(isEmpty(obj)){%>${year!}<%}else{%>${obj.year}<%}%>">
                 <div class="row mb10">
                     <div class="col-lg-12">
                         <div class="form-group">

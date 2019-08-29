@@ -37,7 +37,7 @@ public class MonitorCatalogService extends Service<Monitor_catalog> {
             Monitor_catalog pp = this.fetch(pid);
             catacode = pp.getCatacode();
         } else pid = "";
-        catacode = getSubCode("monitor_catalog", "catacode", catacode);
+        catacode = getSubCode("monitor_catalog",catalog.getYear(), "catacode", catacode);
         catalog.setCatacode(catacode);
         //获取第几级指标
 

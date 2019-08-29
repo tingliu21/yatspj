@@ -37,7 +37,7 @@ public class MonitorIndexService extends Service<Monitor_index> {
             Monitor_index pp = this.fetch(pid);
             path = pp.getCode();
         } else pid = "";
-        path = getSubCode("monitor_index", "code", path);
+        path = getSubCode("monitor_index",index.getYear(), "code", path);
         index.setCode(path);
         //获取第几级指标
 

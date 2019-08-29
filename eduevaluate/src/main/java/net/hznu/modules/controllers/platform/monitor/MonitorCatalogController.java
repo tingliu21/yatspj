@@ -53,8 +53,10 @@ public class MonitorCatalogController {
     @At
     @Ok("beetl:/platform/monitor/catalog/add.html")
     @RequiresAuthentication
-    public Object add(@Param("pid") String pid, HttpServletRequest req) {
-
+    public Object add(@Param("pid") String pid,@Param("year") int year, HttpServletRequest req) {
+		if(year!=0){
+			req.setAttribute("year",year);
+		}
 		return Strings.isBlank(pid) ? null : monitorCatalogService.fetch(pid);
     }
 
@@ -156,12 +158,18 @@ public class MonitorCatalogController {
 		}
 		return tree;
 	}
-	@At("/child/?")
+	@At({"/child","/child/?"})
 	@Ok("beetl:/platform/monitor/catalog/child.html")
 	@RequiresAuthentication
-	public Object child(String id) {
-
-		return monitorCatalogService.query(Cnd.where("parentId", "=", id).asc("catacode"));
+	public Object child(String id,@Param("year") int year) {
+		if(id == null){
+			id="";
+		}
+		Cnd cnd = Cnd.where("parentId", "=", id);
+		if(year!=0){
+			cnd = cnd.and("year","=",year);
+		}
+		return monitorCatalogService.query(cnd.asc("catacode"));
 	}
 
 
