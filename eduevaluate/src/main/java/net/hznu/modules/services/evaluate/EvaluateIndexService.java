@@ -99,7 +99,7 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
     }
 
     /**
-    * 功能：根据行政区划，获得指标得分
+    * 功能：根据行政区划，获得指标得分，主要为统计图中获取县指标
     * viewname:视图名称
     * xzqh：为行政区划代码，如果为市级代码，则获取该市所有县级的得分
     * fieldnames：字段名称，如果为一级指标得分，则为index_01~index_05;
@@ -143,7 +143,7 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
         return sql.getList(MonitorStat.class);
     }
     /**
-    * 功能：根据行政区划，获得指标平均得分
+    * 功能：根据行政区划，获得指标平均得分，主要为统计图中获取均值指标
     * viewname:视图名称
     * xzqh：为行政区划代码，一般为省级或地市级行政区划代码
     * fieldnames：字段名称，如果为一级指标得分，则为index_01~index_05;
@@ -195,7 +195,7 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
     }
 
     /**
-     * 功能：获取各指标的省均值或市均值
+     * 功能：获取各指标的省均值或市均值,主要为获取导出报告中的指标表格数据
      * xzqhdm：为行政区划代码，一般为省级或地市级行政区划代码
      * @return
      */
