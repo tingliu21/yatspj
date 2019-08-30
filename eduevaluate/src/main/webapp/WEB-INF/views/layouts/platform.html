@@ -36,6 +36,7 @@
     <% } %>
     <!--<script src="${base!}/assets/plugins/jquery-1.11.1.min.js"></script>-->
     <!-- 引入 echarts.js -->
+    <script src="${base!}/assets/js/echarts.min.js"></script>
     <script src="${base!}/assets/js/echarts.js"></script>
     <script src="${base!}/assets/js/jquery-3.2.1.min.js"></script>
     <script src="${base!}/assets/js/chartOption.js"></script>
@@ -46,6 +47,7 @@
     <!-- 引入EasyUI的样式文件
     <link rel="stylesheet"
           href="${base!}/assets/plugins/jquery-easyui-1.5.3/themes/default/easyui.css" type="text/css" />-->
+
 
     <link rel="icon" href="${base!}/assets/img/favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="${base!}/assets/img/favicon.ico" type="image/x-icon">
@@ -103,19 +105,20 @@
 </div>
 <div class="app <% if(@shiro.getPrincipalProperty('loginSidebar')){ %> small-menu <% } %> <% if(@shiro.getPrincipalProperty('loginScroll')){ %> fixed-scroll <% } %> <% if(@shiro.getPrincipalProperty('loginBoxed')){ %> boxed <% } %>">
     <header class="header header-fixed navbar">
-        <!--<div class="brand">-->
-        <div class="navbar-header">
-            <!--<a href="javascript:;" class="ti-menu off-left visible-xs" data-toggle="offscreen" data-move="ltr"></a>-->
+        <div class="brand" style="width: 280px">
+
+            <a href="javascript:;" class="ti-menu off-left visible-xs" data-toggle="offscreen" data-move="ltr"></a>
 
 
-            <a href="${base!}/platform/home"  data-pjax class="navbar-brand" style="width:300px;">浙江省教育现代化水平监测系统
-                <!--img src="${base!}/assets/img/logoc.png" alt="" class="o_img <% if(!@shiro.getPrincipalProperty('loginSidebar')){ %>o_hide<% } %>"-->
-                <!--<span class="heading-font o_img <% if(@shiro.getPrincipalProperty('loginSidebar')){ %>o_hide<% } %>">
-		            &lt;!&ndash;<img src="${base!}/assets/img/logoc.png" style="height:40px;">&ndash;&gt;
-                    <img src=" " style="height:30px;display:inline;">&nbsp;鄞州学校发展性评价系统
-                </span>-->
+            <a href="${base!}/platform/home"  data-pjax class="navbar-brand" style="width: 500px">
+                <img src="${base!}/assets/img/logo.png" alt="" class="o_img <% if(!@shiro.getPrincipalProperty('loginSidebar')){ %>o_hide<% } %>" >
+                <span class="heading-font o_img <% if(@shiro.getPrincipalProperty('loginSidebar')){ %>o_hide<% } %>">
+		            <img src="${base!}/assets/img/logoc.png" style="max-width: 250%;margin-top:10px">
+                </span>
             </a>
+
         </div>
+
         <ul class="nav navbar-nav navbar-left">
             <li class="hidden-xs">
 
@@ -309,6 +312,95 @@
             $(this).parent().addClass('active');
         });
     }
+
+    function showScoreByCity1(xzqhdm,chartBar)
+    {
+        // 基于准备好的dom，初始化echarts图表
+        //var aname = xzqhmc+'一级指标得分比较';
+        //$.get('monitor/getCountyScore1?year='+year+'&xzqhdm='+xzqhdm).done(function (data){
+        $.get('${base!}/platform/evaluate/getCountyScore1?xzqhdm='+xzqhdm).done(function (data){
+            console.log('一级指标得分返回值')
+            console.log(data);//前端调试控制台输出数据，看看是否符合要求
+            chartBar.setOption({
+                legend:{
+                    data:[ '得分', '目标值','浙江省' ]
+                },
+                series:[{
+
+                    data:data
+                }]
+            });
+            window.onresize = chartRadar1.resize;
+        });
+    }
+    function showScoreByCity2(xzqhdm,chartBar)
+    {
+        //var aname = xzqhmc+'二级指标得分比较';
+        $.get('${base!}/platform/evaluate/getCountyScore2?xzqhdm='+xzqhdm).done(function (data){
+            console.log('二级指标得分返回值')
+            console.log(data);
+
+            chartBar.setOption({
+                legend:{
+                    data:['得分','省均值','目标值']
+                },
+                yAxis:[{
+                    interval:5,
+                    max:function(value){
+                        return Math.ceil(value.max/5)*5;
+                    }
+                }],
+                series:[{
+                    name:'得分',
+                    data:data[0].value
+                },{
+                    name:'目标值',
+                    data:data[2].value
+                },{
+                    name:'省均值',
+                    data:data[1].value
+                }]
+            });
+
+            window.onresize = chartBar2.resize;
+
+        });
+    }
+    function showScoreByCityp( xzqhdm,chartBar)
+    {
+        // 基于准备好的dom，初始化echarts图表
+
+        //var aname = xzqhmc+'五十四个指标得分比较';
+        $.get('${base!}/platform/evaluate/getCountyScorep?xzqhdm='+xzqhdm).done(function (data){
+            console.log('监测点得分返回值')
+            console.log(data);
+            var monitorname=[];
+            for(var i=0;i<data[0].value.length;i++){
+                var name =i+1;
+                monitorname.push(name);
+            }
+            chartBar.setOption({
+                legend:{
+                    data:['得分','目标值','省均值']
+                },
+
+                yAxis:[{
+                    data:monitorname
+                }],
+                series:[{
+                    name:'得分',
+                    data:data[0].value
+                },{
+                    name:'目标值',
+                    data:data[2].value
+                },{
+                    name:'省均值',
+                    data:data[1].value
+                }]
+            });
+        });
+    }
+
     $(document).ready(function () {
 
         if($.support.pjax) {
