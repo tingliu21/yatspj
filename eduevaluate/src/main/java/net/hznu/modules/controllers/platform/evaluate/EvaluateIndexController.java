@@ -331,6 +331,22 @@ public class EvaluateIndexController {
 
 		return monitorSumValueList;
 	}
+	//特殊地区排名
+	@At
+	@Ok("json")
+	@RequiresAuthentication
+	public Object getTotalScoreByDevelop(@Param("develope") String develope) {
+		List<MonitorSumValue> monitorSumValueList = evaluateRecordsService.getTotalScore(Globals.EvaluateYear,"develop",develope);
+		return monitorSumValueList;
+	}
+	//重点帮扶县排名
+	@At
+	@Ok("json")
+	@RequiresAuthentication
+	public Object getTotalScoreByKey() {
+		List<MonitorSumValue> monitorSumValueList = evaluateRecordsService.getTotalScore(Globals.EvaluateYear,"keynote",true);
+		return monitorSumValueList;
+	}
 	//导出县报告
 	@At
 	@Ok("void")

@@ -56,6 +56,25 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
         return sql.getList(MonitorSumValue.class);
     }
     /**
+     * 功能：获得特殊地区的评估总分
+     * colname：为sys_unit的特征字段，如develop、keynote
+     * sValue：为对应colname的值
+     * */
+    public List<MonitorSumValue> getTotalScore(int year, String cloName,Object value){
+
+        Sql sql = Sqls.create("SELECT  b.unitcode as code, b.xzqhmc as name,score as value FROM evaluate_records a inner join sys_unit b on b.id = a.unitid where "+
+                cloName + " = @col and  year =@year order by value");
+        sql.params().set("col",value);
+        sql.params().set("year", year);
+
+        Entity<MonitorSumValue> entity = dao().getEntity(MonitorSumValue.class);
+        sql.setEntity(entity);
+        sql.setCallback(Sqls.callback.entities());
+        dao().execute(sql);
+
+        return sql.getList(MonitorSumValue.class);
+    }
+    /**
      * 功能：根据行政区划，获得评估总分的平均值
      * xzqh：为行政区划代码，一般为省级或地市级行政区划代码
      * */
