@@ -1,0 +1,17 @@
+package net.hznu.modules.services.basicdata;
+
+import net.hznu.common.base.Service;
+import net.hznu.modules.models.basicdata.Bascidata_researchresult;
+import org.nutz.dao.Dao;
+import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
+@IocBean(args = {"refer:dao"})
+public class BascidataResearchresultService extends Service<Bascidata_researchresult> {
+	private static final Log log = Logs.get();
+
+    public BascidataResearchresultService(Dao dao) {
+    	super(dao);
+    }
+}
+

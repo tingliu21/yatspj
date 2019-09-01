@@ -67,6 +67,16 @@ layout("/layouts/platform.html"){
                                 <input type="hidden" name="department" value="<%if(!isEmpty(obj)){%>${obj.department}<%}%>">
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="masterrole" class="col-sm-2 control-label">评测专家</label>
+                            <div class="col-sm-8">
+                                <select class="form-control" name="masterrole" id="masterrole">
+
+                                </select>
+                            </div>
+                        </div>
+
+
                         <!--<div class="form-group">
                             <label for="qualify" class="col-sm-2 control-label">是否达标性指标</label>
                             <div class="col-sm-8 switcha">
@@ -122,6 +132,7 @@ layout("/layouts/platform.html"){
         </div>
     </div>
 </div>
+
 <script language="JavaScript">
     function initTreeView() {
         $("#jsTreeParentUnit").jstree({
@@ -146,9 +157,35 @@ layout("/layouts/platform.html"){
         $("#editForm #parentId").val(node[0].text);
         $("#editForm input[name='department']").val(node[0].id);
         $("#dialogSelectParentUnit").modal("hide");
+        selectMasterRole();
+    }
+    //选择审核角色
+    function selectMasterRole(){
+        var deptid = $("#editForm input[name='department']").val();
+        if(deptid!='') {
+            $.ajax({
+                url: "${base}/platform/sys/role/roledata?uid=" + deptid,
+                async:false,
+                type: "get",
+                dataType: "json",
+                success: function (data) {
+                    $("#masterrole").empty();
+                    if (data.length > 0) {
+                        for (var i=0;i< data.length;i++) {
+                            $("#masterrole").append("<option value='" + data[i].id + "'>" + data[i].text + "</option>")
+                        }
+                    }
+
+                }
+            });
+        }
     }
     $(document).ready(function () {
         initTreeView();
+        selectMasterRole();
+        //$("#masterrole").val("<%if(!isEmpty(obj)){%>${obj.masterrole}<%}%>");
+        $("#masterrole").find("option[value='<%if(!isEmpty(obj)){%>${obj.masterrole}<%}%>']").attr("selected",true);
+
         $('#editForm').ajaxForm({
             dataType: 'json',
             beforeSubmit: function (arr, form, options) {

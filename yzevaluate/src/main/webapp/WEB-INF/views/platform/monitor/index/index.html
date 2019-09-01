@@ -39,6 +39,7 @@ layout("/layouts/platform.html"){
                     <th class="col-md-1">权重</th>
                     <th class="col-md-1">是否需要自评</th>
                     <th class="col-md-1">评测部门</th>
+                    <th class="col-md-1">评测专家</th>
                     <th class="col-md-1">操作</th>
                 </tr>
                 </thead>
@@ -128,7 +129,8 @@ layout("/layouts/platform.html"){
                 {"data": "weights", "bSortable": true},
                 /*{"data": "qualify", "bSortable": true},*/
                 {"data": "selfeva", "bSortable": true},
-                {"data": "dept.name", "bSortable": false}
+                {"data": "deptname", "bSortable": false},
+                {"data": "masterrolename", "bSortable": true}
             ],
             "columnDefs": [
                 {
@@ -161,7 +163,7 @@ layout("/layouts/platform.html"){
                             '<li><a href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a></li>' +
                             '</ul></div>';
                     },
-                    "targets": 6
+                    "targets": 7
                 }
             ]
         });

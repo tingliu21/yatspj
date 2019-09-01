@@ -32,17 +32,8 @@
                         <div class="form-group">
                             <label for="indexname" class="col-sm-3 control-label">指标</label>
                             <div class="col-sm-8">
-                                <select class="form-control" name="indexname" id="indexname">
-                                    <option value="校园建设">校园建设</option>
-                                    <option value="课程改革">课程改革</option>
-                                    <option value="教师发展">教师发展</option>
-                                    <option value="学生成长">学生成长</option>
-                                    <option value="特色打造">特点打造</option>
-                                    <option value="国际交流">国际交流</option>
-                                </select>
-                                <div style="width: 400px;margin-top: 10px;" class="alert alert-warning alert-dismissable">
-                                    <strong>提示：</strong>下拉框选择指标
-                                </div>
+                                <input type="text" id="indexname" class="form-control" name="indexname" data-parsley-required="true"
+                                       placeholder="指标" value="${obj.indexname}" readonly="true" >
                             </div>
                         </div>
                         <div class="form-group">
@@ -198,7 +189,7 @@
             'height': '35',
             'buttonText': '请选择附件材料',
             'fileType': '*.doc;*.docx;*.pdf;*.jpg;*.png;*.rar;*.zip',
-            'fileSizeLimit': 2048,
+            'fileSizeLimit': 5120,
             'queueSizeLimit': 10,
             'formData': {},
             'queueID': 'queue',

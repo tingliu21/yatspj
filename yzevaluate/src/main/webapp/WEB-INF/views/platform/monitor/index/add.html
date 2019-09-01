@@ -82,7 +82,14 @@ layout("/layouts/platform.html"){
                                 <input type="hidden" name="department" >
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="masterrole" class="col-sm-2 control-label">评测专家</label>
+                            <div class="col-sm-8">
+                                <select class="form-control" name="masterrole" id="masterrole">
 
+                                </select>
+                            </div>
+                        </div>
                         <!--<div class="form-group">
                             <label for="qualify" class="col-sm-2 control-label">是否达标性指标</label>
                             <div class="col-sm-8 switcha">
@@ -207,6 +214,28 @@ layout("/layouts/platform.html"){
         $("#addForm #parentId").val(node[0].text);
         $("#addForm input[name='department']").val(node[0].id);
         $("#dialogSelectParentUnit").modal("hide");
+        selectMasterRole();
+    }
+    //选择审核角色
+    function selectMasterRole(){
+        var deptid = $("#addForm input[name='department']").val();
+        if(deptid!='') {
+            $.ajax({
+                url: "${base}/platform/sys/role/roledata?uid=" + deptid,
+                async:false,
+                type: "get",
+                dataType: "json",
+                success: function (data) {
+                    $("#masterrole").empty();
+                    if (data.length > 0) {
+                        for (var i=0;i< data.length;i++) {
+                            $("#masterrole").append("<option value='" + data[i].id + "'>" + data[i].text + "</option>")
+                        }
+                    }
+
+                }
+            });
+        }
     }
     $(document).ready(function () {
         initTreeView()
