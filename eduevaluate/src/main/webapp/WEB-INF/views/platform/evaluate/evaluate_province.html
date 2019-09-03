@@ -32,7 +32,7 @@ layout("/layouts/platform.html"){
 			</li>
 			<li>
 				<a href="#citycomp" data-toggle="tab">
-					地市排名
+					各县发展水平排名
 				</a>
 			</li>
 			<li>
@@ -59,6 +59,12 @@ layout("/layouts/platform.html"){
 				<div id="cmain" style="width: 800px; height: 1500px;"></div>
 			</div>
 			<div class="tab-pane fade" id="citycomp">
+				<select id="city" name="city"  placeholder="选择地市" >
+					<% for(obj in cityList){
+					%>
+					<option value=${obj.unitcode!}>${obj.xzqhmc!}</option>
+					<%} %>
+				</select>
 				<div id="dmain" style="width: 800px; height: 500px;"></div>
 			</div>
 			<div class="tab-pane fade" id="developcomp">
@@ -187,42 +193,44 @@ layout("/layouts/platform.html"){
              window.onresize = chartBar.resize;
          });
      }
-     function showCityTotalScore(xzqhdm,chartBar)
+     function showTotalScoreByCity(xzqhdm,xzqhmc,chartBar)
      {
-         //var aname = xzqhmc+'二级指标得分比较';
-         $.get('${base!}/platform/evaluate/getCityTotalScore?xzqhdm='+xzqhdm).done(function (data){
-             console.log('省各地市得分返回值')
+         var name = xzqhmc+'各县（市、区）评估分';
+         $.get('${base!}/platform/evaluate/getTotalScoreByCity?xzqhdm='+xzqhdm).done(function (data){
+
              console.log(data);
              var cname=[],mvalue=[];
              for(var i = 0; i < data.length; i++){
                  cname.push(data[i].name);
                  mvalue.push(data[i].value);
              }
-             chartBar.setOption({
-                 legend:{
-                     data:['浙江省各地市得分']
+             var option = {
+                 title: {
+                     text: name+'排名'
                  },
-                 xAxis: [
-                     {
-                         type: 'category',
-                         data: cname,
-                         axisLabel:{
-                             interval: 0,
-                             rotate: 30
-                         }
-                     }
-                 ],
-                 yAxis:[{
-                     interval:10,
-                     max:function(value){
-                         return Math.ceil(value.max/10)*10;
-                     }
+
+                 legend: {
+                     data:[name],
+                 },
+
+                 xAxis: [{
+                     data: cname,
+
                  }],
-                 series:[{
-                     name:'浙江省各地市得分',
+                 yAxis: [{
+                     max:  function(value) {
+                         return Math.ceil(value.max/10)*10;
+                     },
+                     interval: 10,
+
+                 }],
+                 series: [{
+                     name:name,
                      data:mvalue
                  }]
-             });
+             };
+             // 为echarts对象加载数据
+             chartBar.setOption(option);
              window.onresize = chartBar.resize;
 
          });
@@ -305,10 +313,15 @@ layout("/layouts/platform.html"){
          showAvgScore1(${xzqh!},chartRadar1);
          showAvgScore2(${xzqh!},chartBar2);
          showAvgScorep(${xzqh!},chartBarp);
-         showCityTotalScore(${xzqh!},chartBart);
+         showTotalScoreByCity($("#city").val(),$("#city option:selected").text(),chartBart);
+//         showCityTotalScore(${xzqh!},chartBart);
          showScoreBydevelope($("#develop").val(),chartBarc_d);
+
          showScoreByKey(chartBarc_k);
 
+         $("#city").change(function () {
+             showTotalScoreByCity($("#city").val(),$("#city option:selected").text(),chartBart);
+         });
          $("#develop").change(function () {
              showScoreBydevelope($("#develop").val(),chartBarc_d);
          });
@@ -321,24 +334,9 @@ layout("/layouts/platform.html"){
              $('#radar1').val(picRadar1);//将编码赋值给输入框
              $('#bar2').val(picBar2);//将编码赋值给输入框
              $('#barp').val(picBarp);//将编码赋值给输入框
-             $('#bart').val(picBarp);//将编码赋值给输入框
+             //$('#bart').val(picBarp);//将编码赋值给输入框
              $('#chartForm').submit();
 
-         });
-         $('#chartForm').ajaxForm({
-             dataType: 'json',
-             beforeSubmit: function (arr, form, options) {
-                 form.find("button:submit").button("loading");
-             },
-             success: function (data, statusText, xhr, form) {
-                 if (data.code == 0) {
-                     Toast.success(data.msg);
-
-                 } else {
-                     Toast.error(data.msg);
-                 }
-                 form.find("button:submit").button("reset");
-             }
          });
      });
 

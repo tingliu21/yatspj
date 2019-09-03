@@ -1,9 +1,6 @@
 package net.hznu.modules.controllers.platform.evaluate;
 
-import com.sun.tools.corba.se.idl.constExpr.EvaluationException;
-import net.hznu.common.annotation.SLog;
 import net.hznu.common.base.Globals;
-import net.hznu.common.base.Result;
 import net.hznu.common.chart.MonitorStat;
 import net.hznu.common.chart.MonitorSumValue;
 import net.hznu.common.chart.StatChart;
@@ -12,7 +9,6 @@ import net.hznu.common.page.DataTableColumn;
 import net.hznu.common.page.DataTableOrder;
 import net.hznu.common.util.ImgBase64Util;
 import net.hznu.common.util.XwpfUtil;
-import net.hznu.modules.models.evaluate.Evaluate_index;
 import net.hznu.modules.models.evaluate.Evaluate_records;
 import net.hznu.modules.models.monitor.Monitor_catalog;
 import net.hznu.modules.models.monitor.Monitor_index;
@@ -38,9 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @IocBean
 @At("/platform/evaluate")
@@ -141,7 +136,9 @@ public class EvaluateIndexController {
 	@Ok("beetl:/platform/evaluate/evaluate_province.html")
 	@RequiresAuthentication
 	public void evaluate_province(HttpServletRequest req) {
+
 		req.setAttribute("xzqh", "330000");
+		req.setAttribute("cityList",sysUnitService.query(Cnd.where("level","=",2).and("unitcode","like","33%").asc("unitcode")));
 	}
 	//县一级指标达成度图
 	@At
@@ -160,7 +157,7 @@ public class EvaluateIndexController {
 			fieldnames.add(fieldname);
 		}
 		//加入县得分
-		MonitorStat monitorStat = evaluateIndexService.getScoreByXZQH(viewname, fieldnames, xzqh).get(0);
+		MonitorStat monitorStat = evaluateIndexService.getScoreByXZQH(viewname, fieldnames, xzqh,"" ).get(0);
 		monitorStat.setName("得分");
 		result.add(monitorStat);
 		//加入省均值
@@ -192,7 +189,7 @@ public class EvaluateIndexController {
 			fieldnames.add(fieldname);
 		}
 		//加入县得分
-		MonitorStat monitorStat = evaluateIndexService.getScoreByXZQH(viewname, fieldnames, xzqh).get(0);
+		MonitorStat monitorStat = evaluateIndexService.getScoreByXZQH(viewname, fieldnames, xzqh,"" ).get(0);
 		monitorStat.setName("得分");
 		result.add(monitorStat);
 		//加入省均值
@@ -224,7 +221,7 @@ public class EvaluateIndexController {
 			fieldnames.add(fieldname);
 		}
 		//加入县得分
-		MonitorStat monitorStat = evaluateIndexService.getScoreByXZQH(viewname, fieldnames, xzqh).get(0);
+		MonitorStat monitorStat = evaluateIndexService.getScoreByXZQH(viewname, fieldnames, xzqh, "").get(0);
 		monitorStat.setName("得分");
 		result.add(monitorStat);
 		//加入省均值
@@ -347,6 +344,14 @@ public class EvaluateIndexController {
 		List<MonitorSumValue> monitorSumValueList = evaluateRecordsService.getTotalScore(Globals.EvaluateYear,"keynote",true);
 		return monitorSumValueList;
 	}
+	//县排名
+	@At
+	@Ok("json")
+	@RequiresAuthentication
+	public Object getTotalScoreByCity(@Param("xzqhdm") String xzqh) {
+		List<MonitorSumValue> monitorSumValueList = evaluateRecordsService.getTotalScore(Globals.EvaluateYear,xzqh);
+		return monitorSumValueList;
+	}
 	//导出县报告
 	@At
 	@Ok("void")
@@ -405,6 +410,107 @@ public class EvaluateIndexController {
 
 			XwpfUtil xwpfUtil = new XwpfUtil();
 			xwpfUtil.exportWord(paramsPara,paramsTable,is,resp,xwpfUtil,filename);
+
+			log.debug("导出word文件完成>>>>>>>>>>>>>");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	//导出省报告
+	@At
+	@Ok("void")
+	public void exportProvince(HttpServletResponse resp, HttpServletRequest req, @Param("xzqhdm") String xzqhdm,
+							 @Param("radar1") String picRadar1, @Param("bar2") String picBar2, @Param("barp") String picBarp) {
+		log.debug("导出word文件开始>>>>>>>>>>>>>");
+		//获取行政区划信息
+		//String xzqhdm="330000";
+		Map<String,Object> paramsPara = new HashMap<String, Object>();
+		//报告生成日期
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy 年 MM 月 dd 日");
+		paramsPara.put("${date}",sdf.format(new Date()));
+
+
+		// 传递过正中  "+" 变为了 " "
+		picRadar1 = picRadar1.replaceAll(" ", "+");
+		picBar2 = picBar2.replaceAll(" ", "+");
+		picBarp = picBarp.replaceAll(" ", "+");
+//        picBart = picBart.replaceAll(" ", "+");
+
+		ImgBase64Util imgUtil = new ImgBase64Util();
+		String tempPath = req.getSession().getServletContext().getRealPath("/tmp");
+		String picRadar1Path = imgUtil.decodeBase64(picRadar1, new File(tempPath));     // 读取图片信息，返回图片保存路径
+		String picBar2Path = imgUtil.decodeBase64(picBar2, new File(tempPath));     // 读取图片信息，返回图片保存路径
+		String picBarpPath = imgUtil.decodeBase64(picBarp, new File(tempPath));     // 读取图片信息，返回图片保存路径
+//		String picBartPath = imgUtil.decodeBase64(picBart, new File(tempPath));     // 读取图片信息，返回图片保存路径
+
+		StatChart chart = new StatChart();
+		chart.setFilePath(picRadar1Path);
+		chart.setFileType("png");
+		chart.setHeight(350);
+		chart.setWidth(350);
+		paramsPara.put("${radar1}", chart);
+		chart = new StatChart();
+		chart.setFilePath(picBar2Path);
+		chart.setFileType("png");
+		chart.setHeight(270);
+		chart.setWidth(420);
+		paramsPara.put("${bar2}", chart);
+		chart = new StatChart();
+		chart.setFilePath(picBarpPath);
+		chart.setFileType("png");
+		chart.setHeight(710);
+		chart.setWidth(420);
+		paramsPara.put("${barp}", chart);
+//		chart = new StatChart();
+//		chart.setFilePath(picBartPath);
+//		chart.setFileType("png");
+//		chart.setHeight(320);
+//		chart.setWidth(420);
+//		params.put("${bar_t}", chart);
+		//读入word模板
+
+		List<MonitorStat> result1 = new ArrayList<>();
+
+		String viewname = "v_xzqh_evaluate1_" + Globals.EvaluateYear;
+		//获取一级指标
+		List<Monitor_catalog> catalogs = monitorCatalogService.query(Cnd.where("level", "=", 1).
+				and("year", "=", Globals.EvaluateYear).and("isshow", "=", true).asc("catacode"));
+		List<String> fieldnames = new ArrayList<>(catalogs.size());
+		for (Monitor_catalog catalog : catalogs) {
+			String fieldname = "index_" + catalog.getCatacode();
+			fieldnames.add(fieldname);
+		}
+		//县得分
+		result1 = evaluateIndexService.getScoreByXZQH(viewname, fieldnames, xzqhdm, "desc");
+
+
+		List<MonitorStat> result2 = new ArrayList<>();
+
+		viewname = "v_xzqh_evaluate2_" + Globals.EvaluateYear;
+		//获取二级指标
+		catalogs = monitorCatalogService.query(Cnd.where("level", "=", 2).
+				and("year", "=", Globals.EvaluateYear).and("isshow", "=", true).asc("catacode"));
+		fieldnames = new ArrayList<>(catalogs.size());
+		for (Monitor_catalog catalog : catalogs) {
+			String fieldname = "index_" + catalog.getCatacode();
+			fieldnames.add(fieldname);
+		}
+		//县得分
+		result2 = evaluateIndexService.getScoreByXZQH(viewname, fieldnames, xzqhdm,"desc" );
+
+
+
+		InputStream is = getClass().getClassLoader().getResourceAsStream("template/Provincetemplate_"+Globals.EvaluateYear+".docx");
+		try {
+			String filename = "浙江省县（市、区）教育现代化发展水平报告_"+Globals.EvaluateYear+".docx";
+			filename = URLEncoder.encode(filename, "UTF-8");
+
+			XwpfUtil xwpfUtil = new XwpfUtil();
+			//xwpfUtil.exportWord(resp);
+			evaluateIndexService.exportWord(paramsPara,result1,result2,is,resp,xwpfUtil,filename);
 
 			log.debug("导出word文件完成>>>>>>>>>>>>>");
 		} catch (UnsupportedEncodingException e) {

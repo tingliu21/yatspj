@@ -5,6 +5,7 @@ import net.hznu.common.chart.MonitorStat;
 import net.hznu.common.page.DataTableColumn;
 import net.hznu.common.page.DataTableOrder;
 import net.hznu.common.page.OffsetPager;
+import net.hznu.common.util.XwpfUtil;
 import net.hznu.modules.models.evaluate.Evaluate_index;
 
 import net.hznu.modules.models.evaluate.Evaluate_records;
@@ -13,6 +14,7 @@ import net.hznu.modules.models.monitor.Monitor_catalog;
 import net.hznu.modules.models.monitor.Monitor_index;
 import net.hznu.modules.models.sys.Sys_config;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.xwpf.usermodel.*;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
@@ -28,6 +30,10 @@ import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -106,7 +112,7 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
     *                     如果为二级指标得分，则为index_0101~index_0501;
     *                     如果为监测点得分，则为m1～m46
     * */
-    public List<MonitorStat> getScoreByXZQH(String viewname, List<String> fieldnames, String xzqhdm) {
+    public List<MonitorStat> getScoreByXZQH(String viewname, List<String> fieldnames, String xzqhdm, String orderDir) {
         String statXZQ =xzqhdm;
 
         if(xzqhdm.endsWith("00")) {
@@ -115,7 +121,11 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
                 statXZQ= statXZQ.substring(0,statXZQ.length()-2);
             }
         }
-        Sql sql = Sqls.create("SELECT * FROM  "+viewname+ " where xzqhdm like '" + statXZQ + "%'");
+        String strSql = "SELECT * FROM  "+viewname+ " where xzqhdm like '" + statXZQ + "%'";
+        if(StringUtils.isNotBlank(orderDir)){
+            strSql +=" order by t_score "+orderDir;
+        }
+        Sql sql = Sqls.create(strSql);
         sql.setCallback(new SqlCallback() {
             public Object invoke(Connection connection, ResultSet resultSet, Sql sql) throws SQLException {
                 List<MonitorStat> monitorList = new ArrayList<MonitorStat>();
@@ -292,6 +302,11 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
         }else
             return null;
     }
+
+    /**
+     * 为评估记录生成一级/二级指标、监测点达成度情况
+     * @param evaluate 一条评估记录
+     */
     public void generateRemark(Evaluate_records evaluate){
         //获取各级指标评语模版
         Map<String, String> tplConfig = new HashMap<> ();
@@ -332,7 +347,7 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
             fieldnames.add(fieldname);
         }
         //县得分
-        values_c = getScoreByXZQH(viewname, fieldnames, xzqh).get(0).getValue();
+        values_c = getScoreByXZQH(viewname, fieldnames, xzqh, "").get(0).getValue();
         //省均值
         values_p = getAvgScoreByXZQH(viewname, fieldnames, proXZQH).getValue();
 
@@ -362,7 +377,7 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
 
         }
         //县得分
-        values_c = getScoreByXZQH(viewname, fieldnames, xzqh).get(0).getValue();
+        values_c = getScoreByXZQH(viewname, fieldnames, xzqh, "").get(0).getValue();
         //省均值
         values_p = getAvgScoreByXZQH(viewname, fieldnames, proXZQH).getValue();
         //二级指标达成度说明
@@ -400,7 +415,7 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
             fieldnames.add(fieldname);
         }
         //县得分
-        values_c = getScoreByXZQH(viewname, fieldnames, xzqh).get(0).getValue();
+        values_c = getScoreByXZQH(viewname, fieldnames, xzqh, "").get(0).getValue();
         //省均值
         values_p = getAvgScoreByXZQH(viewname, fieldnames, proXZQH).getValue();
         //监测点达成度说明
@@ -433,6 +448,89 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
                 .setParam("evaluateid",evaluate.getId()).setParam("remark1",remark1).setParam("remark2",remark2).setParam("remarkp",remarkp));
 
     }
+    /**
+     * 导出word文件
+     * @param params
+     * @param is
+     * @param request
+     * @param response
+     * @param xwpfUtil
+     */
+    public void exportWord(Map<String, Object> paramsPara, List<MonitorStat>stat1,List<MonitorStat>stat2,InputStream is,
+                           HttpServletResponse response,
+                           XwpfUtil xwpfUtil, String filename) {
+
+        try {
+            XWPFDocument doc=new XWPFDocument(is);
+
+            xwpfUtil.replaceInPara(doc,paramsPara);
+            replaceInTable(doc,stat1,stat2);
+            OutputStream os = response.getOutputStream();
+
+            response.setContentType("application/vnd.ms-excel");
+            response.setHeader("Content-disposition","attachment;filename="+filename);//文件名中文不显示
+            //把构造好的文档写入输出流
+            doc.write(os);
+            //关闭流
+            xwpfUtil.close(os);
+            xwpfUtil.close(is);
+            os.flush();
+            os.close();
+        } catch (IOException e) {
+            //logger.error("文件导出错误");
+        }
+    }
+    /**
+     * 替换word模板文档表格中的变量
+     * @param doc 要替换的文档
+     * @param xzqList1 一级指标统计结果
+     * @param xzqList2 二级指标统计结果
+     */
+    public void replaceInTable(XWPFDocument doc, List<MonitorStat> xzqList1,List<MonitorStat> xzqList2) {
+        List<XWPFTable> tables = doc.getTables();
+        //附件中的前2个表格为一级指标和二级指标表
+        for (int i = 0; i < tables.size(); i++) {
+            XWPFTable table = tables.get(i);
+            if (null != xzqList1 && 0 < xzqList1.size() && i == 0){
+                insertTable(table,xzqList1);
+            }else if((null != xzqList2 && 0 < xzqList2.size() && i == 1)){
+                insertTable(table,xzqList2);
+            }
+        }
+
+    }
+    /**
+     * 为表格插入数据，行数不够添加新行
+     * @param table 需要插入数据的表格
+     * @param xzqList 第四个表格的插入数据
+     */
+    public static void insertTable(XWPFTable table, List<MonitorStat> xzqList) {
+            //插入表头下面第一行的数据
+            for (int i = 0; i < xzqList.size(); i++) {
+                MonitorStat stat = xzqList.get(i);
+                double[] values = stat.getValue();
+                double total =0.0;
+                XWPFTableRow row = table.createRow();
+                List<XWPFTableCell> cells = row.getTableCells();
+                //第一列序号
+                cells.get(0).setText(String.valueOf(i+1));
+                //第二列行政区划名称
+                cells.get(1).setText(stat.getName());
+
+                //第4列开始各指标得分
+                for(int j=0;j<values.length;j++){
+                    XWPFTableCell cell = cells.get(j+3);
+
+                    cell.setText(String.format("%.2f",values[j]));
+                    total +=values[j];
+
+                }
+                //第三列总分
+                cells.get(2).setText(String.format("%.2f",total));
+
+            }
+        }
+
 
 }
 
