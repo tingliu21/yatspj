@@ -168,6 +168,7 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
                                 //如果该列没有对应的数据代码，则跳过
                                 continue;
                             }
+
                             //读取该单元格的值
                             Double value = null;
                             valuec = row.getCell(n);
@@ -182,30 +183,35 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
 
                                     log.error("行政区："+xzqhdm+"的数据指标"+dt_cd+"解析出错："+ne.getMessage());
                                 }
-                                Evaluate_index data =  dao().fetch(Evaluate_index.class,Cnd.where("evaluateid","=",records.getId()).and("code","=",dt_cd));
-                                if(data==null){
-                                    data = new Evaluate_index();
-                                    data.setEvaluateId(records.getId());
-                                    data.setCode(dt_cd);
-                                    //获取监测点id
-                                    Monitor_index index = dao().fetch(Monitor_index.class,Cnd.where("code","=",dt_cd).and("year","=",year));
-                                    data.setIndexId(index.getId());
-                                    if(bScore) {
-                                        data.setScore(value);
-                                    }else{
-                                        data.setValue(value);
+                                if(dt_cd.equalsIgnoreCase("total")){
+                                    records.setScore(value);
+                                    updateIgnoreNull(records);
+                                }else {
+                                    Evaluate_index data = dao().fetch(Evaluate_index.class, Cnd.where("evaluateid", "=", records.getId()).and("code", "=", dt_cd));
+                                    if (data == null) {
+                                        data = new Evaluate_index();
+                                        data.setEvaluateId(records.getId());
+                                        data.setCode(dt_cd);
+                                        //获取监测点id
+                                        Monitor_index index = dao().fetch(Monitor_index.class, Cnd.where("code", "=", dt_cd).and("year", "=", year));
+                                        data.setIndexId(index.getId());
+                                        if (bScore) {
+                                            data.setScore(value);
+                                        } else {
+                                            data.setValue(value);
+                                        }
+                                        dao().insert(data);
+
+                                    } else {
+                                        if (bScore) {
+                                            data.setScore(value);
+
+                                        } else {
+                                            data.setValue(value);
+                                        }
+
+                                        dao().updateIgnoreNull(data);
                                     }
-                                    dao().insert(data);
-
-                                }else{
-                                    if(bScore) {
-                                        data.setScore(value);
-
-                                    }else{
-                                        data.setValue(value);
-                                    }
-
-                                    dao().updateIgnoreNull(data);
                                 }
                                 log.info("行政区："+xzqhdm+"的数据指标"+dt_cd+"入库成功！");
 

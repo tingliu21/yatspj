@@ -356,7 +356,7 @@ public class EvaluateIndexController {
 	@At
 	@Ok("void")
 	public void exportCounty(HttpServletResponse resp, HttpServletRequest req, @Param("evaluateId") String evaluateId,
-						  @Param("radar1") String picRadar1, @Param("bar2") String picBar2, @Param("barp") String picBarp) {
+						  @Param("radar1") String picRadar1, @Param("bar2") String picBar2, @Param("barp") String picBarp, @Param("bark") String picBark) {
 		log.debug("导出word文件开始>>>>>>>>>>>>>");
 		//获取行政区划信息
 		Evaluate_records record = evaluateRecordsService.fetch(evaluateId);
@@ -394,12 +394,12 @@ public class EvaluateIndexController {
 		chart.setHeight(710);
 		chart.setWidth(420);
 		paramsPara.put("${bar55}", chart);
-//		chart = new StatChart();
-//		chart.setFilePath(picBartPath);
-//		chart.setFileType("png");
-//		chart.setHeight(320);
-//		chart.setWidth(420);
-//		params.put("${bar_t}", chart);
+		chart = new StatChart();
+		chart.setFilePath(picBark);
+		chart.setFileType("png");
+		chart.setHeight(470);
+		chart.setWidth(420);
+		paramsPara.put("${bar_key}", chart);
 		//读入word模板
 
 		System.out.println(getClass().getClassLoader().getResource("template/Countytemplate_"+Globals.EvaluateYear+".docx"));
@@ -423,7 +423,7 @@ public class EvaluateIndexController {
 	@At
 	@Ok("void")
 	public void exportProvince(HttpServletResponse resp, HttpServletRequest req, @Param("xzqhdm") String xzqhdm,
-							 @Param("radar1") String picRadar1, @Param("bar2") String picBar2, @Param("barp") String picBarp) {
+							 @Param("radar1") String picRadar1, @Param("bar2") String picBar2, @Param("barp") String picBarp, @Param("bar_key") String picBarkey) {
 		log.debug("导出word文件开始>>>>>>>>>>>>>");
 		//获取行政区划信息
 		//String xzqhdm="330000";
@@ -437,14 +437,14 @@ public class EvaluateIndexController {
 		picRadar1 = picRadar1.replaceAll(" ", "+");
 		picBar2 = picBar2.replaceAll(" ", "+");
 		picBarp = picBarp.replaceAll(" ", "+");
-//        picBart = picBart.replaceAll(" ", "+");
+		picBarkey = picBarkey.replaceAll(" ", "+");
 
 		ImgBase64Util imgUtil = new ImgBase64Util();
 		String tempPath = req.getSession().getServletContext().getRealPath("/tmp");
 		String picRadar1Path = imgUtil.decodeBase64(picRadar1, new File(tempPath));     // 读取图片信息，返回图片保存路径
 		String picBar2Path = imgUtil.decodeBase64(picBar2, new File(tempPath));     // 读取图片信息，返回图片保存路径
 		String picBarpPath = imgUtil.decodeBase64(picBarp, new File(tempPath));     // 读取图片信息，返回图片保存路径
-//		String picBartPath = imgUtil.decodeBase64(picBart, new File(tempPath));     // 读取图片信息，返回图片保存路径
+		String picBarkeyPath = imgUtil.decodeBase64(picBarkey, new File(tempPath));     // 读取图片信息，返回图片保存路径
 
 		StatChart chart = new StatChart();
 		chart.setFilePath(picRadar1Path);
@@ -464,12 +464,12 @@ public class EvaluateIndexController {
 		chart.setHeight(710);
 		chart.setWidth(420);
 		paramsPara.put("${barp}", chart);
-//		chart = new StatChart();
-//		chart.setFilePath(picBartPath);
-//		chart.setFileType("png");
-//		chart.setHeight(320);
-//		chart.setWidth(420);
-//		params.put("${bar_t}", chart);
+		chart = new StatChart();
+		chart.setFilePath(picBarkeyPath);
+		chart.setFileType("png");
+		chart.setHeight(470);
+		chart.setWidth(420);
+		paramsPara.put("${bar_key}", chart);
 		//读入word模板
 
 		List<MonitorStat> result1 = new ArrayList<>();
@@ -479,6 +479,7 @@ public class EvaluateIndexController {
 		List<Monitor_catalog> catalogs = monitorCatalogService.query(Cnd.where("level", "=", 1).
 				and("year", "=", Globals.EvaluateYear).and("isshow", "=", true).asc("catacode"));
 		List<String> fieldnames = new ArrayList<>(catalogs.size());
+		fieldnames.add("t_score");
 		for (Monitor_catalog catalog : catalogs) {
 			String fieldname = "index_" + catalog.getCatacode();
 			fieldnames.add(fieldname);
@@ -494,6 +495,7 @@ public class EvaluateIndexController {
 		catalogs = monitorCatalogService.query(Cnd.where("level", "=", 2).
 				and("year", "=", Globals.EvaluateYear).and("isshow", "=", true).asc("catacode"));
 		fieldnames = new ArrayList<>(catalogs.size());
+		fieldnames.add("t_score");
 		for (Monitor_catalog catalog : catalogs) {
 			String fieldname = "index_" + catalog.getCatacode();
 			fieldnames.add(fieldname);

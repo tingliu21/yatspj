@@ -509,24 +509,20 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
             for (int i = 0; i < xzqList.size(); i++) {
                 MonitorStat stat = xzqList.get(i);
                 double[] values = stat.getValue();
-                double total =0.0;
                 XWPFTableRow row = table.createRow();
                 List<XWPFTableCell> cells = row.getTableCells();
                 //第一列序号
                 cells.get(0).setText(String.valueOf(i+1));
                 //第二列行政区划名称
                 cells.get(1).setText(stat.getName());
+                //第3列开始总分，各指标分
 
-                //第4列开始各指标得分
                 for(int j=0;j<values.length;j++){
-                    XWPFTableCell cell = cells.get(j+3);
+                    XWPFTableCell cell = cells.get(j+2);
 
                     cell.setText(String.format("%.2f",values[j]));
-                    total +=values[j];
-
                 }
-                //第三列总分
-                cells.get(2).setText(String.format("%.2f",total));
+
 
             }
         }

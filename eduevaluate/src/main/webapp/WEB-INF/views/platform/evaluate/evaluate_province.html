@@ -73,10 +73,10 @@ layout("/layouts/platform.html"){
 					<option value="1">发展中地区</option>
 					<option value="2" selected>发达地区</option>
 				</select>
-				<div id="emain" style="width: 800px; height: 800px;"></div>
+				<div id="emain" style="width: 800px; height: 1200px;"></div>
 			</div>
 			<div class="tab-pane fade" id="keynotecomp">
-				<div id="fmain" style="width: 800px; height: 800px;"></div>
+				<div id="fmain" style="width: 800px; height: 900px;"></div>
 			</div>
 		</div>
 
@@ -91,7 +91,7 @@ layout("/layouts/platform.html"){
 		    <input id="radar1" name="radar1" type="text" maxlength="50000" />
 		    <input id="bar2" name="bar2" type="text" maxlength="50000" />
 		    <input id="barp" name="barp" type="text" maxlength="50000" />
- 		    <input id="bar_city" name="bar_city" type="text" maxlength="50000" />
+ 		    <input id="bar_key" name="bar_key" type="text" maxlength="50000" />
 
 		     <!-- <input class="easyui-textbox" name="radarCounty64" style="width:90%" data-options="label:'用户名:',required:true"> -->
 		</form>
@@ -265,7 +265,8 @@ layout("/layouts/platform.html"){
                  }],
                  series: [{
                      name:'得分',
-                     data:mvalue
+                     data:mvalue,
+
                  }]
              };
              // 为echarts对象加载数据
@@ -330,15 +331,23 @@ layout("/layouts/platform.html"){
              var picRadar1 = chartRadar1.getDataURL();//获取echarts图的base64编码，为png格式。
              var picBar2 = chartBar2.getDataURL();//获取echarts图的base64编码，为png格式。
              var picBarp = chartBarp.getDataURL();//获取echarts图的base64编码，为png格式。
-             var picBart = chartBart.getDataURL();//获取echarts图的base64编码，为png格式。
+             var picBarkey = chartBarc_k.getDataURL();//获取echarts图的base64编码，为png格式。
              $('#radar1').val(picRadar1);//将编码赋值给输入框
              $('#bar2').val(picBar2);//将编码赋值给输入框
              $('#barp').val(picBarp);//将编码赋值给输入框
-             //$('#bart').val(picBarp);//将编码赋值给输入框
+             $('#bar_key').val(picBarkey);//将编码赋值给输入框
              $('#chartForm').submit();
 
          });
-     });
 
+     });
+     window.addEventListener("resize", () => {
+         this.chartRadar1.resize();
+     	this.chartBar2.resize();
+     	this.chartBarp.resize();
+     	this.chartBart.resize();
+     	this.chartBarc_d.resize();
+     	this.chartBarc_k.resize();
+     });
 	</script>
 <%}%>

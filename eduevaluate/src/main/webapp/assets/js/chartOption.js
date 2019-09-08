@@ -119,8 +119,8 @@ var barOption_v={
 	 }, */
 	xAxis : [ {
 		type : 'category',
-		data : [ '经费保障', '教师保障', '资源保障', '教育教学',
-				'对外开放',  '义务教育优质均衡',
+		data : [ '经费保障', '教师保障', '资源保障', '素质教育',
+				'国际交流与合作',  '义务教育资源均衡',
 				'教育协调发展', '教育发展水平','学生发展', '教育满意' ],
 		axisLabel : {
 			interval : 0,
@@ -257,7 +257,8 @@ var barOption_h={
 					
 				}
 			}
-		}
+		},
+        //barMaxWidth: 50
 		//data : data[0].value
 
 	}, {
