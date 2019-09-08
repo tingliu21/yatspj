@@ -6,11 +6,9 @@ import net.hznu.common.filter.PrivateFilter;
 import net.hznu.common.page.DataTableColumn;
 import net.hznu.common.page.DataTableOrder;
 import net.hznu.common.util.XwpfUtil;
-import net.hznu.modules.models.evaluate.*;
 import net.hznu.modules.models.monitor.Monitor_index;
 import net.hznu.modules.models.sys.Sys_unit;
 import net.hznu.modules.models.sys.Sys_user;
-import net.hznu.modules.services.evaluate.*;
 import net.hznu.modules.services.evaluate.EvaluateSummaryService;
 import net.hznu.modules.services.monitor.MonitorCatalogService;
 import net.hznu.modules.services.monitor.MonitorIndexService;
@@ -18,10 +16,9 @@ import net.hznu.modules.services.sys.SysUnitService;
 import net.hznu.modules.services.sys.SysUserService;
 import net.hznu.modules.models.evaluate.Evaluate_records;
 import net.hznu.modules.models.evaluate.Evaluate_remark;
-import net.hznu.modules.models.evaluate.Evaluate_special;
 import net.hznu.modules.services.evaluate.EvaluateRecordsService;
 import net.hznu.modules.services.evaluate.EvaluateRemarkService;
-import net.hznu.modules.services.evaluate.EvaluateSpecialService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -64,15 +61,9 @@ public class EvaluateRecordsController {
 	private MonitorCatalogService monitorCatalogService;
 	@Inject
 	private EvaluateSummaryService evaluateSummaryService;
-	@Inject
-	private EvaluateSpecialService evaluateSpecialService;
 
-	@At("/scorechart")
-	@Ok("beetl:/platform/evaluate/records/scorechart.html")
-	@RequiresAuthentication
-	public void scorechart( HttpServletRequest req) {
 
-	}
+
 //	@At({"","/?"})
 //	@Ok("beetl:/platform/evaluate/records/${req_attr.type}/index.html")
 //	@RequiresAuthentication
@@ -96,13 +87,7 @@ public class EvaluateRecordsController {
 		req.setAttribute("unitType","111");
 	}
 
-
-	@At("/special/addspec")
-	@Ok("beetl:/platform/evaluate/records/special/addspec.html")
-	@RequiresAuthentication
-	public void addspec( HttpServletRequest req) {
-	}
-
+	//评估专家分配页面的评估组别树
 	@At({"/tree","/tree/?"})
 	@Ok("json")
 	@RequiresAuthentication
@@ -128,6 +113,7 @@ public class EvaluateRecordsController {
 		}
 		return tree;
 	}
+	//评估专家分配页面的评估组别树的子树
 	@At({"/schooltree","/schooltree/?"})
 	@Ok("json")
 	@RequiresAuthentication
@@ -181,17 +167,11 @@ public class EvaluateRecordsController {
 		Sys_user user = (Sys_user) subject.getPrincipal();
 		//2019-01-08 超级专家可以审核所有的学校
 		if(!subject.isPermitted("evaluate.verify.special.all")) {
-			List<Evaluate_special> evaluate_specials = evaluateSpecialService.query(Cnd.where("specialid", "=", user.getId()));
-			Set<String> evaluateSet = new HashSet<String>();
-			for (int i = 0; i < evaluate_specials.size(); i++) {
-				evaluateSet.add(evaluate_specials.get(i).getEvaluateId());
-				//set可以去除重复的evaluateid
-			}
-			String[] evaluateids = new String[evaluateSet.size()];
-			//Set-->数组
-			evaluateSet.toArray(evaluateids);
+			List<String> evaluateidList = evaluateRecordsService.getEvaluateIdsBySpecial(user.getId());
+
+
 			//2018-12-21修改，可以先由专家审核,专家只审核自己分配的学校
-			cnd = Cnd.where("id", "in", evaluateids).and("status_p", "=", false);
+			cnd = Cnd.where("id", "in", evaluateidList).and("status_p", "=", false);
 		}
 		if (year!=0) {
 			cnd.and("year", "=",  year );
@@ -212,49 +192,13 @@ public class EvaluateRecordsController {
 
     }
 
-	@At("/special/assignDo")
-	@Ok("json")
-	@RequiresAuthentication
-	public Object assignDo(@Param("recordIds") String[] recordIds,@Param("special1") String special1,@Param("special2") String special2,@Param("special3") String special3,@Param("special4") String special4, HttpServletRequest req) {
-		try {
-			for(String recordId:recordIds)
-			{
-			//用学校ID获取评估记录
-			Evaluate_records records = evaluateRecordsService.fetch(recordId);
-
-			List<Record> indexList = monitorIndexService.getSpecialIndex("111");
-			//分配评审专家
-			for(Record rec : indexList) {
-				//给一次评估分配专家
-				Evaluate_special evaluateSpecial = new Evaluate_special();
-				evaluateSpecial.setEvaluateId(records.getId());
-				evaluateSpecial.setIndexId(rec.getString("id"));
-				String strRole = rec.getString("rolecode");
-				if (strRole.equals("specialLeader")) {
-					evaluateSpecial.setSpecialId(special1);
-
-				} else if (strRole.equals("special1")) {
-					evaluateSpecial.setSpecialId(special2);
-
-				} else if (strRole.equals("special2")) {
-					evaluateSpecial.setSpecialId(special3);
-
-				} else if (strRole.equals("special3")) {
-					evaluateSpecial.setSpecialId(special4);
-				}
-				evaluateSpecialService.insert(evaluateSpecial);
-			}
-			}
-			return Result.success("system.success");
-		} catch (Exception e) {
-			return Result.error("system.error");
-		}
-	}
 
     @At
     @Ok("json")
     @SLog(tag = "初始化学校评估数据", msg = "")
-    public Object addDo(@Param("year") int year,@Param("taskname")String taskname,@Param("schoolIds") String[] schoolIds, @Param("specialIds") String[] specialIds,HttpServletRequest req) {
+    public Object addDo(@Param("year") int year,@Param("taskname")String taskname,@Param("schoolIds") String[] schoolIds,
+//						@Param("specialIds") String[] specialIds,
+						HttpServletRequest req) {
 		try {
 			if(schoolIds!=null&&schoolIds.length>0){
 				for (String schoolid : schoolIds) {
@@ -302,36 +246,7 @@ public class EvaluateRecordsController {
 						evaluateSummaryService.insert(summary);//插入自评概述
 
 					}*/
-					if(specialIds!=null&&specialIds.length==5){
-						List<Record> indexList = monitorIndexService.getSpecialIndex(unitType);
-						//分配评审专家
-						for(Record rec : indexList){
-							//给一次评估分配专家
-							Evaluate_special evaluateSpecial = new Evaluate_special();
-							evaluateSpecial.setEvaluateId(records.getId());
-							evaluateSpecial.setIndexId(rec.getString("id"));
-							String strRole = rec.getString("rolecode");
-							if(strRole.equals("specialLeader")){
-								evaluateSpecial.setSpecialId(specialIds[0]);
-
-							}else if(strRole.equals("special1")){
-								evaluateSpecial.setSpecialId(specialIds[1]);
-
-							}else if(strRole.equals("special2")){
-								evaluateSpecial.setSpecialId(specialIds[2]);
-
-							}else if(strRole.equals("special3")){
-								evaluateSpecial.setSpecialId(specialIds[3]);
-
-							}else if(strRole.equals("special4")){
-								evaluateSpecial.setSpecialId(specialIds[4]);
-
-							}
-							evaluateSpecialService.insert(evaluateSpecial);
-						}
-
-					}
-
+					//原来这里分配评估专家，现在移到专门的模块
 
 				}
 
@@ -341,27 +256,6 @@ public class EvaluateRecordsController {
 			return Result.error("system.error");
 		}
 
-    }
-
-    @At("/edit/?")
-    @Ok("beetl:/platform/evaluate/records/edit.html")
-    @RequiresAuthentication
-    public Object edit(String id) {
-		return evaluateRecordsService.fetch(id);
-    }
-
-    @At
-    @Ok("json")
-    @SLog(tag = "修改Evaluate_records", msg = "ID:${args[0].id}")
-    public Object editDo(@Param("..") Evaluate_records evaluateRecords, HttpServletRequest req) {
-		try {
-
-			evaluateRecords.setOpAt((int) (System.currentTimeMillis() / 1000));
-			evaluateRecordsService.updateIgnoreNull(evaluateRecords);
-			return Result.success("system.success");
-		} catch (Exception e) {
-			return Result.error("system.error");
-		}
     }
 
 
@@ -392,27 +286,9 @@ public class EvaluateRecordsController {
 	}
 
 
-//    @At({"/delete","/delete/?"})
-//    @Ok("json")
-//    @SLog(tag = "删除Evaluate_records", msg = "ID:${args[2].getAttribute('id')}")
-//    public Object delete(String id, @Param("ids") String[] ids ,HttpServletRequest req) {
-//		try {
-//			if(ids!=null&&ids.length>0){
-//				evaluateRecordsService.delete(ids);
-//
-//    			req.setAttribute("id", org.apache.shiro.util.StringUtils.toString(ids));
-//			}else{
-//				evaluateRecordsService.delete(id);
-//    			req.setAttribute("id", id);
-//			}
-//			return Result.success("system.success");
-//		} catch (Exception e) {
-//			return Result.error("system.error");
-//		}
-//    }
 	@At({"/delete","/delete/?"})
 	@Ok("json")
-	@SLog(tag = "删除Evaluate_records", msg = "ID:${args[2].getAttribute('id')}")
+	@SLog(tag = "删除Evaluate_records", msg = "ID:${args[0]}")
 	public Object delete(String id ,HttpServletRequest req) {
 		try {
 				//通过级联删除其他外键表记录
@@ -426,16 +302,7 @@ public class EvaluateRecordsController {
 		}
 	}
 
-    @At("/detail/?")
-    @Ok("beetl:/platform/evaluate/records/detail.html")
-    @RequiresAuthentication
-	public Object detail(String id) {
-		if (!Strings.isBlank(id)) {
-			return evaluateRecordsService.fetch(id);
 
-		}
-		return null;
-    }
 	@At("/select")
 	@Ok("beetl:/platform/evaluate/records/select.html")
 	@RequiresAuthentication
@@ -471,8 +338,38 @@ public class EvaluateRecordsController {
 		return evaluateRecordsService.getSpecialUser();
 
 	}
+	//获取评估分配的专家
+	@At("/specialdata")
+	@Ok("json:full")
+	@RequiresAuthentication
+	public Object specialdata(@Param("recordIds") String[] recordIds, @Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
+		if(recordIds!=null && recordIds.length>0) {
+			return evaluateRecordsService.getEvaluateSpecial(recordIds);
+		}else return null;
 
+	}
 
+	@At("/special/pushSpecial")
+	@Ok("json")
+//	@RequiresPermissions("sys.manager.role.user")
+	@SLog(tag = "分配专家到评估记录", msg = "评估记录Id:${args[1]},专家ID:${args[0]}")
+	public Object pushSpecial(@Param("specialIds") String specialIds, @Param("evaluateid") String evaluateid,@Param("roleid") String roleid, HttpServletRequest req) {
+		try {
+			String[] ids = StringUtils.split(specialIds, ",");
+			String[] evaluateIds = StringUtils.split(evaluateid, ",");
+			for (String eid : evaluateIds) {
+				for (String s : ids) {
+					if (!Strings.isEmpty(s)) {
+						evaluateRecordsService.assignEvaluateSpecial(eid,roleid,s);
+					}
+				}
+			}
+
+			return Result.success("system.success");
+		} catch (Exception e) {
+			return Result.error("system.error");
+		}
+	}
 	@At("/special/download/?")
 	@Ok("void")
 	@RequiresAuthentication

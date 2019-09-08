@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Table("evaluate_custom")
+@View("evaluate_custom_view")
 public class Evaluate_custom extends Model implements Serializable{
     private static final long serialVersionUID = 1L;
 
@@ -84,6 +85,10 @@ public class Evaluate_custom extends Model implements Serializable{
     @Many(target=Evaluate_appendix.class,field = "remarkid")
     private List<Evaluate_appendix> appendixList;
 
+    @Column
+    @Readonly
+    private String specialid;
+
     public String getId() {
         return id;
     }
@@ -120,7 +125,13 @@ public class Evaluate_custom extends Model implements Serializable{
         this.score_p = score_p;
     }
 
+    public String getSpecialid() {
+        return specialid;
+    }
 
+    public void setSpecialid(String specialid) {
+        this.specialid = specialid;
+    }
 
     public Boolean getSelfeva() {
         return selfeva;

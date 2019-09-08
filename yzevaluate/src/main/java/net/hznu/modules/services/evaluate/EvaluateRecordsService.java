@@ -2,17 +2,25 @@ package net.hznu.modules.services.evaluate;
 
 import net.hznu.common.base.Service;
 import net.hznu.modules.models.evaluate.Evaluate_records;
+import net.hznu.modules.models.sys.Sys_role;
 import org.nutz.aop.interceptor.ioc.TransAop;
+import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
+import org.nutz.dao.entity.Entity;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.sql.Sql;
+import org.nutz.dao.sql.SqlCallback;
 import org.nutz.ioc.aop.Aop;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @IocBean(args = {"refer:dao"})
@@ -34,7 +42,7 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
 
         dao().execute(Sqls.create("delete from evaluate_remark where evaluateid=@id ").setParam("id", evaluateId));
         dao().execute(Sqls.create("delete from evaluate_custom where evaluateid=@id ").setParam("id", evaluateId));
-        dao().execute(Sqls.create("delete from evaluate_summary where evaluateid=@id")).setParam("id",evaluateId);
+        dao().execute(Sqls.create("delete from evaluate_summary where evaluateid=@id").setParam("id",evaluateId));
         dao().execute(Sqls.create("delete from evaluate_appendix where evaluateid=@id").setParam("id",evaluateId));
         //清空该评估记录
         delete(evaluateId);
@@ -109,7 +117,108 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
     }
 
 
+    /**
+     * 获取本项目的专家组角色，并查找评估记录中是否有给各专家组角色赋予相应的专家名单
+     * @param evaluateIds 评估记录Id
+     * @return 返回给前端 具体的角色及专家数组列表，以及记录数，该项目是4位专家角色
+     */
+    public NutMap getEvaluateSpecial(String[] evaluateIds){
+        NutMap re = new NutMap();
+        Sql sql = Sqls.create("SELECT sys_role.id,sys_role.name,sys_role.code FROM sys_role inner join sys_unit on sys_unit.id = sys_role.unitid WHERE sys_unit.aliasname='Special' order by sys_role.name");
+        Entity<Sys_role> entity = dao().getEntity(Sys_role.class);
+        sql.setEntity(entity);
+        sql.setCallback(Sqls.callback.entities());
+        dao().execute(sql);
+        List<Sys_role> roles = sql.getList(Sys_role.class);
+
+        List<Record> roleRecords = new ArrayList<>();
 
 
+        for(Sys_role role:roles){
+            Record r = new Record();
+            String roleId = role.getId();
+            r.put("id",roleId);
+            r.put("rolename",role.getName());
+
+            sql = Sqls.create("SELECT distinct sys_user.nickname FROM sys_user inner join evaluate_special_role on evaluate_special_role.specialid = sys_user.id WHERE evaluate_special_role.roleid=@roldid and evaluateid in (@evaluateid)");
+            sql.params().set("roldid",roleId);
+            sql.params().set("evaluateid", evaluateIds);
+            sql.setCallback(new SqlCallback() {
+                public Object invoke(Connection conn, ResultSet rs, Sql sql)
+                        throws SQLException {
+                    String username = "";
+                    while (rs != null && rs.next()) {
+                        username += rs.getString(1) + ";";
+                    }
+                    return username;
+                }
+            });
+            this.dao().execute(sql);
+            r.put("username",sql.getString());
+            roleRecords.add(r);
+        }
+
+        re.put("data", roleRecords);
+        re.put("recordsTotal", roleRecords.size());
+        return re;
+
+    }
+
+    /**
+     * 给一组评估记录和专家角色分配专家
+     * @param evaluateid
+     * @param roleid
+     * @param uid
+     */
+    public void assignEvaluateSpecial(String evaluateid, String roleid,String uid){
+        this.dao().clear("evaluate_special_role", Cnd.where("evaluateid","=",evaluateid).and("roleid","=",roleid));
+        insert("evaluate_special_role", org.nutz.dao.Chain.make("evaluateid", evaluateid).add("specialid",uid).add("roleid", roleid));
+    }
+
+    /**
+     * 获取专家参与的评估ID
+     * @param suid 专家的用户id
+     * @return  专家负责的评估ID
+     */
+    public List<String> getEvaluateIdsBySpecial(String suid){
+        Sql sql = Sqls.create("SELECT distinct evaluateid FROM evaluate_special_role WHERE specialid=@userid").setParam("userid",suid);
+        sql.setCallback(new SqlCallback() {
+            public Object invoke(Connection conn, ResultSet rs, Sql sql)
+                    throws SQLException {
+                List<String> evaluateIds = new ArrayList<>();
+
+                while (rs != null && rs.next()) {
+                    String eid = rs.getString(1) ;
+                    evaluateIds.add(eid);
+                }
+                return evaluateIds;
+            }
+        });
+        this.dao().execute(sql);
+        return sql.getList(String.class);
+    }
+    /**
+     * 获取专家负责评估的指标ID
+     * @param suid 专家的用户id
+     * @param eid 评估id
+     * @return  专家负责的评估ID
+     */
+    public List<String> getIndexIdsBySpecial(String suid,String eid){
+        Sql sql = Sqls.create("SELECT distinct indexid FROM evalute_remark_special_view WHERE evaluateid=@evaluateid and specialid=@userid").setParam("evaluateid",eid).setParam("userid",suid);
+        sql.setCallback(new SqlCallback() {
+            public Object invoke(Connection conn, ResultSet rs, Sql sql)
+                    throws SQLException {
+                List<String> evaluateIds = new ArrayList<>();
+
+                while (rs != null && rs.next()) {
+                    String eid = rs.getString(1) ;
+                    evaluateIds.add(eid);
+                }
+                return evaluateIds;
+            }
+        });
+        this.dao().execute(sql);
+        return sql.getList(String.class);
+    }
 }
 

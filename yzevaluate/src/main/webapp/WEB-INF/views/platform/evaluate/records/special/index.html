@@ -162,12 +162,12 @@ layout("/layouts/platform.html"){
                         '<ul class="dropdown-menu" role="menu"><li><a onclick="checkfile(\''+row.selfevaurl+'\')" href="#" >自评报告</a></li>' +
                         '<li><a onclick="checkfile(\''+row.planurl+'\')" href="#" >3年规划</a></li></ul>' +
                         '<a class="btn btn-primary" href="${base}/platform/evaluate/remark/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>基础性指标</a>' +
-                        '<a class="btn btn-success" href="${base}/platform/evaluate/custom/?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>发展性指标</a>';
-                    if(!row.locked) {
-                        html +='<a class="btn btn-warning" href="javascript:;" onclick="locked(\'' + row.id + '\')">锁定</a>';
-                    }else{
-                        html +='<a class="btn btn-info" href="javascript:;" onclick="unlocked(\'' + row.id + '\')">解锁</a>';
-                    }
+                        '<a class="btn btn-success" href="${base}/platform/evaluate/custom/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>发展性指标</a>';
+//                    if(!row.locked) {
+//                        html +='<a class="btn btn-warning" href="javascript:;" onclick="locked(\'' + row.id + '\')">锁定</a>';
+//                    }else{
+//                        html +='<a class="btn btn-info" href="javascript:;" onclick="unlocked(\'' + row.id + '\')">解锁</a>';
+//                    }
 
 
                     return html;

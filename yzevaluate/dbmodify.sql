@@ -37,3 +37,30 @@ ALTER TABLE evaluate_custom
    ALTER COLUMN weights TYPE numeric(3,1);
 COMMENT ON COLUMN evaluate_custom.weights IS '分值';
 
+
+-- View: monitor_index_view
+
+-- DROP VIEW monitor_index_view;
+
+CREATE OR REPLACE VIEW monitor_index_view AS
+ SELECT monitor_index.location,
+    monitor_index.name,
+    monitor_index.id,
+    monitor_index.weights,
+    monitor_index.catalogid,
+    monitor_index.unittype,
+    monitor_index.detail,
+    monitor_index.department,
+    sys_unit.name AS deptname,
+    monitor_index.selfeva,
+    monitor_index.masterrole,
+    sys_role.name AS masterrolename
+   FROM monitor_index
+     JOIN sys_unit ON monitor_index.department::text = sys_unit.id::text
+     LEFT JOIN sys_role ON monitor_index.masterrole::text = sys_role.id::text
+  ORDER BY monitor_index.location;
+
+ALTER TABLE monitor_index_view
+  OWNER TO postgres;
+
+

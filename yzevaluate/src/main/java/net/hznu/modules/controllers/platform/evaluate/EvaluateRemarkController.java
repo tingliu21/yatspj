@@ -9,12 +9,11 @@ import net.hznu.common.page.DataTableOrder;
 import net.hznu.modules.models.evaluate.Evaluate_appendix;
 import net.hznu.modules.models.evaluate.Evaluate_records;
 import net.hznu.modules.models.evaluate.Evaluate_remark;
-import net.hznu.modules.models.evaluate.Evaluate_special;
 import net.hznu.modules.models.sys.Sys_user;
 import net.hznu.modules.services.evaluate.EvaluateAppendixService;
 import net.hznu.modules.services.evaluate.EvaluateRecordsService;
 import net.hznu.modules.services.evaluate.EvaluateRemarkService;
-import net.hznu.modules.services.evaluate.EvaluateSpecialService;
+
 import net.hznu.modules.services.monitor.MonitorCatalogService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -41,8 +40,6 @@ public class EvaluateRemarkController {
 	private EvaluateRemarkService evaluateRemarkService;
 	@Inject
 	private EvaluateRecordsService evaluateRecordsService;
-	@Inject
-	private EvaluateSpecialService evaluateSpecialService;
 	@Inject
 	private MonitorCatalogService monitorCatalogService;
 	@Inject
@@ -105,7 +102,7 @@ public class EvaluateRemarkController {
 
     }
 
-    //专家评估指标，仅列出续现场评估的指标
+    //专家评估指标，仅列出需现场评估的指标
     @At
 	@Ok("json:full")
 	@RequiresPermissions("evaluate.verify.special")
@@ -140,15 +137,9 @@ public class EvaluateRemarkController {
 			//获取专家id
 			Subject subject = SecurityUtils.getSubject();
 			Sys_user user = (Sys_user) subject.getPrincipal();
-			List<Evaluate_special> evaluate_specials = evaluateSpecialService.query(Cnd.where("specialid","=",user.getId()).and("evaluateid","=",evaluateId));
-			Set<String> indexSet = new HashSet<String>();
-			for(int i =0;i<evaluate_specials.size();i++){
-				indexSet.add(evaluate_specials.get(i).getIndexId());
-				//set可以去除重复的evaluateid
-			}
-			String[] indexids = new String[indexSet.size()];
-			//Set-->数组
-			indexSet.toArray(indexids);
+
+			List<String> indexids = evaluateRecordsService.getIndexIdsBySpecial(user.getId(),evaluateId);
+
 			Cnd cnd = Cnd.where("indexid","in",indexids);
 			cnd.and("evaluateId", "like", "%" + evaluateId + "%").asc("location");
 

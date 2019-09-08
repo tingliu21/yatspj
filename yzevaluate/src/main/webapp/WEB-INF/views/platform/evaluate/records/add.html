@@ -14,7 +14,7 @@ layout("/layouts/platform.html"){
             <form id="addForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
                   action="${base}/platform/evaluate/records/addDo" method="post">
                 <input id="schoolIds" name="schoolIds" type="hidden">
-                <input id="specialIds" name="specialIds" type="hidden">
+                <!--<input id="specialIds" name="specialIds" type="hidden">-->
                 <div class="row mb10">
                     <div class="col-lg-12">
                         <div class="form-group">
@@ -30,33 +30,24 @@ layout("/layouts/platform.html"){
                             </div>
                         </div>
 
-                        <!--下拉框选择学校-->
-                        <!--<div class="form-group">-->
-                            <!--<label for="unitType" class="col-sm-2 control-label">学校类型</label>-->
+
+                        <!--初始化的时候不确定专家，后续专门进行专家分配
+                        <div class="form-group no-b">-->
+                            <!--<label for="specialIds" class="col-sm-2 control-label">评审专家</label>-->
 
                             <!--<div class="col-sm-8">-->
-                                <!--<select class="form-control" name="unitType" id="unitType">-->
-                                    <!--<option value="211">小学</option>-->
-                                    <!--<option value="311">初中</option>-->
-                                <!--</select>-->
+                                <!--<div class="btn-group tool-button">-->
+                                    <!--<a class="btn btn-primary navbar-btn" id="selSpecial"> 选择专家</a>-->
+                                    <!--<a class="btn btn-danger navbar-btn" id="delSpecial">重置专家</a>-->
+
+                                <!--</div>-->
+                                <!--<div class="dd" id="nestable4">-->
+                                    <!--<ol class="dd-list">-->
+                                    <!--</ol>-->
+                                <!--</div>-->
                             <!--</div>-->
+
                         <!--</div>-->
-                        <div class="form-group no-b">
-                            <label for="specialIds" class="col-sm-2 control-label">评审专家</label>
-
-                            <div class="col-sm-8">
-                                <div class="btn-group tool-button">
-                                    <a class="btn btn-primary navbar-btn" id="selSpecial"> 选择专家</a>
-                                    <a class="btn btn-danger navbar-btn" id="delSpecial">重置专家</a>
-
-                                </div>
-                                <div class="dd" id="nestable4">
-                                    <ol class="dd-list">
-                                    </ol>
-                                </div>
-                            </div>
-
-                        </div>
                         <div class="form-group">
                             <label for="schoolIds" class="col-sm-2 control-label">学校类型</label>
 
@@ -115,7 +106,7 @@ layout("/layouts/platform.html"){
     $(document).ready(function () {
 
         $("#nestable3").nestable();
-        $("#nestable4").nestable();
+//        $("#nestable4").nestable();
 //        $('input:radio[name=unitType]').click(function () {
 //            $("#nestable3 .dd-list").html("");
 //        });
@@ -129,18 +120,18 @@ layout("/layouts/platform.html"){
                 remote: "${base}/platform/evaluate/records/select?unitType=" + unitType
             });
         });
-        $("#selSpecial").on("click", function () {
-            var unitType = $('input:radio[name=unitType]:checked').val();
-            $("#dialogSelect").modal({
-                remote: "${base}/platform/evaluate/records/selectindex?unitType=" + unitType
-            });
-        });
-        $("#delSpecial").on("click",function () {
-            $("#nestable4 .dd-list .dd-item").each(function () {
-                $(this).remove();
-            })
-            
-        })
+//        $("#selSpecial").on("click", function () {
+//            var unitType = $('input:radio[name=unitType]:checked').val();
+//            $("#dialogSelect").modal({
+//                remote: "${base}/platform/evaluate/records/selectindex?unitType=" + unitType
+//            });
+//        });
+//        $("#delSpecial").on("click",function () {
+//            $("#nestable4 .dd-list .dd-item").each(function () {
+//                $(this).remove();
+//            })
+//
+//        })
         $("#submit").on("click", function () {
             var data = $("#nestable3").nestable('serialize');
             var ids = [];
@@ -155,19 +146,19 @@ layout("/layouts/platform.html"){
             }
 
             $("#schoolIds").val(ids.toString());
-            //专家信息
-            data = $("#nestable4").nestable('serialize');
-            ids = [];
-            if (data) {
-                $.each(data, function (i, n) {
-                    ids.push(n.id);
-                });
-            }
+//            //专家信息
+//            data = $("#nestable4").nestable('serialize');
+//            ids = [];
+//            if (data) {
+//                $.each(data, function (i, n) {
+//                    ids.push(n.id);
+//                });
+//            }
            /* if (ids.length != 5) {
                 Toast.error("请选择5位专家");
                 return false;
             }*/
-            $("#specialIds").val(ids.toString());
+//            $("#specialIds").val(ids.toString());
             $('#addForm').ajaxForm({
                 dataType: 'json',
                 beforeSubmit: function (arr, form, options) {

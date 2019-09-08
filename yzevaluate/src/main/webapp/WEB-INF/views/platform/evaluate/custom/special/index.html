@@ -114,9 +114,11 @@ layout("/layouts/platform.html"){
                     "render": function (data, type, row) {
                         html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/custom/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><span class="glyphicon glyphicon-eye-open"></span> 查看</a>';
 
-                        html+='<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/custom/speceva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
-                            '    <span class="glyphicon glyphicon-pencil"></span> 评价</a>' +
-                            '</div>';
+                        if (row.specialid == '${@shiro.getPrincipalProperty("id")}') {
+                            html += '<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/custom/speceva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
+                                '    <span class="glyphicon glyphicon-pencil"></span> 评价</a>' +
+                                '</div>';
+                        }
                         return  html;
 
 //                        return '<div class="btn-group"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">' +
