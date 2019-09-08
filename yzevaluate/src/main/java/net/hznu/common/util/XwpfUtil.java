@@ -3,11 +3,9 @@ package net.hznu.common.util;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.*;
 
 import net.hznu.common.chart.CustomStat;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -152,41 +150,52 @@ public class XwpfUtil {
             for(String key :params.keySet()){
                 if(key.equals(str)){
                     Object oValue = params.get(str);
-                    /*if(oValue instanceof StatChart){//图表添加
-                        StatChart chart = (StatChart)oValue ;
-                        try {
+                     //文本替换
+                    String value = String.valueOf(oValue);
+                    if(value!=""){
+                        int iNewLine = value.indexOf("\n");
+                        if(iNewLine!=-1){
+                            XWPFRun run = para.createRun();
+                            run.setText(value.substring(0,iNewLine));
+                            run.addCarriageReturn();
+                            run.addTab();
+                            run.setText(value.substring(iNewLine,value.length()));
 
-                            InputStream input = new FileInputStream(chart.getFilePath());
-
-                            para.createRun().addPicture(input, getPictureType(chart.getFileType()),
-                                    chart.getFilePath(), Units.toEMU(chart.getWidth()), Units.toEMU(chart.getHeight()));
-                        } catch (InvalidFormatException | IOException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                        }else {
+                            para.createRun().setText(value);
                         }
-                    }else {//文本替换
-                        String value = String.valueOf(oValue);
-                        if(value!=""){
-                            int iNewLine = value.indexOf("\n");
-                            if(iNewLine!=-1){
-                                XWPFRun run = para.createRun();
-                                run.setText(value.substring(0,iNewLine));
-                                run.addCarriageReturn();
-                                run.addTab();
-                                run.setText(value.substring(iNewLine,value.length()));
-
-                            }else {
-                                para.createRun().setText(value);
-                            }
-                        }
-                    }*/
-
+                    }
 
                     break;
                 }
             }
 
 
+        }
+    }
+    /**
+     * 替换word模板文档表格中的变量
+     * @param doc 要替换的文档
+     * @param params 参数
+     */
+    public void replaceInTable(XWPFDocument doc, Map<String, Object> params) {
+        Iterator<XWPFTable> iterator = doc.getTablesIterator();
+        XWPFTable table;
+        List<XWPFTableRow> rows;
+        List<XWPFTableCell> cells;
+        List<XWPFParagraph> paras;
+        while (iterator.hasNext()) {
+            table = iterator.next();
+            rows = table.getRows();
+            for (XWPFTableRow row : rows) {
+                cells = row.getTableCells();
+                for (XWPFTableCell cell : cells) {
+                    paras = cell.getParagraphs();
+                    for (XWPFParagraph para : paras) {
+                        this.replaceInPara(para, params);
+                    }
+                }
+            }
         }
     }
 }

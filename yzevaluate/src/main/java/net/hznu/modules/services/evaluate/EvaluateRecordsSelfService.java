@@ -3,22 +3,16 @@ package net.hznu.modules.services.evaluate;
 import net.hznu.common.base.Service;
 import net.hznu.common.chart.CustomStat;
 import net.hznu.common.util.XwpfUtil;
-import net.hznu.modules.models.evaluate.Evaluate_custom;
 import net.hznu.modules.models.evaluate.Evaluate_records_self;
-import net.hznu.modules.models.evaluate.Evaluate_remark;
-import net.hznu.modules.models.evaluate.Evaluate_special;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.nutz.aop.interceptor.ioc.TransAop;
-import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
 import org.nutz.dao.entity.Record;
-import org.nutz.dao.sql.Sql;
-import org.nutz.dao.sql.SqlCallback;
 import org.nutz.ioc.aop.Aop;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.log.Log;
@@ -30,11 +24,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @IocBean(args = {"refer:dao"})
 public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
@@ -127,11 +121,11 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
     		//Xzqh pxzqh = dao.fetch(Xzqh.class,pxzqhdm);
             List<Record> recordsUnitInfo = this.getUnitInfo(evaluateId);
 		if (recordsUnitInfo.size() > 0) {
-            params.put("unitname", recordsUnitInfo.get(0).getString("unitname"));
-            params.put("address", recordsUnitInfo.get(0).getString("address"));
-            params.put("website", recordsUnitInfo.get(0).getString("website"));
-            params.put("telephone", recordsUnitInfo.get(0).getString("telephone"));
-            params.put("email", recordsUnitInfo.get(0).getString("email"));
+            params.put("${unitname}", recordsUnitInfo.get(0).getString("unitname"));
+            params.put("${address}", recordsUnitInfo.get(0).getString("address"));
+            params.put("${website}", recordsUnitInfo.get(0).getString("website"));
+            params.put("${telephone}", recordsUnitInfo.get(0).getString("telephone"));
+            params.put("${email}", recordsUnitInfo.get(0).getString("email"));
 		}
             return params;
         }else
@@ -152,9 +146,9 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
                 double score_s = record.getDouble("score_s");
                 //double score_p = record.getDouble("score_p");
                 String remark_s = record.getString("remark_s");
-                params.put("s_i" + location, formatDouble(score_s));
+                params.put("${s_i" + location+"}", formatDouble(score_s));
                 //params.put("p_i" + location, formatDouble(score_p));
-                params.put("r_i" + location, remark_s);
+                params.put("${r_i" + location+"}", remark_s);
             }
             return params;
         }else
@@ -178,7 +172,7 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
      * @param response
      * @param xwpfUtil
      */
-    public void exportWord(Map<String, Object> paramsPara, List<CustomStat>stat, InputStream is,
+    public void exportWord(Map<String, Object> paramsPara, Map<String, Object> paramsTable,List<CustomStat>stat, InputStream is,
                            HttpServletResponse response,
                            XwpfUtil xwpfUtil, String filename) {
 
@@ -186,7 +180,8 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
             XWPFDocument doc=new XWPFDocument(is);
 
             xwpfUtil.replaceInPara(doc,paramsPara);
-            replaceInTable(doc,stat);
+            xwpfUtil.replaceInTable(doc,paramsTable);
+            CreateRowInTable(doc,stat);
             OutputStream os = response.getOutputStream();
 
             response.setContentType("application/vnd.ms-excel");
@@ -202,12 +197,13 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
             //logger.error("文件导出错误");
         }
     }
+
     /**
-     * 替换word模板文档表格中的变量
+     * 循环创建表格行记录
      * @param doc 要替换的文档
      * @param customStatList 发展性指标内容
      */
-    public void replaceInTable(XWPFDocument doc, List<CustomStat> customStatList) {
+    public void CreateRowInTable(XWPFDocument doc, List<CustomStat> customStatList) {
         List<XWPFTable> tables = doc.getTables();
         //附件中的最后1个表格为发展性指标表
         for (int i = 0; i < tables.size(); i++) {

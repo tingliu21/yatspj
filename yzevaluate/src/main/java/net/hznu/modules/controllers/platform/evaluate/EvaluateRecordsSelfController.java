@@ -315,7 +315,7 @@ public class EvaluateRecordsSelfController {
 			filename = URLEncoder.encode(filename, "UTF-8");
 			XwpfUtil xwpfUtil = new XwpfUtil();
 			//xwpfUtil.exportWord(resp);
-			evaluateRecordsSelfService.exportWord(paramsPara,result,is,resp,xwpfUtil,filename);
+			evaluateRecordsSelfService.exportWord(paramsPara,paramsTable,result,is,resp,xwpfUtil,filename);
 
 			log.debug("导出word文件完成>>>>>>>>>>>>>");
 		} catch (UnsupportedEncodingException e) {
