@@ -2,8 +2,11 @@ package net.hznu.modules.services.evaluate;
 
 import net.hznu.common.base.Service;
 import net.hznu.common.chart.CustomStat;
+import net.hznu.common.util.WordTemplate;
 import net.hznu.common.util.XwpfUtil;
+import net.hznu.modules.models.evaluate.Evaluate_custom;
 import net.hznu.modules.models.evaluate.Evaluate_records_self;
+import net.hznu.modules.models.evaluate.Evaluate_remark;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
@@ -91,18 +94,6 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
         return list(Sqls.create("select t1.summary, t2.location from evaluate_summary t1 join monitor_catalog t2 on t1.catalogid=t2.id where evaluateid=@id order by location").setParam("id", evalId));
     }
 
-    public List<Record> getRemarkData(String evalId) {
-        return list(Sqls.create("select t1.score_s, t1.remark_s, t1.score_p, t2.location from evaluate_remark t1 join monitor_index t2 on t1.indexid=t2.id where evaluateid=@id order by location").setParam("id", evalId));
-    }
-
-    public List<Record> getCustomData(String evalId) {
-        return list(Sqls.create("select indexname, taskname, taskdetail, analysis_s, weights, score_s from evaluate_custom where evaluateid=@evalId").setParam("evalId",evalId));
-    }
-
-    public List<Record> getScaleData(String evalId) {
-        return list(Sqls.create("select t1.grade,t1.planenrollnum,t1.actualenrollnum, t1.classnum,t1.averagenum,t1.instruction from bascidata_scale t1 join evaluate_records t2 on t1.schoolid=t2.schoolid and t1.year=t2.year where t2.id=@id").setParam("id", evalId));
-    }
-
 
 
     /**
@@ -111,49 +102,53 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
      */
     public Map<String, Object> packageParaObject(String evaluateId) {
         if (StringUtils.isNotBlank(evaluateId)) {
+            Map<String,Object> wordDataMap = new HashMap<String,Object>();
+
             Map<String,Object> params = new HashMap<String,Object>();
             //报告生成日期
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy 年 MM 月 dd 日");
-            params.put("${date}",sdf.format(new Date()));
+            params.put("date",sdf.format(new Date()));
 
             //报告学校信息
     		//String pxzqhdm = xzqhdm.substring(0,4)+"00";
     		//Xzqh pxzqh = dao.fetch(Xzqh.class,pxzqhdm);
             List<Record> recordsUnitInfo = this.getUnitInfo(evaluateId);
-		if (recordsUnitInfo.size() > 0) {
-            params.put("${unitname}", recordsUnitInfo.get(0).getString("unitname"));
-            params.put("${address}", recordsUnitInfo.get(0).getString("address"));
-            params.put("${website}", recordsUnitInfo.get(0).getString("website"));
-            params.put("${telephone}", recordsUnitInfo.get(0).getString("telephone"));
-            params.put("${email}", recordsUnitInfo.get(0).getString("email"));
-		}
-            return params;
-        }else
-            return null;
-    }
+            if (recordsUnitInfo.size() > 0) {
+                params.put("unitname", recordsUnitInfo.get(0).getString("unitname"));
+                params.put("address", recordsUnitInfo.get(0).getString("address"));
+                params.put("website", recordsUnitInfo.get(0).getString("website"));
+                params.put("telephone", recordsUnitInfo.get(0).getString("telephone"));
+                params.put("email", recordsUnitInfo.get(0).getString("email"));
+            }
 
-    /**
-     * 组装word文档中需要显示表格数据的集合
-     * @return
-     */
-    public Map<String, Object> packageTableObject(String evalId,List<Record> recordsRemarkData, int year) {
-        if (evalId.trim() != "" && year!=0) {
-            Map<String,Object> params = new HashMap<String,Object>();
-
+            //表格内容
+            List<Record> remarkList = list(Sqls.create("select location,sum(score_s) as score_s, string_agg(remark_s,'\\r\\n' order by indexname ) as remark_s,string_agg(id,',') as id FROM evaluate_remark_view where evaluateid=@eid group by location ")
+                    .setParam("eid",evaluateId));
             //得分
-            for (Record record : recordsRemarkData) {
+            for (Record record : remarkList) {
                 int location = record.getInt("location");
                 double score_s = record.getDouble("score_s");
                 //double score_p = record.getDouble("score_p");
                 String remark_s = record.getString("remark_s");
-                params.put("${s_i" + location+"}", formatDouble(score_s));
+                String attachement="";
+                List<Record> appList = list(Sqls.create("select apname from evaluate_appendix where evaluateid=@eid and remarkid in (@remarkid) order by apname")
+                        .setParam("eid",evaluateId).setParam("remarkid",record.getString("id")));
+                for(Record appendix :appList){
+                    attachement +=appendix.getString("apname")+"\r\n";
+                }
+                params.put("s_i" + location, formatDouble(score_s));
                 //params.put("p_i" + location, formatDouble(score_p));
-                params.put("${r_i" + location+"}", remark_s);
+                params.put("r_i" + location, remark_s);
+                params.put("att_i"+location,attachement);
             }
-            return params;
+
+            wordDataMap.put("parametersMap", params);
+            return wordDataMap;
+
         }else
             return null;
     }
+
 
     public String formatDouble(double d) {
         BigDecimal bg = new BigDecimal(d).setScale(1, RoundingMode.UP);
@@ -172,16 +167,21 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
      * @param response
      * @param xwpfUtil
      */
-    public void exportWord(Map<String, Object> paramsPara, Map<String, Object> paramsTable,List<CustomStat>stat, InputStream is,
+    public void exportWord(Map<String, Object> paramsPara, List<Evaluate_custom>stat, InputStream is,
                            HttpServletResponse response,
                            XwpfUtil xwpfUtil, String filename) {
 
         try {
-            XWPFDocument doc=new XWPFDocument(is);
+            //暂时先用WordTemplate工具类替换word段落中的内容
+            WordTemplate wordTemplate = new WordTemplate(is);
+            wordTemplate.replaceDocument(paramsPara);
 
-            xwpfUtil.replaceInPara(doc,paramsPara);
-            xwpfUtil.replaceInTable(doc,paramsTable);
+            XWPFDocument doc=wordTemplate.getDocument();
+            //xwpfUtil.replaceInPara(doc,paramsPara);
+            //替换表格中的内容
+            //xwpfUtil.replaceInTable(doc,paramsTable);
             CreateRowInTable(doc,stat);
+
             OutputStream os = response.getOutputStream();
 
             response.setContentType("application/vnd.ms-excel");
@@ -203,7 +203,7 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
      * @param doc 要替换的文档
      * @param customStatList 发展性指标内容
      */
-    public void CreateRowInTable(XWPFDocument doc, List<CustomStat> customStatList) {
+    public void CreateRowInTable(XWPFDocument doc, List<Evaluate_custom> customStatList) {
         List<XWPFTable> tables = doc.getTables();
         //附件中的最后1个表格为发展性指标表
         for (int i = 0; i < tables.size(); i++) {
@@ -219,11 +219,11 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
      * @param table 需要插入数据的表格
      * @param xzqList 第四个表格的插入数据
      */
-    public static void insertTable(XWPFTable table, List<CustomStat> customStatList) {
+    public static void insertTable(XWPFTable table, List<Evaluate_custom> customStatList) {
         //插入表头下面第一行的数据
         for (int i = 0; i < customStatList.size(); i++) {
-            CustomStat stat = customStatList.get(i);
-            double weight= stat.getWeight();
+            Evaluate_custom stat = customStatList.get(i);
+            double weight= stat.getWeights();
             double score_s= stat.getScore_s();
             XWPFTableRow row = table.createRow();
             List<XWPFTableCell> cells = row.getTableCells();
@@ -241,6 +241,7 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
             cells.get(5).setText(String.format("%.2f",weight));
             //第七列自评得分
             cells.get(6).setText(String.format("%.2f",score_s));
+            cells.get(7).setText(stat.getRemark_s());
 
         }
     }

@@ -3,7 +3,6 @@ package net.hznu.modules.controllers.platform.evaluate;
 import net.hznu.common.annotation.SLog;
 import net.hznu.common.base.Globals;
 import net.hznu.common.base.Result;
-import net.hznu.common.chart.CustomStat;
 import net.hznu.common.filter.PrivateFilter;
 import net.hznu.common.page.DataTableColumn;
 import net.hznu.common.page.DataTableOrder;
@@ -21,7 +20,6 @@ import net.hznu.modules.services.evaluate.EvaluateSummaryService;
 import net.hznu.modules.services.evaluate.EvaluateCustomService;
 import net.hznu.modules.services.monitor.MonitorCatalogService;
 import net.hznu.modules.services.monitor.MonitorIndexService;
-import net.hznu.common.chart.CustomStat;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.subject.Subject;
@@ -283,39 +281,18 @@ public class EvaluateRecordsSelfController {
 		log.debug("导出word文件开始>>>>>>>>>>>>>");
 		//获取学校信息
 		Map<String,Object> paramsPara = evaluateRecordsSelfService.packageParaObject(evalId);
-		List<Record> recordsRemarkData = evaluateRecordsSelfService.getRemarkData(evalId);
-		Map<String,Object> paramsTable = evaluateRecordsSelfService.packageTableObject(evalId,recordsRemarkData,Globals.EvaluateYear);
+
 
 		//获取发展性指标
-		List<CustomStat> result = new ArrayList<>();
-		List<Record> recordsCustomData = evaluateRecordsSelfService.getCustomData(evalId);
+		List<Evaluate_custom> customs = evaluateCustomService.query(Cnd.where("evaluateid","=",evalId));
 
-		for(Record rec:recordsCustomData)
-		{
-			CustomStat customStat=new CustomStat();
-			String indexname=rec.getString("indexname");
-			String taskname=rec.getString("taskname");
-			String taskdetail=rec.getString("taskdetail");
-			String analysis_s=rec.getString("analysis_s");
-			Double weight=rec.getDouble("weights");
-			Double score_s=rec.getDouble("score_s");
-			customStat.setIndexname(indexname);
-			customStat.setTaskname(taskname);
-			customStat.setTaskdetail(taskdetail);
-			customStat.setAnalysis_s(analysis_s);
-			customStat.setWeight(weight);
-			customStat.setScore_s(score_s);
-			result.add(customStat);
-		}
-
-		//viewname = "v_xzqh_evaluate2_" + Globals.EvaluateYear;
 		InputStream is = getClass().getClassLoader().getResourceAsStream("template/SelfEvaluate-yz.docx");
 		try {
 			String filename = "鄞州区学校发展性评价自评表.docx";
 			filename = URLEncoder.encode(filename, "UTF-8");
 			XwpfUtil xwpfUtil = new XwpfUtil();
 			//xwpfUtil.exportWord(resp);
-			evaluateRecordsSelfService.exportWord(paramsPara,paramsTable,result,is,resp,xwpfUtil,filename);
+			evaluateRecordsSelfService.exportWord(paramsPara,customs,is,resp,xwpfUtil,filename);
 
 			log.debug("导出word文件完成>>>>>>>>>>>>>");
 		} catch (UnsupportedEncodingException e) {
@@ -353,72 +330,7 @@ public class EvaluateRecordsSelfController {
 		}
 		return null;
 	}
-	/**
-	 * 组装word文档中需要显示数据的集合
-	 * @return
-	 */
-	public Map<String, Object> packageObject(String evalId) {
-		Map<String,Object> wordDataMap = new HashMap<String,Object>();
-		Map<String, Object> parametersMap = new HashMap<String, Object>();
 
-		List<Map<String, Object>> table_scale = new ArrayList<Map<String, Object>>();
-
-		/*List<Record> recordsUnitInfo = evaluateRecordsSelfService.getUnitInfo(evalId);
-		if (recordsUnitInfo.size() > 0) {
-			parametersMap.put("unitname", recordsUnitInfo.get(0).getString("unitname"));
-			parametersMap.put("address", recordsUnitInfo.get(0).getString("address"));
-			parametersMap.put("website", recordsUnitInfo.get(0).getString("website"));
-			parametersMap.put("telephone", recordsUnitInfo.get(0).getString("telephone"));
-			parametersMap.put("email", recordsUnitInfo.get(0).getString("email"));
-		}*/
-
-		/*List<Record> recordsBasicEvalData = evaluateRecordsSelfService.getBasicEvalData(evalId);
-		for (Record record : recordsBasicEvalData) {
-			int location = record.getInt("location");
-			if (record.get("qualify") != null) {
-				if ((boolean) record.get("qualify"))
-					parametersMap.put("s_i" + location, "是");
-				else
-					parametersMap.put("s_i" + location, "否");
-			} else {
-				parametersMap.put("s_i" + location, "");
-			}
-		}*/
-
-		/*List<Record> recordsBasicSummaryData = evaluateRecordsSelfService.getBasicSummaryData(evalId);
-		for (Record record : recordsBasicSummaryData) {
-			int location = record.getInt("location");
-			parametersMap.put("sintro"+location, record.getString("summary"));
-		}*/
-
-		List<Record> recordsRemarkData = evaluateRecordsSelfService.getRemarkData(evalId);
-		for (Record record : recordsRemarkData) {
-			int location = record.getInt("location");
-			double score_s = record.getDouble("score_s");
-			double score_p = record.getDouble("score_p");
-			String remark_s = record.getString("remark_s");
-			parametersMap.put("s_i" + location, formatDouble(score_s));
-			parametersMap.put("p_i" + location, formatDouble(score_p));
-			parametersMap.put("r_i" + location, remark_s);
-		}
-
-		/*List<Record> recordsScaleData = evaluateRecordsSelfService.getScaleData(evalId);
-		for (Record record : recordsScaleData) {
-			Map<String, Object> map=new HashMap<>();
-			map.put("grade", record.getString("grade"));
-			map.put("plannum", record.getInt("planenrollnum"));
-			map.put("realnum", record.getInt("actualenrollnum"));
-			map.put("classnum", record.getInt("classnum"));
-			map.put("avgnum", record.getInt("averagenum"));
-			map.put("extra", record.getString("instruction"));
-			table_scale.add(map);
-		}*/
-
-
-		//wordDataMap.put("table_scale", table_scale);
-		wordDataMap.put("parametersMap", parametersMap);
-		return wordDataMap;
-	}
 
 	public String formatDouble(double d) {
 		BigDecimal bg = new BigDecimal(d).setScale(1, RoundingMode.UP);

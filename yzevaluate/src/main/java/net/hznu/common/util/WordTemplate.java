@@ -396,7 +396,22 @@ public class WordTemplate {
                     XWPFRun insertNewRun = xWPFParagraph.insertNewRun(beginRunIndex);
                     insertNewRun.getCTR().setRPr(beginRun.getCTR().getRPr());
                     // 设置文本
-                    insertNewRun.setText(getValueBykey(key.toString(),parametersMap));
+                    String textString = getValueBykey(key.toString(),parametersMap);
+                    //分段显示的情况
+                    String[] values = textString.split("\r\n");
+                    if(values.length > 1) {
+                        insertNewRun.setText(values[0], 0);
+                        for (int i = 1; i < values.length; i++) {
+                            //存在分段则新建一个run
+                            XWPFRun newrun = xWPFParagraph.insertNewRun(endRunIndex+1);
+                            //copy样式
+                            newrun.getCTR().setRPr(insertNewRun.getCTR().getRPr());
+                            //换行
+                            newrun.addBreak();
+                            newrun.setText(values[i]);
+                            endRunIndex++;
+                        }
+                    }
                     xWPFParagraph.removeRun(beginRunIndex + 1);//移除原始的run
                 }else {
                     // 该run标签为**{**或者 {** ，替换key后，还需要加上原始key前的文本

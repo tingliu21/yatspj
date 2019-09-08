@@ -1,11 +1,8 @@
 package net.hznu.common.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.util.Units;
-import org.apache.poi.xwpf.usermodel.*;
 
-import net.hznu.common.chart.CustomStat;
+import org.apache.poi.xwpf.usermodel.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -151,19 +148,20 @@ public class XwpfUtil {
                 if(key.equals(str)){
                     Object oValue = params.get(str);
                      //文本替换
-                    String value = String.valueOf(oValue);
+                    String value = String.valueOf(oValue).replaceAll("\r","");
                     if(value!=""){
                         int iNewLine = value.indexOf("\n");
-                        if(iNewLine!=-1){
+                        while(iNewLine!=-1){
                             XWPFRun run = para.createRun();
                             run.setText(value.substring(0,iNewLine));
                             run.addCarriageReturn();
-                            run.addTab();
-                            run.setText(value.substring(iNewLine,value.length()));
+                            value = value.substring(iNewLine+1,value.length());
+                            //run.setText(value);
+                            iNewLine = value.indexOf("\n");
 
-                        }else {
-                            para.createRun().setText(value);
                         }
+                        para.createRun().setText(value);
+
                     }
 
                     break;

@@ -5,7 +5,7 @@ layout("/layouts/platform.html"){
     <header class="header navbar bg-white shadow">
         <div class="btn-group tool-button">
             <!--<a href="javascript:;" class="h4 show no-m pt5">基础性指标</a>-->
-            <p class="navbar-text"><i class="fa mr5"></i>基础性指标</p>
+            <p class="navbar-text"><i class="fa mr5"></i>学校自评</p>
         </div>
         <div class="pull-right">
             <button class="btn btn-primary navbar-btn" onclick="sublime.toggleFilter('.cd-panel')"><i
@@ -181,9 +181,12 @@ layout("/layouts/platform.html"){
             },
             {
                 "render": function (data, type, row) {
-                    return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/remark/self?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>自评</a>' +
+                    return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/remark/self?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>基础性指标</a>' +
+                        '<a class="btn btn-info" href="${base}/platform/evaluate/custom/self?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>发展性指标</a>' +
+                        '<a class="btn btn-success" href="${base}/platform/evaluate/records/self/download?evalId=' + row.id + '" data-pjax>自评表下载</a>'+
+                        '<a class="btn btn-warning" href="javascript:;" onclick="sub(\'' + row.id + '\','+row.progress_s+','+row.status_s+')">提交审核</a>'+
 //                        '<a class="btn btn-warning" href="javascript:;" onclick="sub(\'' + row.id + '\','+row.progress_s+','+row.status_s+')">提交审核</a>'+
-                        '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
+//                        '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
                         '</div>';
                 },
                 "targets": 7
