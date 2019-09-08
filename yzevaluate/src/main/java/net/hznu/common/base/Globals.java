@@ -30,6 +30,8 @@ public class Globals {
     public static String AppUploadPath = "/upload";
     //自评截止日期
     public static Date SelfDeadline=null;
+    //评估学年
+    public static int EvaluateYear=2018;
     //系统自定义参数
     public static Map<String, String> MyConfig;
     //自定义路由

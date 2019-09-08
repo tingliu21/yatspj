@@ -127,6 +127,33 @@ public class EvaluateRemarkController {
 		}
 		return null;
 	}
+
+	//部门评估指标，仅列出续部门评估的指标
+	@At
+	@Ok("json:full")
+	@RequiresPermissions("evaluate.verify.dept")
+	public Object deptdata(@Param("catalogId") String catalogId,@Param("evaluateId") String evaluateId,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns){
+
+		Cnd cnd = Cnd.where("depttype","=","Education");
+		if (!Strings.isBlank(evaluateId) && !"0".equals(evaluateId)) {
+
+			List<String> strids = new ArrayList<>();
+			//暂不获取
+			/*//先获取2级指标下的所有3级指标
+			List<Monitor_catalog> catalogs = monitorCatalogService.query(Cnd.where("parentId", "=", catalogId));
+			for (Monitor_catalog catalog:catalogs) {
+				if (catalog.getLevel()==3){
+					strids.add(catalog.getId());
+				}
+			}*/
+			strids.add(catalogId);
+			cnd.and("evaluateId", "like", "%" + evaluateId + "%").and("catalogId", "in", strids).asc("location");
+
+			return evaluateRemarkService.data(length, start, draw, order, columns, cnd, "index");
+		}
+		return null;
+	}
+
 	//专家只列出自己负责的指标
 	@At
 	@Ok("json:full")
