@@ -96,7 +96,7 @@ layout("/layouts/platform.html"){
                 sublime.closeLoadingbar($(".main-content"));
             },
             "ajax": {
-                "url": "${base}/platform/evaluate/remark/data",
+                "url": "${base}/platform/evaluate/remark/deptdata",
                 "type": "post",
                 "data": function (d) {
                     d.catalogId = $('#catalogId').val();
@@ -123,12 +123,20 @@ layout("/layouts/platform.html"){
                         html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><span class="glyphicon glyphicon-eye-open"></span> 查看</a>';
 
 
-//                        <% if(@shiro.hasPermission("evaluate.verify.dept.remark")){%>
+                        if(row.department == '${@shiro.getPrincipalProperty("unitid")}'){
                             html+='<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/depteva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
                                 '   <i class="ti-plus"></i> 考评</a>' +
                                 '</div>';
+                        }else {
+                            //如果用户不属于部门，但有部门审核的所有权限，也能进行考评
+                        <% if(@shiro.hasPermission("evaluate.verify.dept.remark")){%>
+                                html+='<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/depteva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
+                                    '   <i class="ti-plus"></i> 考评</a>' +
+                                    '</div>';
 //                        <%}%>
 
+                            }
+//
                         return  html;
 
 

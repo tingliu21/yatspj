@@ -1,7 +1,9 @@
 package net.hznu.modules.controllers.platform.evaluate;
 
 import net.hznu.common.annotation.SLog;
+import net.hznu.common.base.Globals;
 import net.hznu.common.base.Result;
+import net.hznu.common.chart.CustomStat;
 import net.hznu.common.filter.PrivateFilter;
 import net.hznu.common.page.DataTableColumn;
 import net.hznu.common.page.DataTableOrder;
@@ -9,13 +11,17 @@ import net.hznu.common.util.XwpfUtil;
 import net.hznu.modules.models.evaluate.*;
 import net.hznu.modules.models.evaluate.Evaluate_records_self;
 import net.hznu.modules.models.evaluate.Evaluate_remark;
+import net.hznu.modules.models.monitor.Monitor_catalog;
 import net.hznu.modules.models.monitor.Monitor_index;
 import net.hznu.modules.models.sys.Sys_user;
 import net.hznu.modules.services.evaluate.EvaluateRecordsSelfService;
+import net.hznu.modules.services.evaluate.EvaluateRecordsService;
 import net.hznu.modules.services.evaluate.EvaluateRemarkService;
 import net.hznu.modules.services.evaluate.EvaluateSummaryService;
+import net.hznu.modules.services.evaluate.EvaluateCustomService;
 import net.hznu.modules.services.monitor.MonitorCatalogService;
 import net.hznu.modules.services.monitor.MonitorIndexService;
+import net.hznu.common.chart.CustomStat;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.subject.Subject;
@@ -31,15 +37,15 @@ import org.nutz.mvc.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @IocBean
 @At("/platform/evaluate/records/self")
@@ -56,6 +62,8 @@ public class EvaluateRecordsSelfController {
 	private EvaluateRemarkService evaluateRemarkService;
 	@Inject
 	private EvaluateSummaryService evaluateSummaryService;
+	@Inject
+	private EvaluateCustomService evaluateCustomService;
 
 	@At("")
 	@Ok("beetl:/platform/evaluate/records/self/index.html")
@@ -244,7 +252,7 @@ public class EvaluateRecordsSelfController {
 		}
 		return null;
     }
-	@At("/download/?")
+	/*@At("/download/?")
 	@Ok("void")
 	@RequiresAuthentication
 	public Object download(String id, HttpServletResponse resp) {
@@ -252,9 +260,9 @@ public class EvaluateRecordsSelfController {
 			Map<String,Object> wordDataMap = packageObject(id);
 			XwpfUtil xwpfUtil = new XwpfUtil();
 			//读入word模板
-			InputStream is = getClass().getClassLoader().getResourceAsStream("template/SelfEvaluate.docx");
+			InputStream is = getClass().getClassLoader().getResourceAsStream("template/SelfEvaluate-yz.docx");
 			try {
-				String filename = "鄞州区发展性学校评估自评表.docx";
+				String filename = "鄞州区学校发展性评价自评表.docx";
 				filename = URLEncoder.encode(filename, "UTF-8");
 
 				xwpfUtil.exportWord(wordDataMap,is,resp,filename);
@@ -265,7 +273,59 @@ public class EvaluateRecordsSelfController {
 
 		}
 		return null;
+	}*/
+
+
+	//导出自评报告
+	@At({"/download","/download/?"})
+	@Ok("void")
+	public void download(HttpServletResponse resp, HttpServletRequest req, @Param("evalId") String evalId) {
+		log.debug("导出word文件开始>>>>>>>>>>>>>");
+		//获取学校信息
+		Map<String,Object> paramsPara = evaluateRecordsSelfService.packageParaObject(evalId);
+		List<Record> recordsRemarkData = evaluateRecordsSelfService.getRemarkData(evalId);
+		Map<String,Object> paramsTable = evaluateRecordsSelfService.packageTableObject(evalId,recordsRemarkData,Globals.EvaluateYear);
+
+		//获取发展性指标
+		List<CustomStat> result = new ArrayList<>();
+		List<Record> recordsCustomData = evaluateRecordsSelfService.getCustomData(evalId);
+
+		for(Record rec:recordsCustomData)
+		{
+			CustomStat customStat=new CustomStat();
+			String indexname=rec.getString("indexname");
+			String taskname=rec.getString("taskname");
+			String taskdetail=rec.getString("taskdetail");
+			String analysis_s=rec.getString("analysis_s");
+			Double weight=rec.getDouble("weights");
+			Double score_s=rec.getDouble("score_s");
+			customStat.setIndexname(indexname);
+			customStat.setTaskname(taskname);
+			customStat.setTaskdetail(taskdetail);
+			customStat.setAnalysis_s(analysis_s);
+			customStat.setWeight(weight);
+			customStat.setScore_s(score_s);
+			result.add(customStat);
+		}
+
+		//viewname = "v_xzqh_evaluate2_" + Globals.EvaluateYear;
+		InputStream is = getClass().getClassLoader().getResourceAsStream("template/SelfEvaluate-yz.docx");
+		try {
+			String filename = "鄞州区学校发展性评价自评表.docx";
+			filename = URLEncoder.encode(filename, "UTF-8");
+			XwpfUtil xwpfUtil = new XwpfUtil();
+			//xwpfUtil.exportWord(resp);
+			evaluateRecordsSelfService.exportWord(paramsPara,result,is,resp,xwpfUtil,filename);
+
+			log.debug("导出word文件完成>>>>>>>>>>>>>");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
+
 	//上传自评报告和3年规划
 	@At("/upload/?")
 	@Ok("beetl:/platform/evaluate/records/self/upload.html")

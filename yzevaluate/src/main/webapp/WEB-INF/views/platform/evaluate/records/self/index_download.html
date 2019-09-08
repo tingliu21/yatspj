@@ -4,16 +4,9 @@ layout("/layouts/platform.html"){
 <section class="content-wrap bg-white">
     <header class="header navbar bg-white shadow">
         <div class="btn-group tool-button">
-            <!--<a href="javascript:;" class="h4 show no-m pt5">基础性指标</a>-->
             <p class="navbar-text"><i class="fa mr5"></i>自评表下载</p>
         </div>
-        <!--<div class="btn-group tool-button">-->
-            <!--<% if(@shiro.hasPermission("evaluate.init")){%>-->
-            <!--<a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/add" data-pjax><i class="ti-plus"></i>初始化数据</a>-->
-            <!--<%}else if(@shiro.hasPermission("evaluate.self.init")){%>-->
-            <!--<a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/self/add" data-toggle="modal" data-target="#dialogDetail"><i class="ti-plus"></i>申报评估</a>-->
-            <!--<%}%>-->
-        <!--</div>-->
+
     </header>
     <div class=panel-body style="padding-top: 50px;">
         <div class="table-responsive no-border">
@@ -34,57 +27,8 @@ layout("/layouts/platform.html"){
         </div>
     </div>
 </section>
-<div id="dialogDelete" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">删除</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-xs-12">
-                        删除后无法恢复。<br/>
-                        <br/>确定删除吗？
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取  消</button>
-                <button id="okDel" type="button" class="btn btn-primary" data-loading-text="正在删除...">确  定</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="dialogDetail" class="modal fade bs-modal" tabindex="-3" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
 
-        </div>
-    </div>
-</div>
-<div id="dialogSubmit" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">提交审核</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-xs-12">
-                        提交科室和专家审核后无法再修改自评。<br/>
-                        <br/>确定提交吗？
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取  消</button>
-                <button id="okSubmit" type="button" class="btn btn-primary" data-loading-text="正在删除...">确  定</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 <script language="JavaScript">
     var datatable;
     function initDatatable() {
@@ -147,7 +91,7 @@ layout("/layouts/platform.html"){
             },
             {
                 "render": function (data, type, row) {
-                    return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/records/self/download/' + row.id + '" data-pjax>下载</a>' +
+                    return '<div class="btn-group tool-button"><a class="btn btn-primary" href="${base}/platform/evaluate/records/self/download?evalId=' + row.id + '" data-pjax>下载</a>' +
                         '</div>';
                 },
                 "targets": 7
@@ -157,48 +101,12 @@ layout("/layouts/platform.html"){
     });
 
     }
-    function del(id) {
-        var dialog = $("#dialogDelete");
-        dialog.modal("show");
-        dialog.find("#okDel").unbind("click");
-        dialog.find("#okDel").bind("click", function (event) {
-            var btn = $(this);
-            btn.button("loading");
-            $.post("${base}/platform/evaluate/records/self/delete/" + id, {}, function (data) {
-                if (data.code == 0) {
-                    datatable.ajax.reload(null,false);
-                } else {
-                    Toast.error(data.msg);
-                }
-                //重置按钮状态，关闭提示框
-                btn.button("reset");
-                dialog.modal("hide");
-            }, "json");
+    $(document).ready(function () {
+    $("#export").on("click",function(){
+        $('#chartForm').submit();
         });
-    }
-    function sub(id,progress) {
-        if(progress<1){
-            Toast.error("尚未自评完成，暂不能提交");
-            return false;
-        }
-        var dialog = $("#dialogSubmit");
-        dialog.modal("show");
-        dialog.find("#okSubmit").unbind("click");
-        dialog.find("#okSubmit").bind("click", function (event) {
-            var btn = $(this);
-            btn.button("loading");
-            $.post("${base}/platform/evaluate/records/self/submit/" + id, {}, function (data) {
-                if (data.code == 0) {
-                    datatable.ajax.reload(null,false);
-                } else {
-                    Toast.error(data.msg);
-                }
-                //重置按钮状态，关闭提示框
-                btn.button("reset");
-                dialog.modal("hide");
-            }, "json");
-        });
-    }
+    });
+
     $(function () {
         initDatatable();
 
