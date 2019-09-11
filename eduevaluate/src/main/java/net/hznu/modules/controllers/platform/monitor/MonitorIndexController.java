@@ -148,10 +148,10 @@ public class MonitorIndexController {
 		return null;
     }
 	// Add by Liut 2018-10-29
-	@At({"/tree","/tree/?"})
+	@At
 	@Ok("json")
 	@RequiresAuthentication
-	public Object tree(int year,@Param("catacode") String catacode) {
+	public Object tree(@Param("year")int year,@Param("catacode") String catacode) {
 		Cnd cnd = Cnd.where("year", "=", year).and("catacode","like",catacode+"%").and("level","=",1);
 
 		List<Monitor_index> list = monitorIndexService.query(cnd.asc("code"));
