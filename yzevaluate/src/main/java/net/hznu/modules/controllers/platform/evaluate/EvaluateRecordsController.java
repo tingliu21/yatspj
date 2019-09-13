@@ -6,9 +6,11 @@ import net.hznu.common.filter.PrivateFilter;
 import net.hznu.common.page.DataTableColumn;
 import net.hznu.common.page.DataTableOrder;
 import net.hznu.common.util.XwpfUtil;
+import net.hznu.modules.models.evaluate.Evaluate_custom;
 import net.hznu.modules.models.monitor.Monitor_index;
 import net.hznu.modules.models.sys.Sys_unit;
 import net.hznu.modules.models.sys.Sys_user;
+import net.hznu.modules.services.evaluate.EvaluateCustomService;
 import net.hznu.modules.services.evaluate.EvaluateSummaryService;
 import net.hznu.modules.services.monitor.MonitorCatalogService;
 import net.hznu.modules.services.monitor.MonitorIndexService;
@@ -39,6 +41,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @IocBean
@@ -60,7 +63,7 @@ public class EvaluateRecordsController {
 	@Inject
 	private MonitorCatalogService monitorCatalogService;
 	@Inject
-	private EvaluateSummaryService evaluateSummaryService;
+	private EvaluateCustomService evaluateCustomService;
 
 
 
@@ -378,7 +381,7 @@ public class EvaluateRecordsController {
 			Map<String,Object> wordDataMap = packageObject(id);
 			XwpfUtil xwpfUtil = new XwpfUtil();
 			//读入word模板
-			InputStream is = getClass().getClassLoader().getResourceAsStream("template/SpecialEvaluate.docx");
+			InputStream is = getClass().getClassLoader().getResourceAsStream("template/SpecialEvaluate-yz.docx");
 			try {
 				String filename = "鄞州学校发展性评价专家评估表.docx";
 				filename = URLEncoder.encode(filename, "UTF-8");
@@ -400,28 +403,51 @@ public class EvaluateRecordsController {
 	public Map<String, Object> packageObject(String evalId) {
 		Map<String,Object> wordDataMap = new HashMap<String,Object>();
 		Map<String, Object> parametersMap = new HashMap<String, Object>();
-
+		List<Map<String, Object>> table_custom = new ArrayList<Map<String, Object>>();
 
 
 		Evaluate_records evaluate = evaluateRecordsService.fetch(evalId);
 		evaluate = evaluateRecordsService.fetchLinks(evaluate,"school");
 		parametersMap.put("unitname", evaluate.getSchool().getName());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy 年 MM 月 dd 日");
+		parametersMap.put("date",sdf.format(new Date()));
 
-		List<Evaluate_remark> remarklist = evaluateRemarkService.query(Cnd.where("depttype","=","Special").and("evaluateId", "=", evalId ));
+		//获取专家评估的基础性指标
+		List<Record> remarklist = evaluateRecordsService.getSpecialRemarkData(evalId);
 
-		for (Evaluate_remark remark : remarklist) {
-			int location = remark.getLocation();
-			double score_p = remark.getScore_p();
-			String advantage = remark.getAdvantage();
-			String disadvantae = remark.getDisadvantage();
-			String suggestion = remark.getSuggestion();
+		for (Record remark : remarklist) {
+			String code = remark.getString("path");
+			double score_p = remark.getDouble("score_p");
+			String advantage = remark.getString("advantage");
+			String disadvantae = remark.getString("disadvantage");
 
-			parametersMap.put("p_i" + location, formatDouble(score_p));
-			parametersMap.put("p_advantage" + location, advantage);
-			parametersMap.put("p_disadvantage" + location, disadvantae);
-			parametersMap.put("p_suggestion" + location, suggestion);
+			parametersMap.put("s_i" + code, formatDouble(score_p));
+			parametersMap.put("ad_i" + code, advantage);
+			parametersMap.put("disad_i" + code, disadvantae);
 
 		}
+		//获取专家评估的发展性指标
+		List<Evaluate_custom> customList =evaluateCustomService.query(Cnd.where("evaluateid","=",evalId).asc("location"));
+		for (Evaluate_custom custom:customList ) {
+			Map<String, Object> map=new HashMap<>();
+			map.put("indexname",custom.getIndexname());
+			map.put("weights",custom.getWeights());
+			map.put("score_p",custom.getScore_p());
+			String strRemark = custom.getAdvantage();
+			if(StringUtils.isNotBlank(strRemark)){
+				strRemark = strRemark.replaceAll("\n","\r\n");
+			}
+			map.put("advantage",strRemark);
+			strRemark = custom.getDisadvantage();
+			if(StringUtils.isNotBlank(strRemark)){
+				strRemark = strRemark.replaceAll("\n","\r\n");
+			}
+			map.put("disadvantage",strRemark);
+			table_custom.add(map);
+		}
+		wordDataMap.put("table_custom",table_custom);
+		//以下静洁添加，把指标表也导出
+		
 		wordDataMap.put("parametersMap", parametersMap);
 		return wordDataMap;
 	}

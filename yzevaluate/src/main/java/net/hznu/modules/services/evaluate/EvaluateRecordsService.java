@@ -197,7 +197,14 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
         this.dao().execute(sql);
         return sql.getList(String.class);
     }
-
+    public List<Record> getSpecialRemarkData(String eid){
+        Sql sql = Sqls.create("SELECT monitor_catalog.path,sum(score_p) as score_p, string_agg(advantage,'\n') as advantage, string_agg(disadvantage,'\n') as disadvantage" +
+                "  FROM evaluate_remark_view " +
+                "  inner join monitor_catalog on catalogid = monitor_catalog.id" +
+                "  where depttype ='Special' and evaluateid=@evaluateid " +
+                "  group by monitor_catalog.path").setParam("evaluateid",eid);
+        return list(sql);
+    }
     public Sys_role getRoleInEvaluate(String suid, String eid){
         Sql sql = Sqls.create("SELECT Sys_role.* FROM Sys_Role inner join evaluate_special_role on evaluate_special_role.roleid = Sys_role.id WHERE evaluateid=@evaluateid and specialid=@userid").setParam("evaluateid",eid).setParam("userid",suid);
         Entity<Sys_role> entity = dao().getEntity(Sys_role.class);
