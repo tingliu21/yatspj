@@ -40,7 +40,7 @@
                                     <ol class="dd-list">
                                         <%for(o in obj.appendixList){%>
                                         <li class="dd-item dd3-item dd-nodrag" data-id="${o.remarkid}">
-                                            <a href="${base}${o.apurl}" data-pjax>
+                                            <a href="${o.apurl}" target="_blank">
                                                 <span>${o.apname}</span>
                                             </a>
                                         </li>
@@ -52,9 +52,12 @@
                                 <td>督评分</td><td>${obj.score_p}</td>
                             </tr>
                             <tr>
-                                <td>督评理由</td><td>${obj.remark_p}</td>
+                                <td>亮点与经验/满分理由</td><td>${obj.advantage}</td>
                             </tr>
                             <tr>
+                                <td>问题与建议/扣分理由</td><td>${obj.disadvantage}</td>
+                            </tr>
+
                                <!-- <td>是否自评完成</td><td>${obj.selfeva}</td>
                             </tr>
                                                         <tr>

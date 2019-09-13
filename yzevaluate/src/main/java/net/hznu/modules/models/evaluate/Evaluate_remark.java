@@ -53,12 +53,12 @@ public class Evaluate_remark extends Model implements Serializable{
     private String remark_p;
 
     @Column
-    @Comment("优势")
+    @Comment("亮点与经验/满分理由")
     @ColDefine(type = ColType.TEXT)
     private String advantage;
 
     @Column
-    @Comment("不足")
+    @Comment("问题与建议/扣分理由")
     @ColDefine(type = ColType.TEXT)
     private String disadvantage;
 

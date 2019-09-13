@@ -68,6 +68,16 @@ public class Evaluate_custom extends Model implements Serializable{
     private String remark_p;
 
     @Column
+    @Comment("亮点与经验/满分理由")
+    @ColDefine(type = ColType.TEXT)
+    private String advantage;
+
+    @Column
+    @Comment("问题与建议/扣分理由")
+    @ColDefine(type = ColType.TEXT)
+    private String disadvantage;
+
+    @Column
     @Comment("是否自评完成")
     @ColDefine(type = ColType.BOOLEAN)
     private Boolean selfeva = null;
@@ -114,8 +124,21 @@ public class Evaluate_custom extends Model implements Serializable{
         this.score_s = score_s;
     }
 
+    public String getAdvantage() {
+        return advantage;
+    }
 
+    public void setAdvantage(String advantage) {
+        this.advantage = advantage;
+    }
 
+    public String getDisadvantage() {
+        return disadvantage;
+    }
+
+    public void setDisadvantage(String disadvantage) {
+        this.disadvantage = disadvantage;
+    }
 
     public double getScore_p() {
         return score_p;

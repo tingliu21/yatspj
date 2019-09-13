@@ -154,47 +154,7 @@ public class EvaluateRemarkController {
 		return null;
 	}
 
-	//专家只列出自己负责的指标
-	@At
-	@Ok("json:full")
-	@RequiresAuthentication
-	public Object specialdata_old(@Param("evaluateId") String evaluateId,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns){
 
-		if (!Strings.isBlank(evaluateId) && !"0".equals(evaluateId)) {
-			//获取专家id
-			Subject subject = SecurityUtils.getSubject();
-			Sys_user user = (Sys_user) subject.getPrincipal();
-
-			List<String> indexids = evaluateRecordsService.getIndexIdsBySpecial(user.getId(),evaluateId);
-
-			Cnd cnd = Cnd.where("indexid","in",indexids);
-			cnd.and("evaluateId", "like", "%" + evaluateId + "%").asc("location");
-
-			return evaluateRemarkService.data(length, start, draw, order, columns, cnd, "index");
-		}
-		return null;
-	}
-	//暂不新增，通过初始化新增
-    @At
-    @Ok("beetl:/platform/evaluate/remark/add.html")
-    @RequiresAuthentication
-    public void add() {
-
-    }
-
-	//暂不新增，通过初始化新增
-    @At
-    @Ok("json")
-    @SLog(tag = "新建Evaluate_remark", msg = "")
-	@AdaptBy(type = WhaleAdaptor.class)
-    public Object addDo(@Param("..") Evaluate_remark evaluateRemark, HttpServletRequest req) {
-		try {
-			evaluateRemarkService.insert(evaluateRemark);
-			return Result.success("system.success");
-		} catch (Exception e) {
-			return Result.error("system.error");
-		}
-    }
 	//自评
 	@At("/selfeva/?")
     @Ok("beetl:/platform/evaluate/remark/schooledit.html")
@@ -301,26 +261,6 @@ public class EvaluateRemarkController {
 			return Result.error("system.error");
 		}
 	}
-
-	//暂不删除
-    @At({"/delete","/delete/?"})
-    @Ok("json")
-    @SLog(tag = "删除Evaluate_remark", msg = "ID:${args[2].getAttribute('id')}")
-    public Object delete(String id, @Param("ids") String[] ids ,HttpServletRequest req) {
-		try {
-			if(ids!=null&&ids.length>0){
-				evaluateRemarkService.delete(ids);
-    			req.setAttribute("id", org.apache.shiro.util.StringUtils.toString(ids));
-			}else{
-				evaluateRemarkService.delete(id);
-    			req.setAttribute("id", id);
-			}
-			return Result.success("system.success");
-		} catch (Exception e) {
-			return Result.error("system.error");
-		}
-    }
-
 
     @At("/detail/?")
     @Ok("beetl:/platform/evaluate/remark/detail.html")

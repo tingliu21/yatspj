@@ -28,10 +28,13 @@ public class Globals {
     public static String AppDomain = "127.0.0.1";
     //文件上传路径
     public static String AppUploadPath = "/upload";
+    //评估发展性指标的专家角色
+    public static String CustomRole="specialLeader";
     //自评截止日期
     public static Date SelfDeadline=null;
     //评估学年
     public static int EvaluateYear=2018;
+
     //系统自定义参数
     public static Map<String, String> MyConfig;
     //自定义路由
@@ -56,6 +59,9 @@ public class Globals {
                     break;
                 case "AppUploadPath":
                     Globals.AppUploadPath = sysConfig.getConfigValue();
+                    break;
+                case "CustomRole":
+                    Globals.CustomRole = sysConfig.getConfigValue();
                     break;
                 case "Selfdeadline":
                     try {

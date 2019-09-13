@@ -170,6 +170,31 @@ public class EvaluateRecordsSelfController {
 		}
 		return Result.error("system.error");
     }
+
+	/**
+	 * 该方法测试用，用来给已有的评估记录插入评估指标；暂时不用了
+	 * @param req
+	 * @return
+	 */
+//	@At
+//	@Ok("json")
+//	public Object TestDo( HttpServletRequest req) {
+//		Monitor_index monitorIndex = monitorIndexService.fetch("d313ff478f12422ba89b2b4bf6b7d543");
+//		List<Evaluate_records_self> recordsList = evaluateRecordsSelfService.query(Cnd.NEW());
+//		for (Evaluate_records_self recordsSelf:recordsList) {
+//			Evaluate_remark remark = new Evaluate_remark();
+//			remark.setEvaluateId(recordsSelf.getId());
+//			remark.setIndexid(monitorIndex.getId());
+//			remark.setScore_s(0.0);
+//			//不需要学校自评指标,默认评估完成
+//			remark.setSelfeva(true);
+//
+//			//插入监测指标记录
+//			evaluateRemarkService.insert(remark);
+//		}
+//		return Result.success("system.success");
+//
+//	}
 	@At({"/submit/?"})
 	@Ok("json")
 	@SLog(tag = "提交学校自评记录", msg = "ID:")
@@ -204,25 +229,7 @@ public class EvaluateRecordsSelfController {
 			return Result.error("system.error");
 		}
     }
-
-
-//    @At({"/delete","/delete/?"})
-//    @Ok("json")
-//    @SLog(tag = "删除Evaluate_records_self", msg = "ID:${args[2].getAttribute('id')}")
-//    public Object delete(String id, @Param("ids") String[] ids ,HttpServletRequest req) {
-//		try {
-//			if(ids!=null&&ids.length>0){
-//				evaluateRecordsSelfService.delete(ids);
-//    			req.setAttribute("id", org.apache.shiro.util.StringUtils.toString(ids));
-//			}else{
-//				evaluateRecordsSelfService.delete(id);
-//    			req.setAttribute("id", id);
-//			}
-//			return Result.success("system.success");
-//		} catch (Exception e) {
-//			return Result.error("system.error");
-//		}
-//    }
+	
 
 	@At({"/delete","/delete/?"})
 	@Ok("json")

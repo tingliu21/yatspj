@@ -2,6 +2,7 @@ package net.hznu.modules.services.evaluate;
 
 import net.hznu.common.base.Service;
 import net.hznu.common.chart.CustomStat;
+import net.hznu.common.util.StringUtil;
 import net.hznu.common.util.WordTemplate;
 import net.hznu.common.util.XwpfUtil;
 import net.hznu.modules.models.evaluate.Evaluate_custom;
@@ -122,17 +123,20 @@ public class EvaluateRecordsSelfService extends Service<Evaluate_records_self> {
             }
 
             //表格内容
-            List<Record> remarkList = list(Sqls.create("select location,sum(score_s) as score_s, string_agg(remark_s,'\\r\\n' order by indexname ) as remark_s,string_agg(id,',') as id FROM evaluate_remark_view where evaluateid=@eid group by location ")
+            List<Record> remarkList = list(Sqls.create("select location,sum(score_s) as score_s, string_agg(remark_s,'\n' order by indexname ) as remark_s,string_agg(id,',') as id FROM evaluate_remark_view where evaluateid=@eid group by location ")
                     .setParam("eid",evaluateId));
             //得分
             for (Record record : remarkList) {
                 int location = record.getInt("location");
                 double score_s = record.getDouble("score_s");
                 //double score_p = record.getDouble("score_p");
-                String remark_s = record.getString("remark_s");
+                String remark_s = record.getString("remark_s").replaceAll("\n","\r\n");
+                String remarkids = record.getString("id");
+
+                String[] remarkIdList = StringUtils.split(remarkids,",");
                 String attachement="";
                 List<Record> appList = list(Sqls.create("select apname from evaluate_appendix where evaluateid=@eid and remarkid in (@remarkid) order by apname")
-                        .setParam("eid",evaluateId).setParam("remarkid",record.getString("id")));
+                        .setParam("eid",evaluateId).setParam("remarkid",remarkIdList));
                 for(Record appendix :appList){
                     attachement +=appendix.getString("apname")+"\r\n";
                 }

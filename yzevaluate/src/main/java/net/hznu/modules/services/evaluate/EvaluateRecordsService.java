@@ -197,28 +197,14 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
         this.dao().execute(sql);
         return sql.getList(String.class);
     }
-    /**
-     * 获取专家负责评估的指标ID
-     * @param suid 专家的用户id
-     * @param eid 评估id
-     * @return  专家负责的评估ID
-     */
-    public List<String> getIndexIdsBySpecial(String suid,String eid){
-        Sql sql = Sqls.create("SELECT distinct indexid FROM evalute_remark_special_view WHERE evaluateid=@evaluateid and specialid=@userid").setParam("evaluateid",eid).setParam("userid",suid);
-        sql.setCallback(new SqlCallback() {
-            public Object invoke(Connection conn, ResultSet rs, Sql sql)
-                    throws SQLException {
-                List<String> evaluateIds = new ArrayList<>();
 
-                while (rs != null && rs.next()) {
-                    String eid = rs.getString(1) ;
-                    evaluateIds.add(eid);
-                }
-                return evaluateIds;
-            }
-        });
-        this.dao().execute(sql);
-        return sql.getList(String.class);
+    public Sys_role getRoleInEvaluate(String suid, String eid){
+        Sql sql = Sqls.create("SELECT Sys_role.* FROM Sys_Role inner join evaluate_special_role on evaluate_special_role.roleid = Sys_role.id WHERE evaluateid=@evaluateid and specialid=@userid").setParam("evaluateid",eid).setParam("userid",suid);
+        Entity<Sys_role> entity = dao().getEntity(Sys_role.class);
+        sql.setEntity(entity);
+        sql.setCallback(Sqls.callback.entities());
+        dao().execute(sql);
+        return sql.getObject(Sys_role.class);
     }
 }
 

@@ -23,7 +23,7 @@
                                 <ol class="dd-list">
                                     <%for(o in obj.appendixList){%>
                                     <li class="dd-item dd3-item dd-nodrag" data-id="${o.remarkid}">
-                                        <a href="${base}${o.apurl}" data-pjax>
+                                        <a href="${o.apurl}" target="_blank">
                                             <span>${o.apname}</span>
                                         </a>
                                     </li>
@@ -34,18 +34,18 @@
                         <tr>
                             <td class="col-md-2 pd-l-lg">审核得分</td><td>${obj.score_p}</td>
                         </tr>
+                        <!--<tr>-->
+                            <!--<td>审核意见</td><td>${obj.remark_p}</td>-->
+                        <!--</tr>-->
                         <tr>
-                            <td>审核意见</td><td>${obj.remark_p}</td>
+                            <td class="col-md-2 pd-l-lg">亮点与经验/满分理由</td><td>${obj.advantage}</td>
                         </tr>
                         <tr>
-                            <td class="col-md-2 pd-l-lg">优势</td><td>${obj.advantage}</td>
+                            <td class="col-md-2 pd-l-lg">问题与建议/扣分理由</td><td>${obj.disadvantage}</td>
                         </tr>
-                        <tr>
-                            <td class="col-md-2 pd-l-lg">不足</td><td>${obj.disadvantage}</td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-2 pd-l-lg">建议</td><td>${obj.suggestion}</td>
-                        </tr>
+                        <!--<tr>-->
+                            <!--<td class="col-md-2 pd-l-lg">建议</td><td>${obj.suggestion}</td>-->
+                        <!--</tr>-->
 
                         </tbody>
                     </table>

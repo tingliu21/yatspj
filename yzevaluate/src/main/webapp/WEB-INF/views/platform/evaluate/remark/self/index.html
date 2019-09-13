@@ -124,7 +124,7 @@ layout("/layouts/platform.html"){
                         //需要自评的指标再看看用户是否有权限
                         if(row.ndselfeva){
                             <% if(@shiro.hasPermission("evaluate.self.remark")){%>
-                                html+='<div class="btn-group-vertical"><a class="btn btn-danger" href="${base}/platform/evaluate/remark/selfeva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
+                                html+='<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/selfeva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
                                     '    <span class="glyphicon glyphicon-pencil"></span> 评价</a>' +
                                     '</div>';
                             <%}%>

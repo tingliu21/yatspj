@@ -1,18 +1,6 @@
 <%
 layout("/layouts/platform.html"){
 %>
-<aside class="sidebar-250 canvas-right bg-default ">
-    <header class="header navbar clearfix bb bg-default pl0 pr0">
-        <p class="navbar-text"><i class="fa fa-sitemap mr5"></i> 指标列表</p>
-    </header>
-    <div class="content-wrap no-p">
-        <div class="wrapper2">
-            <div class="m5">
-                <div id="jsTree"></div>
-            </div>
-        </div>
-    </div>
-</aside>
 <section class="content-wrap bg-white">
     <header class="header navbar bg-white shadow">
         <div class="btn-group tool-button">
@@ -31,15 +19,15 @@ layout("/layouts/platform.html"){
         <div class="table-responsive no-border">
             <table class="table table-bordered table-striped mg-t datatable">
                 <thead>
-                    <tr>
-                        <th class="col-md-1">序号</th>
-                            <th class="col-md-2">三级指标</th>
-                            <th class="col-md-1">权重</th>
-                            <th class="col-md-5">评分细则</th>
-                            <th class="col-md-1">自评得分</th>
-                            <th class="col-md-1">评估得分</th>
-                            <th class="col-md-3">操作</th>
-                    </tr>
+                <tr>
+                    <th class="col-md-1">序号</th>
+                    <th class="col-md-2">三级指标</th>
+                    <th class="col-md-1">权重</th>
+                    <th class="col-md-5">评分细则</th>
+                    <th class="col-md-1">自评得分</th>
+                    <th class="col-md-1">评估得分</th>
+                    <th class="col-md-3">操作</th>
+                </tr>
                 </thead>
             </table>
         </div>
@@ -62,6 +50,8 @@ layout("/layouts/platform.html"){
     function initDatatable() {
         datatable = $('.datatable').DataTable({
             "dom": '<"toolbar">frtip',
+            "paging":false,//不分页
+            "info": false,//不显示页脚信息
             "searching":false,
             "processing": false,
             "serverSide": true,
@@ -77,7 +67,7 @@ layout("/layouts/platform.html"){
                 sublime.closeLoadingbar($(".main-content"));
             },
             "ajax": {
-                "url": "${base}/platform/evaluate/remark/specialdata",
+                "url": "${base}/platform/evaluate/special/basicdata",
                 "type": "post",
                 "data": function (d) {
                     d.catalogId = $('#catalogId').val();
@@ -90,12 +80,12 @@ layout("/layouts/platform.html"){
 //                [0, "desc"]
             ],
             "columns": [
-                {"data": "index.location", "bSortable": false},
-                    {"data": "indexname", "bSortable": false},
-                    {"data": "weights", "bSortable": false},
-                    {"data": "detail", "bSortable": false},
-                    {"data": "score_s", "bSortable": true},
-                    {"data": "score_p", "bSortable": true},
+                {"data": "location", "bSortable": false},
+                {"data": "indexname", "bSortable": false},
+                {"data": "weights", "bSortable": false},
+                {"data": "detail", "bSortable": false},
+                {"data": "score_s", "bSortable": true},
+                {"data": "score_p", "bSortable": true},
 
             ],
             "columnDefs": [
@@ -113,7 +103,7 @@ layout("/layouts/platform.html"){
                             //}
                         }else {
                             //如果用户不属于专家部门，但有专家审核的所有权限，也能进行考评
-                            <% if(@shiro.hasPermission("evaluate.verify.special.all")){%>
+                        <% if(@shiro.hasPermission("evaluate.verify.special.all")){%>
                                 html+='<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/speceva/' + row.id + '"  data-toggle="modal" data-target="#dialogEvaluate">' +
                                     '   <span class="glyphicon glyphicon-pencil"></span> 评价</a>' +
                                     '</div>';
@@ -122,7 +112,7 @@ layout("/layouts/platform.html"){
                         return  html;
                     },
 
-                        "targets": 6
+                    "targets": 6
 
                 }
             ]
@@ -134,38 +124,8 @@ layout("/layouts/platform.html"){
             datatable.ajax.reload();
         });
     }
-    var selected = [];
-    function initTreeView() {
-        $("#jsTree").jstree({
-            plugins: ["wholerow"],
-            core: {
-                data: {
-                    url: function (node) {
-                        return node.id === "#" ? "${base}/platform/monitor/catalog/tree/remark?unitType=${unitType}" : "${base}/platform/monitor/catalog/tree/remark?unitType=${unitType}&pid=" + node.id
-                    }
-                },
-                multiple: false
-            }
-        }).on("select_node.jstree", function (node, selected) {
-            var id = selected.selected;
-            $("#catalogId").val(id);
-            $("#searchForm").find("input[type='text']").val("");
-            if (datatable) {
-                $(".cd-panel-content").find("input").val("");
-                datatable.ajax.reload();
-            } else {
-                initDatatable();
-            }
-        }).on("loaded.jstree", function (node, jstree) {
-            var id = $(node.target).find("li:first").attr("id");
-            if (id) {
-                jstree.instance.select_node(id);
-            }
-        });
-    }
-
     $(function () {
-        initTreeView();
+
         initDatatable();
         $("#dialogDetail").on("hidden.bs.modal", function () {
             $(this).removeData("bs.modal");
