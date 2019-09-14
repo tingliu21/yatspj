@@ -419,7 +419,13 @@ public class EvaluateRecordsController {
 
 		for (Record remark : remarklist) {
 			String code = remark.getString("path");
-			double score_p = remark.getDouble("score_p");
+			//如果没有分数，则为空
+			if(remark.get("score_p")!=null) {
+				double score_p = remark.getDouble("score_p");
+				parametersMap.put("s_i" + code, formatDouble(score_p));
+			}else{
+				parametersMap.put("s_i" + code, "");
+			}
 			String advantage = remark.getString("advantage");
 			String disadvantae = remark.getString("disadvantage");
 			//合并过的指标，督评理由那里都是用\n拼接的，需要转换成\r\n
@@ -429,7 +435,7 @@ public class EvaluateRecordsController {
 			if(StringUtils.isNotBlank(disadvantae)){
 				disadvantae = disadvantae.replaceAll("\n","\r\n");
 			}
-			parametersMap.put("s_i" + code, formatDouble(score_p));
+
 			parametersMap.put("ad_i" + code, advantage);
 			parametersMap.put("disad_i" + code, disadvantae);
 
@@ -468,13 +474,23 @@ public class EvaluateRecordsController {
 		//得分
 		for (Record record : remarklistd ) {
 			int location = record.getInt("location");
-			double score_s = record.getDouble("score_s");
-			double score_p = record.getDouble("score_p");
-			String remarkids = record.getString("id");
+			//如果没有分数，则为空
+			if(record.get("score_s")!=null) {
+				double score_s = record.getDouble("score_s");
+				parametersMap.put("s_i" + location, formatDouble(score_s));
+			}else{
+				parametersMap.put("s_i" + location, "");
+			}
+			//如果没有分数，则为空
+			if(record.get("score_p")!=null) {
+				double score_p = record.getDouble("score_p");
+				parametersMap.put("p_i" + location, formatDouble(score_p));
+			}else{
+				parametersMap.put("p_i" + location, "");
+			}
+			//String remarkids = record.getString("id");
+			//String[] remarkIdList = org.apache.commons.lang.StringUtils.split(remarkids,",");
 
-			String[] remarkIdList = org.apache.commons.lang.StringUtils.split(remarkids,",");
-			parametersMap.put("s_i" + location, formatDouble(score_s));
-			parametersMap.put("p_i" + location, formatDouble(score_p));
 		}
 		wordDataMap.put("parametersMap", parametersMap);
 		return wordDataMap;
