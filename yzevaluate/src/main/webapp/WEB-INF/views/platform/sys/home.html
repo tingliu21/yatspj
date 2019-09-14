@@ -68,28 +68,112 @@ layout("/layouts/platform.html"){
         margin-left: 20px;
         overflow: hidden;
     }
+    h4, .content{
+        background-color: #f6f6f6;
+        margin:0px;
+        padding: 20px 0;
+    }
+    h2 {
+        padding-top: 40px;
+        margin:0px;
+        color: white;
+        font-size: 100px;
+    }
+    .span_head {
+        color: white;
+        font-size: 18px;
+    }
+    .content ul{
+        margin:0;
+        padding: 0;
+    }
+    .content ul li {
+        list-style: none;
+        text-align: left;
+        margin-left: 30%;
+        font-size: 20px;
+        line-height: 2em;
+        color: #737373;
+    }
+    .text-muted {
+        color: #427CBF;
+    }
 </style>
 
-<div class="content-wrap">
+<div class="content-wrap" style="background-color: white; padding-top:50px;">
 
-    <div class="wrapper">
-        <div class="bg-box-content">
+    <!--<div class="wrapper">-->
+        <!--<div class="bg-box-content">-->
 
-        <div class="bg_box" style="position: relative;">
-            <div class="item_coupon_box">
-                <div class="item_coupon_bg"></div>
-                <div class="item_coupon">温馨提醒</div>
-                <div>
+        <!--<div class="bg_box" style="position: relative;">-->
+            <!--<div class="item_coupon_box">-->
+                <!--<div class="item_coupon_bg"></div>-->
+                <!--<div class="item_coupon">温馨提醒</div>-->
+                <!--<div>-->
 
-                </div>
-                <div class="item_mention">幼儿园上传材料截止时间为: <span>${Selfdeadline}</span></div>
-                <p class="item_desc">请尽快完成幼儿园自评!</p></div>
+                <!--</div>-->
+                <!--<div class="item_mention">幼儿园上传材料截止时间为: <span>${Selfdeadline}</span></div>-->
+                <!--<p class="item_desc">请尽快完成幼儿园自评!</p></div>-->
+
+        <!--</div>-->
+        <!--</div>-->
+
+    <!--</div>-->
+    <div class="row placeholders text-center">
+        <div  class="col-xs-4 col-sm-4 placeholder"  style="padding:0 50px;">
+            <!-- <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive img-circle center-block" alt="Generic placeholder thumbnail"> -->
+            <div style="background-color: #427CBF;box-shadow: 0 0 5px #666;height: 200px;">
+                <h2>1</h2>
+                <a href="<% if(@shiro.hasPermission('evaluate.self')){ %>${base}/platform/evaluate/records/self/index_basic<% }else{ %>javascript:;<% } %>">
+                <span class="span_head">学校自评</span></a>
+            </div>
+            <!--             <h4>Label</h4> -->
+            <div class="content">
+                <ul>
+                    <li>基础性指标自评</li>
+                    <li>发展性指标自评</li>
+                    <li>规划报告上传</li>
+                </ul>
+                <span class="text-muted">截止日期：${Selfdeadline}
+                </span>
+            </div>
 
         </div>
+        <div class="col-xs-4 col-sm-4 placeholder" style="padding:0 50px;">
+            <!-- <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive img-circle center-block" alt="Generic placeholder thumbnail"> -->
+            <div style="background-color: #485E98;box-shadow: 0 0 5px #666;height: 200px;">
+                <h2>2</h2>
+                <a href="<% if(@shiro.hasPermission('evaluate.verify.dept')){ %>${base}/platform/evaluate/records/<% }else{ %>javascript:;<% } %>">
+                    <span class="span_head">科室审核</span></a>
+            </div>
+            <!--             <h4>Label</h4> -->
+            <div class="content">
+                <ul>
+                    <li>基础性指标审核</li>
+                    <li>&nbsp;</li>
+                    <li>&nbsp;</li>
+                    <li>&nbsp;</li>
+                </ul>
+                <span class="text-muted"></span></div>
         </div>
-
+        <div class="col-xs-4 col-sm-4 placeholder" style="padding:0 50px;">
+            <!-- <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive img-circle center-block" alt="Generic placeholder thumbnail"> -->
+            <div style="background-color: #4E3A68;box-shadow: 0 0 5px #666;height: 200px;">
+                <h2>3</h2>
+                <a href="<% if(@shiro.hasPermission('evaluate.verify.special')){ %>${base}/platform/evaluate/records/special<% }else{ %>javascript:;<% } %>">
+                    <span class="span_head">现场评估</span></a>
+            </div>
+            <!--             <h4>Label</h4> -->
+            <div class="content">
+                <ul>
+                    <li>基础性指标评估</li>
+                    <li>发展性指标评估</li>
+                    <li>直接评估</li>
+                    <li>评估报告导出</li>
+                </ul>
+                <span class="text-muted"></span></div>
+        </div>
     </div>
-
 
 </div>
 <footer style="margin: 0 auto;width:420px">
