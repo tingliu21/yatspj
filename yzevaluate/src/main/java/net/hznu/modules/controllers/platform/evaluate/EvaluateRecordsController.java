@@ -25,6 +25,8 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
+import org.nutz.dao.Sqls;
+import org.nutz.dao.Dao;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.Cnd;
 import org.nutz.ioc.loader.annotation.Inject;
@@ -404,7 +406,7 @@ public class EvaluateRecordsController {
 		Map<String,Object> wordDataMap = new HashMap<String,Object>();
 		Map<String, Object> parametersMap = new HashMap<String, Object>();
 		List<Map<String, Object>> table_custom = new ArrayList<Map<String, Object>>();
-
+		List<Map<String, Object>> table_customd = new ArrayList<Map<String, Object>>();
 
 		Evaluate_records evaluate = evaluateRecordsService.fetch(evalId);
 		evaluate = evaluateRecordsService.fetchLinks(evaluate,"school");
@@ -431,8 +433,12 @@ public class EvaluateRecordsController {
 		for (Evaluate_custom custom:customList ) {
 			Map<String, Object> map=new HashMap<>();
 			map.put("indexname",custom.getIndexname());
+			map.put("taskname",custom.getTaskname());
+			map.put("taskdetail",custom.getTaskdetail());
+			map.put("analysis_s",custom.getAnalysis_s());
 			map.put("weights",custom.getWeights());
 			map.put("score_p",custom.getScore_p());
+			map.put("score_s",custom.getScore_s());
 			String strRemark = custom.getAdvantage();
 			if(StringUtils.isNotBlank(strRemark)){
 				strRemark = strRemark.replaceAll("\n","\r\n");
@@ -444,10 +450,24 @@ public class EvaluateRecordsController {
 			}
 			map.put("disadvantage",strRemark);
 			table_custom.add(map);
+			table_customd.add(map);
 		}
 		wordDataMap.put("table_custom",table_custom);
+		wordDataMap.put("table_customd",table_customd);
 		//以下静洁添加，把指标表也导出
-		
+		//获取基础性指标的得分表
+		List<Record> remarklistd = evaluateRecordsService.getRemarkData(evalId);
+		//得分
+		for (Record record : remarklistd ) {
+			int location = record.getInt("location");
+			double score_s = record.getDouble("score_s");
+			double score_p = record.getDouble("score_p");
+			String remarkids = record.getString("id");
+
+			String[] remarkIdList = org.apache.commons.lang.StringUtils.split(remarkids,",");
+			parametersMap.put("s_i" + location, formatDouble(score_s));
+			parametersMap.put("p_i" + location, formatDouble(score_p));
+		}
 		wordDataMap.put("parametersMap", parametersMap);
 		return wordDataMap;
 	}
