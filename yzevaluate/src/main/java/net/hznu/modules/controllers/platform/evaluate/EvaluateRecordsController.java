@@ -422,7 +422,13 @@ public class EvaluateRecordsController {
 			double score_p = remark.getDouble("score_p");
 			String advantage = remark.getString("advantage");
 			String disadvantae = remark.getString("disadvantage");
-
+			//合并过的指标，督评理由那里都是用\n拼接的，需要转换成\r\n
+			if(StringUtils.isNotBlank(advantage)){
+				advantage = advantage.replaceAll("\n","\r\n");
+			}
+			if(StringUtils.isNotBlank(disadvantae)){
+				disadvantae = disadvantae.replaceAll("\n","\r\n");
+			}
 			parametersMap.put("s_i" + code, formatDouble(score_p));
 			parametersMap.put("ad_i" + code, advantage);
 			parametersMap.put("disad_i" + code, disadvantae);
@@ -430,27 +436,29 @@ public class EvaluateRecordsController {
 		}
 		//获取专家评估的发展性指标
 		List<Evaluate_custom> customList =evaluateCustomService.query(Cnd.where("evaluateid","=",evalId).asc("location"));
+		int i =0;
 		for (Evaluate_custom custom:customList ) {
 			Map<String, Object> map=new HashMap<>();
+			Map<String, Object> mapDetail=new HashMap<>();
 			map.put("indexname",custom.getIndexname());
-			map.put("taskname",custom.getTaskname());
-			map.put("taskdetail",custom.getTaskdetail());
-			map.put("analysis_s",custom.getAnalysis_s());
 			map.put("weights",custom.getWeights());
 			map.put("score_p",custom.getScore_p());
-			map.put("score_s",custom.getScore_s());
-			String strRemark = custom.getAdvantage();
-			if(StringUtils.isNotBlank(strRemark)){
-				strRemark = strRemark.replaceAll("\n","\r\n");
-			}
-			map.put("advantage",strRemark);
-			strRemark = custom.getDisadvantage();
-			if(StringUtils.isNotBlank(strRemark)){
-				strRemark = strRemark.replaceAll("\n","\r\n");
-			}
-			map.put("disadvantage",strRemark);
+			map.put("advantage",custom.getAdvantage());
+			map.put("disadvantage",custom.getDisadvantage());
+
+			i++;
+			mapDetail.put("no",i);
+			mapDetail.put("indexname",custom.getIndexname());
+			mapDetail.put("taskname",custom.getTaskname());
+			mapDetail.put("taskdetail",custom.getTaskdetail());
+			mapDetail.put("analysis_s",custom.getAnalysis_s());
+			mapDetail.put("weights",custom.getWeights());
+			mapDetail.put("score_s",custom.getScore_s());
+			mapDetail.put("score_p",custom.getScore_p());
+
+
 			table_custom.add(map);
-			table_customd.add(map);
+			table_customd.add(mapDetail);
 		}
 		wordDataMap.put("table_custom",table_custom);
 		wordDataMap.put("table_customd",table_customd);

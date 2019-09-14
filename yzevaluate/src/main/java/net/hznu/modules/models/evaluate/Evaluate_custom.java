@@ -60,7 +60,7 @@ public class Evaluate_custom extends Model implements Serializable{
     @Column
     @Comment("督评分")
     @ColDefine(type = ColType.FLOAT, width = 8)
-    private double score_p;
+    private Double score_p;
 
     @Column
     @Comment("督评理由")
@@ -140,11 +140,11 @@ public class Evaluate_custom extends Model implements Serializable{
         this.disadvantage = disadvantage;
     }
 
-    public double getScore_p() {
+    public Double getScore_p() {
         return score_p;
     }
 
-    public void setScore_p(double score_p) {
+    public void setScore_p(Double score_p) {
         this.score_p = score_p;
     }
 
