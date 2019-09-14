@@ -176,7 +176,8 @@ public class EvaluateRecordsController {
 
 
 			//2018-12-21修改，可以先由专家审核,专家只审核自己分配的学校
-			cnd = Cnd.where("id", "in", evaluateidList).and("status_p", "=", false);
+			cnd = Cnd.where("id", "in", evaluateidList);
+//					.and("status_p", "=", false);
 		}
 		if (year!=0) {
 			cnd.and("year", "=",  year );
