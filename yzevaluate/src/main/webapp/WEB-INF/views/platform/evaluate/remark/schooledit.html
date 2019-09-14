@@ -77,7 +77,7 @@
                                     <ol class="dd-list">
                                         <%for(o in obj.appendixList){%>
                                         <li class="dd-item dd3-item dd-nodrag" data-id="${o.apurl}">
-                                            <div class="dd3-content"><a href="${base}${o.apurl}" data-pjax>
+                                            <div class="dd3-content"><a href="${o.apurl}" data-pjax>
                                                 <span>${o.apname}</span></a><i class="fa fa-close pull-right" onclick="delContent('${o.apurl}','${o.id}')"></i>
                                                 </a></div>
                                         </li>
