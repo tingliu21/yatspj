@@ -289,4 +289,18 @@ public class EvaluateRemarkController {
 		return null;
     }
 
+	@At("/schooldetail/?")
+	@Ok("beetl:/platform/evaluate/remark/self/detail.html")
+	@RequiresAuthentication
+	public Object schooldetail(String id) {
+		if (!Strings.isBlank(id)) {
+
+			Evaluate_remark remark = evaluateRemarkService.fetch(id);
+			return evaluateRemarkService.fetchLinks(remark,"appendixList");
+//			return evaluateRemarkService.fetchLinks(remark,"index");
+
+		}
+		return null;
+	}
+
 }

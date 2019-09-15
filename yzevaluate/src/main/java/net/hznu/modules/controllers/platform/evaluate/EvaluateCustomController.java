@@ -242,4 +242,16 @@ public class EvaluateCustomController {
 		return null;
     }
 
+	@At("/schooldetail/?")
+	@Ok("beetl:/platform/evaluate/custom/self/detail.html")
+	@RequiresAuthentication
+	public Object schooldetail(String id) {
+		if (!Strings.isBlank(id)) {
+			Evaluate_custom custom = evaluateCustomService.fetch(id);
+			return evaluateCustomService.fetchLinks(custom,"appendixList");
+//			return evaluateCustomService.fetch(id);
+
+		}
+		return null;
+	}
 }
