@@ -103,12 +103,25 @@ public class EvaluateRemarkController {
     }
 
     //专家评估指标，仅列出需现场评估的指标
+
+	/**
+	 * 2019-9-15 专家可以查看所有指标
+	 * @param catalogId
+	 * @param evaluateId
+	 * @param length
+	 * @param start
+	 * @param draw
+	 * @param order
+	 * @param columns
+	 * @return
+	 */
     @At
 	@Ok("json:full")
 	@RequiresPermissions("evaluate.verify.special")
 	public Object specialdata(@Param("catalogId") String catalogId,@Param("evaluateId") String evaluateId,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns){
 
-		Cnd cnd = Cnd.where("depttype","=","Special");
+		Cnd cnd = Cnd.NEW();
+//				Cnd.where("depttype","=","Special");
 		if (!Strings.isBlank(evaluateId) && !"0".equals(evaluateId)) {
 
 			List<String> strids = new ArrayList<>();
