@@ -515,12 +515,15 @@ public class EvaluateRecordsController {
 	@Ok("json")
 	@AdaptBy(type = WhaleAdaptor.class)
 	@RequiresAuthentication
-	public Object uploadDo(@Param("id") String id,@Param("uploaderid") String uploaderId,@Param("summaryurl") String summaryurl,@Param("verifyreport") boolean verifyreport, HttpServletResponse resp) {
+	public Object uploadDo(@Param("id") String id,@Param("summaryurl") String summaryurl,@Param("verifyreport") boolean verifyreport, HttpServletResponse resp) {
 		if (!Strings.isBlank(id)) {
 			try {
 				Evaluate_records record =evaluateRecordsService.fetch(id);
 				record.setId(id);
 				if(!Strings.isBlank(summaryurl)) record.setSummaryurl(summaryurl);
+				Subject subject = SecurityUtils.getSubject();
+				Sys_user user = (Sys_user) subject.getPrincipal();
+				record.setUploaderId(user.getId());
 				evaluateRecordsService.updateIgnoreNull(record);
 //				evaluateRecordsSelfService.upload(id, selfevaurl, planurl);
 				return Result.success("system.success");
