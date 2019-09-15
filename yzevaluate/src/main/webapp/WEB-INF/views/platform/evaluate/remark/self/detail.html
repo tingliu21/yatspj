@@ -1,0 +1,43 @@
+<div class="modal-body no-p">
+    <div class="row">
+        <div class="col-xs-12">
+            <section class="panel panel-primary no-b">
+                <header class="panel-heading clearfix brtl brtr">
+                    <div class="overflow-hidden">
+                        <a href="javascript:;" class="h4 show no-m pt5">${obj.location}.${obj.indexname}</a>
+
+                    </div>
+                </header>
+                <div class="list-group">
+                    <table class="table table-bordered table-striped mg-t datatable">
+
+                        <tbody>
+                        <tr>
+                            <td class="col-md-2 pd-l-lg">自评得分</td><td>${obj.score_s}</td>
+                        </tr>
+                        <tr>
+                            <td>自评理由</td><td>${obj.remark_s}</td>
+                        </tr>
+                        <tr><td>附件材料</td><td>
+                            <div class="dd" id="nestable1">
+                                <ol class="dd-list">
+                                    <%for(o in obj.appendixList){%>
+                                    <li class="dd-item dd3-item dd-nodrag" data-id="${o.remarkid}">
+                                        <a href="${o.apurl}" target="_blank">
+                                            <span>${o.apname}</span>
+                                        </a>
+                                    </li>
+                                    <%}%>
+                                </ol>
+                            </div>
+                        </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary btn-block" data-dismiss="modal">知道了</button>
+</div>
