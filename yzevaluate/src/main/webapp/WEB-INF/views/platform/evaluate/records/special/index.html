@@ -89,6 +89,12 @@ layout("/layouts/platform.html"){
         </div>
     </div>
 </div>
+<div id="dialogImp" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
 <script language="JavaScript">
     var datatable;
     function initDatatable() {
@@ -164,7 +170,10 @@ layout("/layouts/platform.html"){
                         '<a class="btn btn-primary" href="${base}/platform/evaluate/remark/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>基础性指标</a>' +
                         '<a class="btn btn-info" href="${base}/platform/evaluate/custom/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>发展性指标</a>'+
                         '<a class="btn btn-warning" href="${base}/platform/evaluate/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>直接评估</a>'+
-                        '<a class="btn btn-success" href="${base}/platform/evaluate/records/special/download/' + row.id+'" data-pjax>导出评估表</a>';
+                        '<a class="btn btn-success" href="${base}/platform/evaluate/records/special/download/' + row.id+'" data-pjax>导出评估表</a>'+
+                        '<a class="btn btn-success" href="${base}/platform/evaluate/records/upload/' + row.id + '" data-toggle="modal" data-target="#dialogImp">总结报告上传</a>';
+
+
 //                    if(!row.locked) {
 //                        html +='<a class="btn btn-warning" href="javascript:;" onclick="locked(\'' + row.id + '\')">锁定</a>';
 //                    }else{

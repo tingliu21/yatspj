@@ -1,0 +1,105 @@
+<div class="modal-body no-p">
+    <div class="row">
+        <div class="col-xs-12">
+            <section class="panel panel-primary no-b">
+                <header class="panel-heading clearfix brtl brtr">
+                    <div class="overflow-hidden">
+                        <a href="javascript:;" class="h4 show no-m pt5">上传总结报告</a>
+                    </div>
+                </header>
+
+                <form id="addForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
+                      action="${base}/platform/evaluate/records/uploadDo" method="post">
+                    <input name="id" type="hidden" value="${id}">
+                    <div class="row mb10">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label for="summaryurl"  class="col-sm-3 control-label">总结报告</label>
+                                <div  class="col-sm-8">
+                                    <div id="sumqueue"></div>
+                                    <div class="input-group">
+                                        <input id="sumfile_upload" name="sumfile_upload" type="file" multiple="false">
+                                    </div>
+                                    <input type="hidden" id="summaryurl" name="summaryurl" value="" >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </section>
+
+        </div>
+
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+    <button id="ok" type="submit" class="btn btn-primary " data-loading-text="正在提交...">确 定</button>
+</div>
+<script language="JavaScript">
+    $(document).ready(function () {
+
+        $('#sumfile_upload').uploadifive({
+            'auto': true,
+            'multi': false,
+            'width': '100%',
+            'height': '35',
+            'buttonText': '请选择总结报告',
+            'fileType': '*.doc;*.docx;*.pdf',
+            'fileSizeLimit': 5120,
+            'queueSizeLimit': 1,
+            'formData': {},
+            'queueID': 'sumqueue',
+            'uploadScript': '${base}/open/file/upload/docfile',
+            'onUploadComplete': function (file, data) {
+                data = JSON.parse(data);
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+
+                    $("#summaryurl").val(data.data);
+
+                } else {
+                    $("#sumqueue").html("");
+                    Toast.error(data.msg);
+                }
+            },
+            'onDrop': function (file, fileDropCount) {
+                $("#sumqueue").html("");
+            },
+            'onClearQueue': function (queue) {
+                $("#sumqueue").html("");
+            },
+            'onCancel': function () {
+                $("#sumqueue").html("");
+            }
+        });
+
+        $("#ok").on("click",function(){
+            if($("#summaryurl").val()==""){
+                Toast.error("请选择上传材料");
+            }
+            else{
+                $('#addForm').submit();
+            }
+        });
+        $('#addForm').ajaxForm({
+
+            dataType: 'json',
+            beforeSubmit: function (arr, form, options) {
+                form.find("button:submit").button("loading");
+            },
+            success: function (data, statusText, xhr, form) {
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+                    $("#dialogImp").modal("hide");
+                    datatable.ajax.reload(null,false);
+
+                } else {
+                    Toast.error(data.msg);
+                }
+                form.find("button:submit").button("reset");
+            }
+        });
+    });
+</script>

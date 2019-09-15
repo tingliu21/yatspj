@@ -89,6 +89,21 @@ public class Evaluate_records extends Model implements Serializable{
     @ColDefine(type = ColType.VARCHAR,width = 100)
     private String planurl;
 
+    @Column
+    @Comment("总结报告路径")
+    @ColDefine(type = ColType.VARCHAR,width = 100)
+    private String summaryurl;
+
+    @Column
+    @Comment("上传总结者ID")
+    @ColDefine(type = ColType.VARCHAR, width = 32)
+    private String uploaderid;
+
+    @Column
+    @Comment("报告是否审核完成")
+    @ColDefine(type = ColType.BOOLEAN)
+    private Boolean verifyreport = null;
+
     public String getId() {
         return id;
     }
@@ -207,6 +222,30 @@ public class Evaluate_records extends Model implements Serializable{
 
     public void setPlanurl(String planurl) {
         this.planurl = planurl;
+    }
+
+    public String getUploaderId() {
+        return uploaderid;
+    }
+
+    public void setUploaderId(String uploaderid) {
+        this.uploaderid = uploaderid;
+    }
+
+    public String getSummaryurl() {
+        return summaryurl;
+    }
+
+    public void setSummaryurl(String summaryurl) {
+        this.summaryurl = summaryurl;
+    }
+
+    public Boolean getVerifyreport() {
+        return verifyreport;
+    }
+
+    public void setVerifyreport(Boolean verifyreport) {
+        this.verifyreport = verifyreport;
     }
 }
 

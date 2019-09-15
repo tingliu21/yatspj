@@ -6,7 +6,7 @@ import net.hznu.common.filter.PrivateFilter;
 import net.hznu.common.page.DataTableColumn;
 import net.hznu.common.page.DataTableOrder;
 import net.hznu.common.util.XwpfUtil;
-import net.hznu.modules.models.evaluate.Evaluate_custom;
+import net.hznu.modules.models.evaluate.*;
 import net.hznu.modules.models.monitor.Monitor_index;
 import net.hznu.modules.models.sys.Sys_unit;
 import net.hznu.modules.models.sys.Sys_user;
@@ -16,8 +16,6 @@ import net.hznu.modules.services.monitor.MonitorCatalogService;
 import net.hznu.modules.services.monitor.MonitorIndexService;
 import net.hznu.modules.services.sys.SysUnitService;
 import net.hznu.modules.services.sys.SysUserService;
-import net.hznu.modules.models.evaluate.Evaluate_records;
-import net.hznu.modules.models.evaluate.Evaluate_remark;
 import net.hznu.modules.services.evaluate.EvaluateRecordsService;
 import net.hznu.modules.services.evaluate.EvaluateRemarkService;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +32,7 @@ import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+import org.nutz.mvc.adaptor.WhaleAdaptor;
 import org.nutz.mvc.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -503,5 +502,32 @@ public class EvaluateRecordsController {
 			return String.valueOf((long) num);
 		}
 		return String.valueOf(num);
+	}
+
+	//专家上传总结报告
+	@At("/upload/?")
+	@Ok("beetl:/platform/evaluate/records/special/upload.html")
+	@RequiresAuthentication
+	public void upload(String id,HttpServletRequest req) {
+		req.setAttribute("id", id);
+	}
+	@At("/uploadDo")
+	@Ok("json")
+	@AdaptBy(type = WhaleAdaptor.class)
+	@RequiresAuthentication
+	public Object uploadDo(@Param("id") String id,@Param("uploaderid") String uploaderId,@Param("summaryurl") String summaryurl,@Param("verifyreport") boolean verifyreport, HttpServletResponse resp) {
+		if (!Strings.isBlank(id)) {
+			try {
+				Evaluate_records record =evaluateRecordsService.fetch(id);
+				record.setId(id);
+				if(!Strings.isBlank(summaryurl)) record.setSummaryurl(summaryurl);
+				evaluateRecordsService.updateIgnoreNull(record);
+//				evaluateRecordsSelfService.upload(id, selfevaurl, planurl);
+				return Result.success("system.success");
+			} catch (Exception e) {
+				return Result.error("system.error");
+			}
+		}
+		return null;
 	}
 }
