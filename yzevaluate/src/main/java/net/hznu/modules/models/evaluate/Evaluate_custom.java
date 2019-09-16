@@ -90,7 +90,7 @@ public class Evaluate_custom extends Model implements Serializable{
 
     @Column
     @Comment("指标序号")
-    private int location;
+    private Integer location;
 
     @Many(target=Evaluate_appendix.class,field = "remarkid")
     private List<Evaluate_appendix> appendixList;
@@ -228,11 +228,11 @@ public class Evaluate_custom extends Model implements Serializable{
         this.verifyeva = verifyeva;
     }
 
-    public int getLocation() {
+    public Integer getLocation() {
         return location;
     }
 
-    public void setLocation(int location) {
+    public void setLocation(Integer location) {
         this.location = location;
     }
     public List<Evaluate_appendix> getAppendixList() {

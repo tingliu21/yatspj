@@ -34,7 +34,7 @@ public class Evaluate_remark extends Model implements Serializable{
     @Column
     @Comment("自打分")
     @ColDefine(type = ColType.FLOAT, width = 8)
-    private double score_s;
+    private Double score_s;
 
 
     @Column
@@ -137,11 +137,11 @@ public class Evaluate_remark extends Model implements Serializable{
         this.indexId = indexid;
     }
 
-    public double getScore_s() {
+    public Double getScore_s() {
         return score_s;
     }
 
-    public void setScore_s(double score_s) {
+    public void setScore_s(Double score_s) {
         this.score_s = score_s;
     }
 
