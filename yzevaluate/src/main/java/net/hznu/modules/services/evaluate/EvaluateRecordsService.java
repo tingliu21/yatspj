@@ -222,5 +222,26 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
         dao().execute(sql);
         return sql.getObject(Sys_role.class);
     }
+    public Record getSummaryInfo(String eid){
+        Sql sql = Sqls.create("SELECT summaryurl,verifyreport,uploaderid,sys_user.nickname from evaluate_records inner join sys_user on sys_user.id = evaluate_records.uploaderid WHERE evaluate_records.id=@eid").setParam("eid",eid);
+        sql.setCallback(new SqlCallback() {
+            public Object invoke(Connection conn, ResultSet rs, Sql sql)
+                    throws SQLException {
+                if (rs != null && rs.next()) {
+                    Record record = new Record();
+                    record.put("summaryurl",rs.getString("summaryurl"));
+                    record.put("verifyreport",rs.getBoolean("verifyreport"));
+                    record.put("uploaderid",rs.getString("uploaderid"));
+                    record.put("uploader",rs.getString("nickname"));
+                    return record;
+                }else {
+                    return null;
+                }
+
+            }
+        });
+        this.dao().execute(sql);
+        return sql.getObject(Record.class);
+    }
 }
 

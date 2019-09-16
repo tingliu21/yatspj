@@ -22,11 +22,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
-import org.nutz.dao.Sqls;
-import org.nutz.dao.Dao;
+import org.nutz.dao.*;
 import org.nutz.dao.entity.Record;
-import org.nutz.dao.Cnd;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.lang.Strings;
@@ -509,17 +508,29 @@ public class EvaluateRecordsController {
 	@Ok("beetl:/platform/evaluate/records/special/upload.html")
 	@RequiresAuthentication
 	public void upload(String id,HttpServletRequest req) {
-		req.setAttribute("id", id);
+		if (!Strings.isBlank(id)) {
+			Record record = evaluateRecordsService.getSummaryInfo(id);
+			if(record!=null){
+				req.setAttribute("summaryurl",record.getString("summaryurl"));
+				req.setAttribute("uploader",record.getString("uploader"));
+				req.setAttribute("verifyreport",record.get("verifyreport"));
+			}
+			req.setAttribute("id", id);
+
+		}
 	}
 	@At("/uploadDo")
 	@Ok("json")
 	@AdaptBy(type = WhaleAdaptor.class)
 	@RequiresAuthentication
-	public Object uploadDo(@Param("id") String id,@Param("summaryurl") String summaryurl,@Param("verifyreport") boolean verifyreport, HttpServletResponse resp) {
+	public Object uploadDo(@Param("id") String id,@Param("summaryurl") String summaryurl, HttpServletResponse resp) {
 		if (!Strings.isBlank(id)) {
 			try {
 				Evaluate_records record =evaluateRecordsService.fetch(id);
-				record.setId(id);
+				if(record.getVerifyreport()!=null && record.getVerifyreport()==true){
+					return Result.error("组长已审核报告，不能再重新上传了");
+				}
+//				record.setId(id);
 				if(!Strings.isBlank(summaryurl)) record.setSummaryurl(summaryurl);
 				Subject subject = SecurityUtils.getSubject();
 				Sys_user user = (Sys_user) subject.getPrincipal();
@@ -530,6 +541,25 @@ public class EvaluateRecordsController {
 			} catch (Exception e) {
 				return Result.error("system.error");
 			}
+		}
+		return null;
+	}
+	@At
+	@Ok("json")
+	@AdaptBy(type = WhaleAdaptor.class)
+	@RequiresRoles("specialLeader")
+	public Object verifyDo(@Param("id") String id,@Param("summaryurl") String summaryurl){
+		if (!Strings.isBlank(id)) {
+			if(!Strings.isBlank(summaryurl)){
+				//提交并审核，更新报告地址和报告着
+				Subject subject = SecurityUtils.getSubject();
+				Sys_user user = (Sys_user) subject.getPrincipal();
+				evaluateRecordsService.update(org.nutz.dao.Chain.make("summaryurl",summaryurl)
+						.add("uploaderid",user.getId()).add("verifyreport",true),Cnd.where("id","=",id));
+			}else {
+				evaluateRecordsService.update(org.nutz.dao.Chain.make("verifyreport", true), Cnd.where("id", "=", id));
+			}
+			return Result.success("system.success");
 		}
 		return null;
 	}
