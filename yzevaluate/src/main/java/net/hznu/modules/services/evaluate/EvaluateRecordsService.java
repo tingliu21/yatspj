@@ -1,6 +1,7 @@
 package net.hznu.modules.services.evaluate;
 
 import net.hznu.common.base.Service;
+import net.hznu.common.chart.IndexValueStat;
 import net.hznu.modules.models.evaluate.Evaluate_records;
 import net.hznu.modules.models.sys.Sys_role;
 import org.nutz.aop.interceptor.ioc.TransAop;
@@ -21,7 +22,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @IocBean(args = {"refer:dao"})
 public class EvaluateRecordsService extends Service<Evaluate_records> {
@@ -197,6 +200,50 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
         this.dao().execute(sql);
         return sql.getList(String.class);
     }
+    /**
+     * 获取专家参与的评估ID
+     * @param suid 专家的用户id
+     * @return  专家负责的评估ID
+     */
+    public List<String> getTasknameBySpecial(String suid){
+        Sql sql = Sqls.create("SELECT distinct evaluate_records.taskname FROM evaluate_special_role inner join evaluate_records on evaluate_records.id = evaluate_special_role.evaluateid WHERE evaluate_special_role.specialid=@userid").setParam("userid",suid);
+        sql.setCallback(new SqlCallback() {
+            public Object invoke(Connection conn, ResultSet rs, Sql sql)
+                    throws SQLException {
+                List<String> evaluateIds = new ArrayList<>();
+
+                while (rs != null && rs.next()) {
+                    String eid = rs.getString(1) ;
+                    evaluateIds.add(eid);
+                }
+                return evaluateIds;
+            }
+        });
+        this.dao().execute(sql);
+        return sql.getList(String.class);
+    }
+    /**
+     * 获取专家参与的评估ID
+     * @param suid 专家的用户id
+     * @return  专家负责的评估ID
+     */
+    public List<String> getEvaluateIdsByTaskname(String taskname){
+        Sql sql = Sqls.create("SELECT distinct id FROM evaluate_records WHERE taskname = @taskname").setParam("taskname",taskname);
+        sql.setCallback(new SqlCallback() {
+            public Object invoke(Connection conn, ResultSet rs, Sql sql)
+                    throws SQLException {
+                List<String> evaluateIds = new ArrayList<>();
+
+                while (rs != null && rs.next()) {
+                    String eid = rs.getString(1) ;
+                    evaluateIds.add(eid);
+                }
+                return evaluateIds;
+            }
+        });
+        this.dao().execute(sql);
+        return sql.getList(String.class);
+    }
     public List<Record> getSpecialRemarkData(String eid){
         Sql sql = Sqls.create("SELECT monitor_catalog.path,sum(score_p) as score_p, string_agg(advantage,'\n') as advantage, string_agg(disadvantage,'\n') as disadvantage" +
                 "  FROM evaluate_remark_view " +
@@ -242,6 +289,65 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
         });
         this.dao().execute(sql);
         return sql.getObject(Record.class);
+    }
+
+    /**
+     * 获取本项目的专家组角色，并查找评估记录中是否有给各专家组角色赋予相应的专家名单
+     * @param evaluateIds 评估记录Id
+     * @return 返回给前端 具体的角色及专家数组列表，以及记录数，该项目是4位专家角色
+     */
+    public NutMap getIndexReport(String[] evaluateIds){
+        NutMap re = new NutMap();
+        List<Map<String,Object>> cols =new ArrayList<>();
+        Map<String,Object> col = new HashMap<>();
+        col.put("targets",0);
+        col.put("data","no");
+        col.put("title","序号");
+        cols.add(col);
+        col = new HashMap<>();
+        col.put("targets",1);
+        col.put("data","indexname");
+        col.put("title","指标名称");
+        cols.add(col);
+        col = new HashMap<>();
+        col.put("targets",2);
+        col.put("data","weights");
+        col.put("title","权重分");
+        cols.add(col);
+
+        String strSql="SELECT monitor_catalog.location as no,monitor_catalog.name as indexname,monitor_catalog.weights,";
+        String strSchoolSql="";
+        for(int i=0;i<evaluateIds.length;i++){
+            String eid =evaluateIds[i];
+            col = new HashMap<>();
+            col.put("targets",i+3);
+            col.put("data","e_"+eid);
+            Evaluate_records records = fetch(eid);
+            col.put("title",fetchLinks(records,"school").getSchool().getName());
+            cols.add(col);
+
+            strSchoolSql+=" sum(case when evaluateid='"+eid+"' then score_p else null end) as e_"+eid+",";
+        }
+        strSql += strSchoolSql.substring(0,strSchoolSql.length()-1);
+        strSql += " FROM evaluate_remark inner join monitor_index on monitor_index.id = evaluate_remark.indexid \n" +
+                " inner join monitor_catalog on monitor_index.catalogid = monitor_catalog.id \n where evaluateid in (@evaIds) \n"+
+                " group by monitor_catalog.location,monitor_catalog.name,monitor_catalog.weights order by monitor_catalog.location";
+
+        Sql sql = Sqls.create(strSql).setParam("evaIds",evaluateIds);
+        List<Record> remarkData = list(sql);
+
+        //发展性指标
+        strSql = "SELECT 10 as no, '发展性指标' as indexname,10 as weights,";
+        strSql += strSchoolSql.substring(0,strSchoolSql.length()-1);
+        strSql +=" FROM evaluate_custom where evaluateid in (@evaIds)";
+        sql = Sqls.create(strSql).setParam("evaIds",evaluateIds);
+        List<Record> custom = list(sql);
+
+        remarkData.addAll(custom);
+        re.put("rowdata", remarkData);
+        re.put("col_define", cols);
+        return re;
+
     }
 }
 

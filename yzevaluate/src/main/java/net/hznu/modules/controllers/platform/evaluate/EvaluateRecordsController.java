@@ -563,4 +563,34 @@ public class EvaluateRecordsController {
 		}
 		return null;
 	}
+	@At
+	@Ok("beetl:/platform/evaluate/stat/report.html")
+	@RequiresAuthentication
+	public void test(HttpServletRequest req) {
+		Subject subject = SecurityUtils.getSubject();
+		Sys_user user = (Sys_user) subject.getPrincipal();
+		List<String> tasknames;
+		//2019-01-08 超级专家可以审核所有的学校
+		if(!subject.isPermitted("evaluate.verify.special.all")) {
+			tasknames = evaluateRecordsService.getTasknameBySpecial(user.getId());
+
+		}else{
+			tasknames = new ArrayList<>();
+			tasknames.add("第一组评估");
+			tasknames.add("第二组评估");
+			tasknames.add("第三组评估");tasknames.add("第四组评估");tasknames.add("第五组评估");
+			tasknames.add("第六组评估");
+		}
+		req.setAttribute("tasknames",tasknames);
+
+	}
+	@At
+	@Ok("json")
+	@RequiresAuthentication
+	public Object testDo(@Param("taskname") String taskname,HttpServletRequest req) {
+		//String[] ids = StringUtils.split(indexIds, ",");
+		List<String> eids = evaluateRecordsService.getEvaluateIdsByTaskname(taskname);
+		String[] evaIds = eids.toArray(new String[eids.size()]);
+		return evaluateRecordsService.getIndexReport(evaIds);
+	}
 }

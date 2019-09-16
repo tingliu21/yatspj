@@ -1,7 +1,6 @@
 package net.hznu.modules.services.evaluate;
 
 import net.hznu.common.base.Service;
-import net.hznu.common.chart.CustomStat;
 import net.hznu.common.util.StringUtil;
 import net.hznu.common.util.WordTemplate;
 import net.hznu.common.util.XwpfUtil;

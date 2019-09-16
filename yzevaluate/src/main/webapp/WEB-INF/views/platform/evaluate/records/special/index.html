@@ -27,7 +27,7 @@ layout("/layouts/platform.html"){
                             <th class="col-md-1">评估进度</th>
                             <th class="col-md-1">评估状态</th>
                             <!--<th class="col-md-1">锁定状态</th>-->
-                            <th class="col-md-5">操作</th>
+                            <th class="col-md-7">操作</th>
                             <!--<th>锁定/解锁</th>-->
                     </tr>
                 </thead>
@@ -162,16 +162,18 @@ layout("/layouts/platform.html"){
             },
             {
                 "render": function (data, type, row) {
-
-                    html ='<div class="btn-group tool-button">' +
+                    html ='<div class="btn-group">' +
                         '<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="ti-angle-down">规划材料</span></button>' +
                         '<ul class="dropdown-menu" role="menu"><li><a onclick="checkfile(\''+row.selfevaurl+'\')" href="#" >自评报告</a></li>' +
-                        '<li><a onclick="checkfile(\''+row.planurl+'\')" href="#" >3年规划</a></li></ul>' +
-                        '<a class="btn btn-primary" href="${base}/platform/evaluate/remark/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>基础性指标</a>' +
+                        '<li><a onclick="checkfile(\''+row.planurl+'\')" href="#" >3年规划</a></li>' +
+                        '<li class="divider"></li><li><a href="${base}/platform/evaluate/records/special/download/' + row.id+'" data-pjax>导出评估表</a></li>';
+                    if(row.summaryurl){
+                        html+='<li><a onclick="checkfile(\''+row.summaryurl+'\')" href="#" >查看评估报告</a></li>' ;
+                    }
+                    html +='</ul><a class="btn btn-primary" href="${base}/platform/evaluate/remark/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>基础性指标</a>' +
                         '<a class="btn btn-info" href="${base}/platform/evaluate/custom/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>发展性指标</a>'+
                         '<a class="btn btn-warning" href="${base}/platform/evaluate/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>直接评估</a>'+
-                        '<a class="btn btn-success" href="${base}/platform/evaluate/records/special/download/' + row.id+'" data-pjax>导出评估表</a>'+
-                        '<a class="btn btn-success" href="${base}/platform/evaluate/records/upload/' + row.id + '" data-toggle="modal" data-target="#dialogImp">总结报告上传</a>';
+                        '<a class="btn btn-success" href="${base}/platform/evaluate/records/upload/' + row.id + '" data-toggle="modal" data-target="#dialogImp">评估报告上传</a>';
 
 
 //                    if(!row.locked) {
@@ -226,6 +228,9 @@ layout("/layouts/platform.html"){
     $(function () {
         initDatatable();
         $("#dialogDetail").on("hidden.bs.modal", function () {
+            $(this).removeData("bs.modal");
+        });
+        $("#dialogImp").on("hidden.bs.modal", function () {
             $(this).removeData("bs.modal");
         });
     });
