@@ -317,7 +317,8 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
 
         String strSql="SELECT monitor_catalog.location as no,monitor_catalog.name as indexname,monitor_catalog.weights,";
         String strSchoolSql="";
-        for(int i=0;i<evaluateIds.length;i++){
+        int i=0;
+        for( ;i<evaluateIds.length;i++){
             String eid =evaluateIds[i];
             col = new HashMap<>();
             col.put("targets",i+3);
@@ -328,7 +329,15 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
 
             strSchoolSql+=" sum(case when evaluateid='"+eid+"' then score_p else 0 end) as e_"+eid+",";
         }
-        strSql += strSchoolSql.substring(0,strSchoolSql.length()-1);
+        col = new HashMap<>();
+        col.put("targets",i+3);
+        col.put("data","avg_group");
+        col.put("title","组平均得分");
+        cols.add(col);
+
+        //求平均分
+        strSchoolSql+=" COALESCE(sum(score_p)/"+evaluateIds.length+",0)::numeric(4,2) as avg_group";
+        strSql += strSchoolSql;
         strSql += " FROM evaluate_remark inner join monitor_index on monitor_index.id = evaluate_remark.indexid \n" +
                 " inner join monitor_catalog on monitor_index.catalogid = monitor_catalog.id \n where evaluateid in (@evaIds) \n"+
                 " group by monitor_catalog.location,monitor_catalog.name,monitor_catalog.weights order by monitor_catalog.location";
@@ -337,13 +346,24 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
         List<Record> remarkData = list(sql);
 
         //发展性指标
-        strSql = "SELECT 10 as no, '发展性指标' as indexname,10 as weights,";
-        strSql += strSchoolSql.substring(0,strSchoolSql.length()-1);
+        strSql = "SELECT 10 as no, '专家1(发展性指标)' as indexname,10 as weights,";
+        strSql += strSchoolSql;
         strSql +=" FROM evaluate_custom where evaluateid in (@evaIds)";
         sql = Sqls.create(strSql).setParam("evaIds",evaluateIds);
         List<Record> custom = list(sql);
-
         remarkData.addAll(custom);
+
+        //按专家分组
+        strSql = "SELECT '' as no,masterrolename as indexname,(sum(weights)/12)  ::numeric(8,0) as weights, ";
+        strSql += strSchoolSql;
+        strSql +=" FROM evaluate_remark inner join monitor_index_view on monitor_index_view.id = evaluate_remark.indexid \n"+
+                " where deptname like'评估专家组%' and evaluateid in (@evaIds) \n"+
+                " group by masterrolename order by masterrolename";
+        sql = Sqls.create(strSql).setParam("evaIds",evaluateIds);
+        List<Record> special = list(sql);
+
+        remarkData.addAll(special);
+
         re.put("rowdata", remarkData);
         re.put("col_define", cols);
         return re;
