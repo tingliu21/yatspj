@@ -326,7 +326,7 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
             col.put("title",fetchLinks(records,"school").getSchool().getName());
             cols.add(col);
 
-            strSchoolSql+=" sum(case when evaluateid='"+eid+"' then score_p else null end) as e_"+eid+",";
+            strSchoolSql+=" sum(case when evaluateid='"+eid+"' then score_p else 0 end) as e_"+eid+",";
         }
         strSql += strSchoolSql.substring(0,strSchoolSql.length()-1);
         strSql += " FROM evaluate_remark inner join monitor_index on monitor_index.id = evaluate_remark.indexid \n" +

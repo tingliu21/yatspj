@@ -99,6 +99,7 @@ layout("/layouts/platform.html"){
             "paging":false,//不分页
             "info": false,//不显示页脚信息
             "searching":false,
+            "ordering": false,
             "destroy": true,
             //列的配置信息通过变量传进来
             "columns": data.col_define,
@@ -123,6 +124,10 @@ layout("/layouts/platform.html"){
         //第一次初始化,加载所有列
         $("#taskname").change(function () {
             $.post("${base}/platform/evaluate/records/testDo", {taskname: $("#taskname").val()}, function (data) {
+                //改变列的结构，先销毁前面的实例
+                datatable.destroy();
+                // 列改变了，需要清空table
+                $(".datatable").empty();
                 datatable = createTable(data);
             }, "json");
 
