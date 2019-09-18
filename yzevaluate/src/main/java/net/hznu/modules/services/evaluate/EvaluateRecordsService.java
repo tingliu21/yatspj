@@ -228,7 +228,7 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
      * @return  专家负责的评估ID
      */
     public List<String> getEvaluateIdsByTaskname(String taskname){
-        Sql sql = Sqls.create("SELECT distinct id FROM evaluate_records WHERE taskname = @taskname").setParam("taskname",taskname);
+        Sql sql = Sqls.create("SELECT id FROM evaluate_records WHERE taskname = @taskname order by score_p desc").setParam("taskname",taskname);
         sql.setCallback(new SqlCallback() {
             public Object invoke(Connection conn, ResultSet rs, Sql sql)
                     throws SQLException {
@@ -315,7 +315,7 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
         col.put("title","权重分");
         cols.add(col);
 
-        String strSql="SELECT monitor_catalog.location as no,monitor_catalog.name as indexname,monitor_catalog.weights,";
+        String strSql="SELECT monitor_catalog.location as no,monitor_catalog.name || (case sys_unit.aliasname when 'Special' then '(专家)' when 'Education' then '(科室)' else null end) as indexname,(sum(monitor_index.weights)/"+evaluateIds.length+") ::numeric(3,0) as weights,";
         String strSchoolSql="";
         int i=0;
         for( ;i<evaluateIds.length;i++){
@@ -339,20 +339,42 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
         strSchoolSql+=" COALESCE(sum(score_p)/"+evaluateIds.length+",0)::numeric(4,2) as avg_group";
         strSql += strSchoolSql;
         strSql += " FROM evaluate_remark inner join monitor_index on monitor_index.id = evaluate_remark.indexid \n" +
-                " inner join monitor_catalog on monitor_index.catalogid = monitor_catalog.id \n where evaluateid in (@evaIds) \n"+
-                " group by monitor_catalog.location,monitor_catalog.name,monitor_catalog.weights order by monitor_catalog.location";
+                " inner join monitor_catalog on monitor_index.catalogid = monitor_catalog.id \n"+
+                " inner JOIN sys_unit ON monitor_index.department::text = sys_unit.id::text where evaluateid in (@evaIds) \n"+
+                " group by monitor_catalog.location,monitor_catalog.name,sys_unit.aliasname order by monitor_catalog.location,sys_unit.aliasname";
 
         Sql sql = Sqls.create(strSql).setParam("evaIds",evaluateIds);
         List<Record> remarkData = list(sql);
 
         //发展性指标
-        strSql = "SELECT 10 as no, '专家1(发展性指标)' as indexname,10 as weights,";
+        strSql = "SELECT 10 as no, '发展性指标' as indexname,10 as weights,";
         strSql += strSchoolSql;
         strSql +=" FROM evaluate_custom where evaluateid in (@evaIds)";
         sql = Sqls.create(strSql).setParam("evaIds",evaluateIds);
-        List<Record> custom = list(sql);
-        remarkData.addAll(custom);
+        sql.setCallback(Sqls.callback.record());
+        this.dao().execute(sql);
+        Record custom = sql.getObject(Record.class);
+        remarkData.add(custom);
 
+//        remarkData.addAll(custom);
+        //当前总分
+        List<Evaluate_records> recordsList = query(Cnd.where("id","in",evaluateIds).desc("score_p"));
+        double totalScore=0.0;
+        Record record = new Record();
+        record.put("no","");
+        record.put("indexname","总分");
+        record.put("weights",recordsList.get(0).getWeights());
+        for(Evaluate_records evaluate_records : recordsList){
+            totalScore +=evaluate_records.getScore_p();
+            record.put("e_"+evaluate_records.getId(),evaluate_records.getScore_p());
+        }
+        record.put("avg_group",String.format("%.2f",totalScore/evaluateIds.length));
+        remarkData.add(record);
+
+        Record record1 = custom.clone();
+        record1.put("no","");
+        record1.put("indexname","专家1");
+        remarkData.add(record1);
         //按专家分组
         strSql = "SELECT '' as no,masterrolename as indexname,(sum(weights)/12)  ::numeric(8,0) as weights, ";
         strSql += strSchoolSql;
