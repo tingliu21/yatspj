@@ -7,17 +7,18 @@ layout("/layouts/platform.html"){
             <p class="navbar-text">选择学校</p>
         </div>
         <div class="btn-group tool-button">
-            <select class="form-control" name="taskname" id="taskname">
+            <select class="form-control" name="taskname" id="taskname" >
                 <%for(tn in tasknames){%>
                 <option value="${tn}">${tn}</option>
                 <%}%>
             </select>
+
             <!--<p class="navbar-text">选择观测点</p>-->
             <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"> 删除选中</button>-->
         </div>
-        <!--<div class="pull-right">-->
-            <!--<a id="goback" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/special/aggregate/taskname=" data-pjax><i class="ti-angle-left"></i> 导出报表</a>-->
-        <!--</div>-->
+        <div class="pull-right">
+            <a id="goback" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/special/aggregate?taskname=${taskname!}" data-pjax><i class="ti-angle-left"></i> 导出报表</a>
+        </div>
         <!--<div class="pull-right">-->
             <!--<a id="goback" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/special" data-pjax><i class="ti-angle-left"></i> 生成</a>-->
         <!--</div>-->
