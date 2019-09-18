@@ -7,25 +7,24 @@ layout("/layouts/platform.html"){
             <p class="navbar-text">选择学校</p>
         </div>
         <div class="btn-group tool-button">
+            <form id="reportForm" style="display:none" method="post" action="${base}/platform/evaluate/special/aggregate">
             <select class="form-control" name="taskname" id="taskname" >
                 <%for(tn in tasknames){%>
                 <option value="${tn}">${tn}</option>
                 <%}%>
             </select>
-
+            </form>
             <!--<p class="navbar-text">选择观测点</p>-->
             <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"> 删除选中</button>-->
         </div>
-        <div class="pull-right">
-            <a id="goback" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/special/aggregate?taskname=${taskname!}" data-pjax><i class="ti-angle-left"></i> 导出报表</a>
-        </div>
+        <!--<div class="pull-right">-->
+            <!--<button id="generate" class="btn btn-primary navbar-btn" type="submit" data-pjax><i class="ti-share"></i> 导出报表</button>-->
+        <!--</div>-->
         <!--<div class="pull-right">-->
             <!--<a id="goback" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/special" data-pjax><i class="ti-angle-left"></i> 生成</a>-->
         <!--</div>-->
     </header>
     <div class=panel-body style="padding-top: 50px;">
-        <input id="evaluateIds" type="hidden" value="75640570dace4119937092ad3a5fbdcf,4f157b2c307e460cb2101d077946a2a5">
-        <input id="indexIds" type="hidden" value="'7d8531d3fb584bfd98bd85b23d3eb42c','4a8e943a5bd449be80e43f202aebe970'">
         <div class="table-responsive no-border">
             <table class="table table-bordered table-striped mg-t datatable">
             </table>
@@ -149,7 +148,10 @@ layout("/layouts/platform.html"){
 
         }, "json");
 
-
+        $("#generate").on('click',function () {
+            //$.get("${base}/platform/evaluate/special/aggregate?taskname="+$("#taskname").val());
+            reportForm.submit();
+        })
         //initDatatable();
 
     });
