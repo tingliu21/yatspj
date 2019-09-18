@@ -15,9 +15,9 @@ layout("/layouts/platform.html"){
             <!--<p class="navbar-text">选择观测点</p>-->
             <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"> 删除选中</button>-->
         </div>
-        <div class="pull-right">
-            <a id="goback" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/aggregate?taskname=" data-pjax><i class="ti-angle-left"></i> 导出报表</a>
-        </div>
+        <!--<div class="pull-right">-->
+            <!--<a id="goback" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/special/aggregate/taskname=" data-pjax><i class="ti-angle-left"></i> 导出报表</a>-->
+        <!--</div>-->
         <!--<div class="pull-right">-->
             <!--<a id="goback" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/special" data-pjax><i class="ti-angle-left"></i> 生成</a>-->
         <!--</div>-->
@@ -126,7 +126,7 @@ layout("/layouts/platform.html"){
 
         //第一次初始化,加载所有列
         $("#taskname").change(function () {
-            $.post("${base}/platform/evaluate/records/testDo", {taskname: $("#taskname").val()}, function (data) {
+            $.post("${base}/platform/evaluate/records/GenerateReport", {taskname: $("#taskname").val()}, function (data) {
                 //改变列的结构，先销毁前面的实例
                 datatable.destroy();
                 // 列改变了，需要清空table
@@ -135,7 +135,7 @@ layout("/layouts/platform.html"){
             }, "json");
 
         });
-        $.post("${base}/platform/evaluate/records/testDo", {taskname: $("#taskname").val()}, function (data) {
+        $.post("${base}/platform/evaluate/records/GenerateReport", {taskname: $("#taskname").val()}, function (data) {
             datatable = createTable(data);
 //            if (data.code == 0) {
 //                Toast.success("添加成功");

@@ -566,7 +566,7 @@ public class EvaluateRecordsController {
 	@At
 	@Ok("beetl:/platform/evaluate/stat/report.html")
 	@RequiresAuthentication
-	public void test(HttpServletRequest req) {
+	public void report(HttpServletRequest req) {
 		Subject subject = SecurityUtils.getSubject();
 		Sys_user user = (Sys_user) subject.getPrincipal();
 		List<String> tasknames;
@@ -587,7 +587,7 @@ public class EvaluateRecordsController {
 	@At
 	@Ok("json")
 	@RequiresAuthentication
-	public Object testDo(@Param("taskname") String taskname,HttpServletRequest req) {
+	public Object GenerateReport(@Param("taskname") String taskname,HttpServletRequest req) {
 		//String[] ids = StringUtils.split(indexIds, ",");
 		List<String> eids = evaluateRecordsService.getEvaluateIdsByTaskname(taskname);
 		String[] evaIds = eids.toArray(new String[eids.size()]);

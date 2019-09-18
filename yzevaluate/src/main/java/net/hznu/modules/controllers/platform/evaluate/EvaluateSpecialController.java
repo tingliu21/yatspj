@@ -111,10 +111,10 @@ public class EvaluateSpecialController {
 		}
 		return null;
 	}
-	@At("/aggregate/?")
+	@At
 	@Ok("void")
 	@RequiresAuthentication
-	public Object aggregate(String taskname, HttpServletResponse resp) {
+	public Object aggregate(@Param("taskname") String taskname, HttpServletResponse resp) {
 		if (!Strings.isBlank(taskname)) {
 			Map<String,Object> wordDataMap = packageObject(taskname);
 			XwpfUtil xwpfUtil = new XwpfUtil();
@@ -161,13 +161,13 @@ public class EvaluateSpecialController {
 		for(int i=0;i<8;i++){
 			strSchoolSql+=" sum(case when monitor_catalog.location=1 then score_p else 0 end) as index_"+i+",";
 		}
-		strSql += strSchoolSql.substring(0,strSchoolSql.length()-1);
-		strSql +="sum(score_p)"+
-				"FROM evaluate_remark \n" +
-				"inner join monitor_index on monitor_index.id = evaluate_remark.indexid\n" +
-				"inner join monitor_catalog on monitor_index.catalogid = monitor_catalog.id\n" +
-				"where evaluateid in (@evaIds)\n" +
-				"group by evaluateid order by evaluateid";
+		strSql += strSchoolSql;
+		strSql +=" sum(score_p)"+
+				" FROM evaluate_remark \n" +
+				" inner join monitor_index on monitor_index.id = evaluate_remark.indexid\n" +
+				" inner join monitor_catalog on monitor_index.catalogid = monitor_catalog.id\n" +
+				" where evaluateid in (@evaIds)\n" +
+				" group by evaluateid order by evaluateid";
 
 		Sql sql = Sqls.create(strSql).setParam("evaIds",evaluateIds);
 		List<Record> remarkData = evaluateRecordsService.list(sql);
