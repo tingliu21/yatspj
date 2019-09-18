@@ -116,8 +116,8 @@ public class EvaluateSpecialController {
 	@RequiresAuthentication
 	public Object aggregate(@Param("taskname") String taskname, HttpServletResponse resp) {
 
-		if (Strings.isBlank(taskname)) {
-			Map<String,Object> wordDataMap = packageObject("第一组评估");
+		if (!Strings.isBlank(taskname)) {
+			Map<String,Object> wordDataMap = packageObject(taskname);
 			XwpfUtil xwpfUtil = new XwpfUtil();
 			//读入word模板
 			InputStream is = getClass().getClassLoader().getResourceAsStream("template/EvaAggregate-yz.docx");
