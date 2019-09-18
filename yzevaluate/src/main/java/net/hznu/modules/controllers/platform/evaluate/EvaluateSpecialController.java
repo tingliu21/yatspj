@@ -154,32 +154,34 @@ public class EvaluateSpecialController {
 		String strSql="select sys_unit.name from sys_unit\n" +
 				"JOIN evaluate_records ON schoolid=sys_unit.id\n" +
 				"where evaluate_records.id in (@evaIds)" +
-				"order by evaluate_records.id ";
+				"order by score_p desc ";
 		Sql sql = Sqls.create(strSql).setParam("evaIds",evaluateIds);
 		List<Record> schoolData = evaluateRecordsService.list(sql);
 		//基础性指标
 		 strSql="SELECT evaluateid,";
 		String strSchoolSql="";
 		for(int i=1;i<10;i++){//9个基础性二级指标
-			strSchoolSql+=" sum(case when monitor_catalog.location="+i+" then score_p else 0 end) as index_"+i+",";
+			strSchoolSql+=" sum(case when monitor_catalog.location="+i+" then evaluate_remark.score_p else 0 end) as index_"+i+",";
 		}
 		strSql += strSchoolSql;
-		strSql +=" sum(score_p) as indexsum,"+
-				" sum(case when monitor_index.masterrole='37206ff462b24524a467c74fffb83376' then score_p else 0 end) as special2,\n" +
-				" sum(case when monitor_index.masterrole='5426f51b1e1345f0a4853345b7288f06' then score_p else 0 end) as special3,\n" +
-				" sum(case when monitor_index.masterrole='e11b437889ef4a31bc184261c5d05f3c' then score_p else 0 end) as special4"+
+		strSql +=" sum(evaluate_remark.score_p) as indexsum,"+
+				" sum(case when monitor_index.masterrole='37206ff462b24524a467c74fffb83376' then evaluate_remark.score_p else 0 end) as special2,\n" +
+				" sum(case when monitor_index.masterrole='5426f51b1e1345f0a4853345b7288f06' then evaluate_remark.score_p else 0 end) as special3,\n" +
+				" sum(case when monitor_index.masterrole='e11b437889ef4a31bc184261c5d05f3c' then evaluate_remark.score_p else 0 end) as special4"+
 				" FROM evaluate_remark \n" +
 				" inner join monitor_index on monitor_index.id = evaluate_remark.indexid\n" +
 				" inner join monitor_catalog on monitor_index.catalogid = monitor_catalog.id\n" +
+				" inner join evaluate_records on evaluate_records.id=evaluate_remark.evaluateid\n"+
 				" where evaluateid in (@evaIds)\n" +
-				" group by evaluateid order by evaluateid";
+				" group by evaluateid ,evaluate_records.score_p order by evaluate_records.score_p desc";
 
 		 sql = Sqls.create(strSql).setParam("evaIds",evaluateIds);
 		List<Record> remarkData = evaluateRecordsService.list(sql);
 
 		//发展性指标
-		strSql = "SELECT evaluateid,sum(score_p) as customsum";
-		strSql +=" FROM evaluate_custom where evaluateid in (@evaIds) group by evaluateid order by evaluateid";
+		strSql = "SELECT evaluateid,sum(evaluate_custom.score_p) as customsum";
+		strSql +=" FROM evaluate_custom inner join evaluate_records on evaluate_records.id=evaluate_custom.evaluateid \n"+
+				" where evaluateid in (@evaIds) group by evaluateid,evaluate_records.score_p order by evaluate_records.score_p desc";
 		sql = Sqls.create(strSql).setParam("evaIds",evaluateIds);
 		List<Record> customData = evaluateRecordsService.list(sql);
 
