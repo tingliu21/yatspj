@@ -161,7 +161,8 @@ public class EvaluateSpecialController {
 		 strSql="SELECT evaluateid,";
 		String strSchoolSql="";
 		for(int i=1;i<10;i++){//9个基础性二级指标
-			strSchoolSql+=" sum(case when monitor_catalog.location="+i+" then evaluate_remark.score_p else 0 end) as index_"+i+",";
+			strSchoolSql+="sum(case when monitor_catalog.location="+i+" and masterrolename!='教育局管理员' then evaluate_remark.score_p else 0 end) as index_s"+i+
+					" ,sum(case when monitor_catalog.location="+i+" and masterrolename ='教育局管理员' then evaluate_remark.score_p else 0 end) as index_d"+i+",";
 		}
 		strSql += strSchoolSql;
 		strSql +=" sum(evaluate_remark.score_p) as indexsum,"+
@@ -171,6 +172,7 @@ public class EvaluateSpecialController {
 				" FROM evaluate_remark \n" +
 				" inner join monitor_index on monitor_index.id = evaluate_remark.indexid\n" +
 				" inner join monitor_catalog on monitor_index.catalogid = monitor_catalog.id\n" +
+				"inner join monitor_index_view on monitor_index_view.id = evaluate_remark.indexid\n"+
 				" inner join evaluate_records on evaluate_records.id=evaluate_remark.evaluateid\n"+
 				" where evaluateid in (@evaIds)\n" +
 				" group by evaluateid ,evaluate_records.score_p order by evaluate_records.score_p desc";
@@ -188,59 +190,83 @@ public class EvaluateSpecialController {
 		for (int i=0;i<remarkData.size();i++) {
 			Map<String, Object> map=new HashMap<>();
 			map.put("school",schoolData.get(i).getString("name"));
-			if(remarkData.get(i).get("index_1")!=null) {//园务管理
-				double index_1=remarkData.get(i).getDouble("index_1");
-				map.put("YWGL", formatDouble(index_1));
+			if(remarkData.get(i).get("index_d1")!=null) {//园务管理
+				double index_d1=remarkData.get(i).getDouble("index_d1");
+				map.put("YWGL_d", formatDouble(index_d1));
 			}else{
-				map.put("YWGL", "");
+				map.put("YWGL_d", "");
 			}
-			if(remarkData.get(i).get("index_2")!=null) {//教育教学
-				double index_2 = remarkData.get(i).getDouble("index_2");
-				map.put("JYJX", formatDouble(index_2));
-			}else {
-				map.put("JYJX","");
+			if(remarkData.get(i).get("index_s1")!=null) {//园务管理
+				double index_s1=remarkData.get(i).getDouble("index_s1");
+				map.put("YWGL_s", formatDouble(index_s1));
+			}else{
+				map.put("YWGL_s", "");
 			}
-			if(remarkData.get(i).get("index_3")!=null) {//教师发展
-				double index_3= remarkData.get(i).getDouble("index_3");
-				map.put("JSFZ", formatDouble(index_3));
+			if(remarkData.get(i).get("index_s2")!=null) {//教育教学
+				double index_s2 = remarkData.get(i).getDouble("index_s2");
+				map.put("JYJX_s", formatDouble(index_s2));
 			}else {
-				map.put("JSFZ", "");
+				map.put("JYJX_s","");
 			}
-			if(remarkData.get(i).get("index_4")!=null) {//文化校园
-				double index_4=remarkData.get(i).getDouble("index_4");
-				map.put("WHXY", formatDouble(index_4));
+			if(remarkData.get(i).get("index_d3")!=null) {//教师发展
+				double index_d3= remarkData.get(i).getDouble("index_d3");
+				map.put("JSFZ_d", formatDouble(index_d3));
 			}else {
-				map.put("WHXY", "");
+				map.put("JSFZ_d", "");
 			}
-			if(remarkData.get(i).get("index_5")!=null) {//安全后勤
-				double index_5 = remarkData.get(i).getDouble("index_5");
-				map.put("AQHQ", formatDouble(index_5));
+			if(remarkData.get(i).get("index_s3")!=null) {//教师发展
+				double index_s3= remarkData.get(i).getDouble("index_s3");
+				map.put("JSFZ_s", formatDouble(index_s3));
 			}else {
-				map.put("AQHQ", "");
+				map.put("JSFZ_s", "");
 			}
-			if(remarkData.get(i).get("index_6")!=null) {//卫生保健
-				double index_6 = remarkData.get(i).getDouble("index_6");
-				map.put("WSBJ", formatDouble(index_6));
+			if(remarkData.get(i).get("index_d4")!=null) {//文化校园
+				double index_d4=remarkData.get(i).getDouble("index_d4");
+				map.put("WHXY_d", formatDouble(index_d4));
 			}else {
-				map.put("WSBJ", "");
+				map.put("WHXY_d", "");
 			}
-			if(remarkData.get(i).get("index_7")!=null) {//满意度测评
-				double index_7 = remarkData.get(i).getDouble("index_7");
-				map.put("MYDCP", formatDouble(index_7));//满意度测评
+			if(remarkData.get(i).get("index_s4")!=null) {//文化校园
+				double index_s4=remarkData.get(i).getDouble("index_s4");
+				map.put("WHXY_s", formatDouble(index_s4));
 			}else {
-				map.put("MYDCP", "");
+				map.put("WHXY_s", "");
 			}
-			if(remarkData.get(i).get("index_8")!=null) {//满意度测评
-				double index_8 = remarkData.get(i).getDouble("index_8");
-				map.put("TSLD", formatDouble(index_8));
+			if(remarkData.get(i).get("index_d5")!=null) {//安全后勤
+				double index_d5 = remarkData.get(i).getDouble("index_d5");
+				map.put("AQHQ_d", formatDouble(index_d5));
 			}else {
-				map.put("TSLD", "");
+				map.put("AQHQ_d", "");
 			}
-			if(remarkData.get(i).get("index_9")!=null) {//倒扣分项目
-				double index_9 = remarkData.get(i).getDouble("index_9");
-				map.put("DKFXM", formatDouble(index_9));
+			if(remarkData.get(i).get("index_s5")!=null) {//安全后勤
+				double index_s5 = remarkData.get(i).getDouble("index_s5");
+				map.put("AQHQ_s", formatDouble(index_s5));
 			}else {
-				map.put("DKFXM", "");
+				map.put("AQHQ_s", "");
+			}
+			if(remarkData.get(i).get("index_s6")!=null) {//卫生保健
+				double index_s6 = remarkData.get(i).getDouble("index_s6");
+				map.put("WSBJ_s", formatDouble(index_s6));
+			}else {
+				map.put("WSBJ_s", "");
+			}
+			if(remarkData.get(i).get("index_s7")!=null) {//满意度测评
+				double index_s7 = remarkData.get(i).getDouble("index_s7");
+				map.put("MYDCP_s", formatDouble(index_s7));//满意度测评
+			}else {
+				map.put("MYDCP_s", "");
+			}
+			if(remarkData.get(i).get("index_d8")!=null) {//特色亮点
+				double index_d8 = remarkData.get(i).getDouble("index_d8");
+				map.put("TSLD_d", formatDouble(index_d8));
+			}else {
+				map.put("TSLD_d", "");
+			}
+			if(remarkData.get(i).get("index_d9")!=null) {//倒扣分项目
+				double index_d9 = remarkData.get(i).getDouble("index_d9");
+				map.put("DKFXM_d", formatDouble(index_d9));
+			}else {
+				map.put("DKFXM_d", "");
 			}
 			if(customData.get(i).get("customsum")!=null) {//发展性指标
 				double customsum = customData.get(i).getDouble("customsum");
