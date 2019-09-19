@@ -7,7 +7,7 @@ layout("/layouts/platform.html"){
             <p class="navbar-text">选择学校</p>
         </div>
         <div class="btn-group tool-button">
-            <form id="reportForm" style="display:none" method="post" action="${base}/platform/evaluate/special/aggregate">
+            <form id="reportForm" method="post" action="${base}/platform/evaluate/special/aggregate">
             <select class="form-control" name="taskname" id="taskname" >
                 <%for(tn in tasknames){%>
                 <option value="${tn}">${tn}</option>
@@ -17,9 +17,9 @@ layout("/layouts/platform.html"){
             <!--<p class="navbar-text">选择观测点</p>-->
             <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"> 删除选中</button>-->
         </div>
-        <!--<div class="pull-right">-->
-            <!--<button id="generate" class="btn btn-primary navbar-btn" type="submit" data-pjax><i class="ti-share"></i> 导出报表</button>-->
-        <!--</div>-->
+        <div class="pull-right">
+            <button id="generate" class="btn btn-primary navbar-btn" type="submit" data-pjax><i class="ti-share"></i> 导出报表</button>
+        </div>
         <!--<div class="pull-right">-->
             <!--<a id="goback" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/special" data-pjax><i class="ti-angle-left"></i> 生成</a>-->
         <!--</div>-->
@@ -103,21 +103,13 @@ layout("/layouts/platform.html"){
             "info": false,//不显示页脚信息
             "searching":false,
             "ordering": false,
+            "select": true,
             "destroy": true,
             //列的配置信息通过变量传进来
             "columns": data.col_define,
             "data": data.rowdata,
             "language": {
-                "lengthMenu": "每页_MENU_ 条记录",
-                "zeroRecords": "没有找到记录",
-                "info": "第 _PAGE_ 页 ( 总共 _PAGES_ 页 )",
-                "infoEmpty": "无记录",
-                "search": "搜索：",
-                "infoFiltered": "(从 _MAX_ 条记录过滤)",
-                "paginate": {
-                    "previous": "上一页",
-                    "next": "下一页"
-                }
+                "url": "${base}/assets/plugins/datatables/cn.json"
             }
         });
     }

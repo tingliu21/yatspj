@@ -495,7 +495,7 @@ public class EvaluateRecordsController {
 		return wordDataMap;
 	}
 	public String formatDouble(double d) {
-		BigDecimal bg = new BigDecimal(d).setScale(1, RoundingMode.UP);
+		BigDecimal bg = new BigDecimal(String.valueOf(d)).setScale(2, RoundingMode.HALF_UP);
 		double num = bg.doubleValue();
 		if (Math.round(num) - num == 0) {
 			return String.valueOf((long) num);

@@ -179,7 +179,7 @@ public class EvaluateSpecialController {
 		List<Record> remarkData = evaluateRecordsService.list(sql);
 
 		//发展性指标
-		strSql = "SELECT evaluateid,sum(evaluate_custom.score_p) as customsum";
+		strSql = "SELECT evaluateid,COALESCE(sum(evaluate_custom.score_p),0) as customsum";
 		strSql +=" FROM evaluate_custom inner join evaluate_records on evaluate_records.id=evaluate_custom.evaluateid \n"+
 				" where evaluateid in (@evaIds) group by evaluateid,evaluate_records.score_p order by evaluate_records.score_p desc";
 		sql = Sqls.create(strSql).setParam("evaIds",evaluateIds);
@@ -243,13 +243,13 @@ public class EvaluateSpecialController {
 				map.put("DKFXM", "");
 			}
 			if(remarkData.get(i).get("customsum")!=null) {//发展性指标
-				double customsum = remarkData.get(i).getDouble("customsum");
+				double customsum = customData.get(i).getDouble("customsum");
 				map.put("customsum", formatDouble(customsum));
 			}else {
 				map.put("customsum", "");
 			}
 			if(remarkData.get(i).get("customsum")!=null||remarkData.get(i).get("indexsum")!=null) {//总分
-				double sum = remarkData.get(i).getDouble("customsum") + remarkData.get(i).getDouble("indexsum");
+				double sum = customData.get(i).getDouble("customsum") + remarkData.get(i).getDouble("indexsum");
 				map.put("sum", formatDouble(sum));
 			}else{
 				map.put("sum", "");
@@ -281,7 +281,7 @@ public class EvaluateSpecialController {
 		return wordDataMap;
 	}
 	public String formatDouble(double d) {
-		BigDecimal bg = new BigDecimal(d).setScale(1, RoundingMode.UP);
+		BigDecimal bg = new BigDecimal(String.valueOf(d)).setScale(2, RoundingMode.HALF_UP);
 		double num = bg.doubleValue();
 		if (Math.round(num) - num == 0) {
 			return String.valueOf((long) num);
