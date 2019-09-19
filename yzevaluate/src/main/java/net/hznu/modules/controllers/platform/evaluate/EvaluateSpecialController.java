@@ -242,13 +242,13 @@ public class EvaluateSpecialController {
 			}else {
 				map.put("DKFXM", "");
 			}
-			if(remarkData.get(i).get("customsum")!=null) {//发展性指标
+			if(customData.get(i).get("customsum")!=null) {//发展性指标
 				double customsum = customData.get(i).getDouble("customsum");
 				map.put("customsum", formatDouble(customsum));
 			}else {
 				map.put("customsum", "");
 			}
-			if(remarkData.get(i).get("customsum")!=null||remarkData.get(i).get("indexsum")!=null) {//总分
+			if(customData.get(i).get("customsum")!=null||remarkData.get(i).get("indexsum")!=null) {//总分
 				double sum = customData.get(i).getDouble("customsum") + remarkData.get(i).getDouble("indexsum");
 				map.put("sum", formatDouble(sum));
 			}else{
