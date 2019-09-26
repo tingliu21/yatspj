@@ -50,6 +50,15 @@ $(function(){
             zh_cn:'请填写正确的数字（打分以0.1分为单位，分数是0.1的倍数）'
         }
     });
+    window.Parsley.addValidator('score_0.01', {
+        validateString: function(value) {
+            var score = /^-?([1-9][\d]{0,7}|0)(\.[\d]{0,2})?$/;
+            return (score.test(value));
+        },
+        messages: {
+            zh_cn:'请填写正确的数字（打分以0.01分为单位，分数是0.01的倍数）'
+        }
+    });
   window.Parsley.addValidator('phone', {
     validateString: function(value) {
       var phone = /^1[3|4|5|7|8][0-9]\d{8}$/;
