@@ -1,20 +1,24 @@
 package net.hznu.modules.services.evaluate;
 
 import net.hznu.common.base.Service;
+import net.hznu.common.chart.EvaluateIndex;
+import net.hznu.common.chart.MonitorIndexReport;
 import net.hznu.common.chart.MonitorStat;
 import net.hznu.common.page.DataTableColumn;
 import net.hznu.common.page.DataTableOrder;
 import net.hznu.common.page.OffsetPager;
 import net.hznu.common.util.XwpfUtil;
 import net.hznu.modules.models.evaluate.Evaluate_index;
-
 import net.hznu.modules.models.evaluate.Evaluate_records;
 import net.hznu.modules.models.evaluate.Evaluate_special;
 import net.hznu.modules.models.monitor.Monitor_catalog;
 import net.hznu.modules.models.monitor.Monitor_index;
 import net.hznu.modules.models.sys.Sys_config;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.xwpf.usermodel.*;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
@@ -44,7 +48,8 @@ import java.util.*;
 @IocBean(args = {"refer:dao"})
 public class EvaluateIndexService extends Service<Evaluate_index> {
 	private static final Log log = Logs.get();
-
+    //@Inject
+    //protected Dao dao; // 就这么注入了,有@IocBean它才会生效
     public EvaluateIndexService(Dao dao) {
     	super(dao);
     }
@@ -304,7 +309,7 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
     }
 
     /**
-     * 为评估记录生成一级/二级指标、监测点达成度情况
+     * 为评估记录生成一级/二级指标、监测点达成度情况、评语建议
      * @param evaluate 一条评估记录
      */
     public void generateRemark(Evaluate_records evaluate){
@@ -443,9 +448,61 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
 
         }
         remarkp = remarkp.replace("@cnt",String.valueOf(fieldnames.size())).replace("@tplp_s",strLoop);
+        //评语建议
+        List<MonitorIndexReport> rptTemps = dao().query(MonitorIndexReport.class, Cnd.orderBy().asc("catacode").asc("code"));
 
-        dao().execute(Sqls.create("insert into evaluate_special(evaluateid,remark1,remark2,remarkp) values (@evaluateid,@remark1,@remark2,@remarkp)")
-                .setParam("evaluateid",evaluate.getId()).setParam("remark1",remark1).setParam("remark2",remark2).setParam("remarkp",remarkp));
+        String remark01 = "";
+        String remark02 = "";
+        String remark03 = "";
+        String remark04 = "";
+        String remark05 = "";
+        String suggestion = "";
+        for (MonitorIndexReport temp : rptTemps){
+            //得到监测点代码和临界值
+            String catacode = temp.getcatacode();
+            String code = temp.getcode();
+            double threshold = temp.getMvalue_threshold();
+            String condition=temp.getCondition();
+
+            //一级指标代码
+            String catacode1 = catacode.substring(0, 2);
+            //String suggestion = "";
+            Cnd cnd = Cnd.where("xzqhdm", "=", xzqh.trim()).and("year","=",year).and("code","like",code+"%");
+            //获取某年某xzq相应监测点的值
+            List<EvaluateIndex> EIValues = dao().query(EvaluateIndex.class, cnd);
+            //某些监测点的值需要将小项的值汇总
+            double sumScore=0.0;
+
+            for(EvaluateIndex EIValue:EIValues){
+                BigDecimal bg = new BigDecimal(EIValue.getScore());
+                //sumScore +=mValue.getScore();
+                sumScore +=bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            }
+            //评估分小于临界值时，自动生成评语
+            String strRemark=String.format("指标%s：%s；", code,temp.getMremark());
+            //去掉末尾分号
+            strRemark=strRemark.substring(0,strRemark.length()-1);
+            suggestion = suggestion+((sumScore<threshold)?strRemark:"");
+            if(condition!=null)
+            {
+                
+            }
+            //按一级指标分5段评语来组织
+/*            if(catacode1.equals("01")){
+                remark01+=mremark;
+            }else if(catacode1.equals("02")){
+                remark02+=mremark;
+            }else if(catacode1.equals("03")){
+                remark03+=mremark;
+            }else if(catacode1.equals("04")){
+                remark04+=mremark;
+            }else if(catacode1.equals("05")){
+                remark05+=mremark;
+            }*/
+        }
+
+        dao().execute(Sqls.create("insert into evaluate_special(evaluateid,remark1,remark2,remarkp,suggestion) values (@evaluateid,@remark1,@remark2,@remarkp,@suggestion)")
+                .setParam("evaluateid",evaluate.getId()).setParam("remark1",remark1).setParam("remark2",remark2).setParam("remarkp",remarkp).setParam("suggestion",suggestion));
 
     }
     /**
