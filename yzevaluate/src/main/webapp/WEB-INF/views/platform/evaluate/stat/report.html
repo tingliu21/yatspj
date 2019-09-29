@@ -7,7 +7,7 @@ layout("/layouts/platform.html"){
             <p class="navbar-text">选择学校</p>
         </div>
         <div class="btn-group tool-button">
-            <form id="reportForm" method="post" action="${base}/platform/evaluate/special/aggregate">
+            <form id="reportForm" method="post" action="${base}/platform/evaluate/records/ExportReport">
             <select class="form-control" name="taskname" id="taskname" >
                 <%for(tn in tasknames){%>
                 <option value="${tn}">${tn}</option>
@@ -19,6 +19,12 @@ layout("/layouts/platform.html"){
         </div>
         <div class="pull-right">
             <button id="generate" class="btn btn-primary navbar-btn" type="submit" data-pjax><i class="ti-share"></i> 导出报表</button>
+            <% if(@shiro.hasPermission("evaluate.all.report")){%>
+            <div class="btn-group tool-button">
+                <a id="export" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/ExportReport" data-pjax><i class="ti-share"></i>导出全区报表</a>
+
+            </div>
+            <%}%>
         </div>
         <!--<div class="pull-right">-->
             <!--<a id="goback" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/special" data-pjax><i class="ti-angle-left"></i> 生成</a>-->

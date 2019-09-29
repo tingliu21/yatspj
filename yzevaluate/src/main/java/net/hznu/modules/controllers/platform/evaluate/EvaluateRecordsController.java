@@ -11,7 +11,6 @@ import net.hznu.modules.models.monitor.Monitor_index;
 import net.hznu.modules.models.sys.Sys_unit;
 import net.hznu.modules.models.sys.Sys_user;
 import net.hznu.modules.services.evaluate.EvaluateCustomService;
-import net.hznu.modules.services.evaluate.EvaluateSummaryService;
 import net.hznu.modules.services.monitor.MonitorCatalogService;
 import net.hznu.modules.services.monitor.MonitorIndexService;
 import net.hznu.modules.services.sys.SysUnitService;
@@ -592,5 +591,86 @@ public class EvaluateRecordsController {
 		List<String> eids = evaluateRecordsService.getEvaluateIdsByTaskname(taskname);
 		String[] evaIds = eids.toArray(new String[eids.size()]);
 		return evaluateRecordsService.getIndexReport(evaIds);
+	}
+	@At
+	@Ok("json")
+	@RequiresAuthentication
+	public void ExportReport(@Param("taskname") String taskname,HttpServletResponse resp) {
+		//String[] ids = StringUtils.split(indexIds, ",");
+
+			Map<String,Object> wordDataMap = packageReportObject(taskname);
+			XwpfUtil xwpfUtil = new XwpfUtil();
+			//读入word模板
+			InputStream is = getClass().getClassLoader().getResourceAsStream("template/EvaAggregate-yz.docx");
+			try {
+				String filename = "宁波市鄞州区2018学年幼儿园发展性评估专家评分汇总表.docx";
+				filename = URLEncoder.encode(filename, "UTF-8");
+
+				xwpfUtil.exportWord(wordDataMap,is,resp,filename);
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+
+	}
+	public Map<String, Object> packageReportObject(String taskname) {
+		Map<String,Object> wordDataMap = new HashMap<String,Object>();
+		Map<String, Object> parametersMap = new HashMap<String, Object>();
+		List<Map<String, Object>> table_aggregate = new ArrayList<Map<String, Object>>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy 年 MM 月 dd 日");
+		parametersMap.put("date",sdf.format(new Date()));
+
+
+		List<Record> statRecordsBasic = evaluateRecordsService.getStatReport_Basic(taskname);
+		List<Record> statRecordsDevelop = evaluateRecordsService.getStatReport_Develop(taskname);
+		//加入第一行统计记录
+		table_aggregate.addAll(packageReportObject(statRecordsBasic.get(0),statRecordsDevelop.get(0)));
+
+		if(StringUtils.isBlank(taskname)) {
+			parametersMap.put("taskname", "全区幼儿园");
+
+			for(int i=1;i<statRecordsBasic.size();i++){
+				table_aggregate.addAll(packageReportObject(statRecordsBasic.get(i),statRecordsDevelop.get(i)));
+				List<Record> schoolRecordsBasic = evaluateRecordsService.getSchoolReport_Basic(statRecordsBasic.get(i).getString("taskname"));
+				List<Record> schoolRecordsDevelop = evaluateRecordsService.getSchoolReport_Develop(statRecordsBasic.get(i).getString("taskname"));
+				for(int j =0;j<schoolRecordsBasic.size();j++) {
+					table_aggregate.addAll(packageReportObject(schoolRecordsBasic.get(j), schoolRecordsDevelop.get(j)));
+				}
+			}
+		}else{
+			parametersMap.put("taskname", taskname.substring(0,3)+"幼儿园");
+			List<Record> schoolRecordsBasic = evaluateRecordsService.getSchoolReport_Basic(taskname);
+			List<Record> schoolRecordsDevelop = evaluateRecordsService.getSchoolReport_Develop(taskname);
+			for(int j =0;j<schoolRecordsBasic.size();j++) {
+				table_aggregate.addAll(packageReportObject(schoolRecordsBasic.get(j), schoolRecordsDevelop.get(j)));
+			}
+		}
+
+		wordDataMap.put("table_aggregate",table_aggregate);
+		wordDataMap.put("parametersMap", parametersMap);
+		return wordDataMap;
+
+	}
+	public List<Map<String, Object>> packageReportObject(Record recordBasic,Record recordDevelop) {
+		List<Map<String, Object>> table_aggregate = new ArrayList<Map<String, Object>>();
+		Map<String, Object> map=new HashMap<>();
+		map.put("school",recordDevelop.getString("name"));
+		map.put("YWGL", recordBasic.getString("index_1"));
+		map.put("JYJX", recordBasic.getString("index_2"));
+		map.put("JSFZ", recordBasic.getString("index_3"));
+		map.put("WHXY", recordBasic.getString("index_4"));
+		map.put("AQHQ", recordBasic.getString("index_5"));
+		map.put("WSBJ", recordBasic.getString("index_6"));
+		map.put("MYDCP", recordBasic.getString("index_7"));//满意度测评
+		map.put("TSLD", recordBasic.getString("index_8"));
+		map.put("DKFXM", recordBasic.getString("index_9"));
+		map.put("customsum", recordDevelop.getString("customsum"));
+		map.put("sum", formatDouble(recordBasic.getDouble("indexsum")+ recordDevelop.getDouble("customsum")));
+		map.put("special2", recordBasic.getString("special2"));
+		map.put("special3", recordBasic.getString("special3"));
+		map.put("special4", recordBasic.getString("special4"));
+		table_aggregate.add(map);
+		return table_aggregate;
 	}
 }

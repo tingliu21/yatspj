@@ -1,9 +1,10 @@
 package net.hznu.modules.services.evaluate;
 
+
 import net.hznu.common.base.Service;
-import net.hznu.common.chart.IndexValueStat;
 import net.hznu.modules.models.evaluate.Evaluate_records;
 import net.hznu.modules.models.sys.Sys_role;
+import org.apache.commons.lang3.StringUtils;
 import org.nutz.aop.interceptor.ioc.TransAop;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
@@ -292,9 +293,9 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
     }
 
     /**
-     * 获取本项目的专家组角色，并查找评估记录中是否有给各专家组角色赋予相应的专家名单
+     * 给定评估记录ID，按二级指标汇总各学校的指标得分情况，以及按专家角色汇总各学校不同专家的打分情况
      * @param evaluateIds 评估记录Id
-     * @return 返回给前端 具体的角色及专家数组列表，以及记录数，该项目是4位专家角色
+     * @return 返回给前端 10行一级指标+1行总分+4行角色打分，共15行的报表，报表列数依据幼儿园名单而定
      */
     public NutMap getIndexReport(String[] evaluateIds){
         NutMap re = new NutMap();
@@ -390,6 +391,135 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
         re.put("col_define", cols);
         return re;
 
+    }
+    public List<Record> getSchoolReport_Basic(String Taskname){
+        //基础性指标
+        String strSql="SELECT evaluateid,";
+        String strIndexSql="";
+        for(int i=1;i<10;i++){//9个基础性二级指标
+            strIndexSql+=" sum(case when monitor_catalog.location="+i+" then evaluate_remark.score_p else 0 end) as index_"+i+",";
+        }
+        strIndexSql += " COALESCE(sum(evaluate_remark.score_p),0) as indexsum,\n"+
+                " sum(case when sys_role.code='special2' then evaluate_remark.score_p else 0 end) as special2," +
+                " sum(case when sys_role.code='special3' then evaluate_remark.score_p else 0 end) as special3," +
+                " sum(case when sys_role.code='special4' then evaluate_remark.score_p else 0 end) as special4 \n";
+        strSql += strIndexSql;
+        //分组总分
+
+        strSql += " FROM evaluate_records inner join evaluate_remark on evaluate_records.id=evaluate_remark.evaluateid\n"+
+                " inner join monitor_index on monitor_index.id = evaluate_remark.indexid\n" +
+                " inner join monitor_catalog on monitor_index.catalogid = monitor_catalog.id\n" +
+                " LEFT JOIN sys_role ON monitor_index.masterrole = sys_role.id\n"+
+                " where taskname = @taskname "+
+                " group by evaluateid ,evaluate_records.score_p order by evaluate_records.score_p desc";
+
+        Sql sql = Sqls.create(strSql).setParam("taskname",Taskname);
+        List<Record> remarkData = list(sql);
+        return remarkData;
+    }
+    public List<Record> getSchoolReport_Develop(String Taskname){
+        //发展性指标
+        String strSql="SELECT evaluateid,sys_unit.name,COALESCE(sum(evaluate_custom.score_p),0) as customsum,"+
+                " evaluate_records.score_p as sum";
+
+        strSql += " FROM evaluate_records inner join evaluate_custom on evaluate_records.id=evaluate_custom.evaluateid\n"+
+                " inner join sys_unit on sys_unit.id = schoolid\n" +
+                " where evaluate_records.taskname = @taskname "+
+                " group by evaluateid ,evaluate_records.score_p,sys_unit.name order by evaluate_records.score_p desc";
+
+        Sql sql = Sqls.create(strSql).setParam("taskname",Taskname);
+        List<Record> remarkData = list(sql);
+        return remarkData;
+    }
+    /**
+     * 得到基础性指标的平均分
+     * @return
+     */
+    public List<Record> getStatReport_Basic(String taskname){
+        //基础性指标
+        List<Record> remarkData =new ArrayList<>();
+        String strIndexSql="";
+        for(int i=1;i<10;i++){//9个基础性二级指标
+            strIndexSql+=" (sum(case when monitor_catalog.location="+i+" then evaluate_remark.score_p else 0 end)/count(distinct evaluateid)):: numeric(5,2)  as index_"+i+",";
+
+        }
+        strIndexSql += " (COALESCE(sum(evaluate_remark.score_p),0)/count(distinct evaluateid)):: numeric(5,2) as indexsum,\n"+
+                " (sum(case when sys_role.code='special2' then evaluate_remark.score_p else 0 end)/count(distinct evaluateid)):: numeric(5,2) as special2," +
+                " (sum(case when sys_role.code='special3' then evaluate_remark.score_p else 0 end)/count(distinct evaluateid)):: numeric(5,2) as special3," +
+                " (sum(case when sys_role.code='special4' then evaluate_remark.score_p else 0 end)/count(distinct evaluateid)):: numeric(5,2) as special4 \n" +
+                 " FROM evaluate_records inner join evaluate_remark on evaluate_records.id=evaluate_remark.evaluateid\n"+
+                " inner join monitor_index on monitor_index.id = evaluate_remark.indexid\n" +
+                " inner join monitor_catalog on monitor_index.catalogid = monitor_catalog.id\n" +
+                " LEFT JOIN sys_role ON monitor_index.masterrole = sys_role.id\n";
+        String strSql ="";
+        //没给评估任务参数
+        if(StringUtils.isBlank(taskname)) {
+            strSql = "SELECT '全区平均分' as name," + strIndexSql;
+            Sql sql = Sqls.create(strSql);
+            sql.setCallback(Sqls.callback.record());
+            this.dao().execute(sql);
+            //全区平均分
+            Record stat = sql.getObject(Record.class);
+            remarkData.add(stat);
+
+            strSql = "SELECT taskname, taskname ||'平均分' as name," + strIndexSql + " Group by taskname order by case taskname\n" +
+                    "  when '第一组评估' then 1\n" +
+                    "  when '第二组评估' then 2\n" +
+                    "  when '第三组评估' then 3\n" +
+                    "  when '第四组评估' then 4\n" +
+                    "  when '第五组评估' then 5\n" +
+                    "  when '第六组评估' then 6\n" +
+                    "  end ";
+            sql = Sqls.create(strSql);
+            //加入分组平均分
+            remarkData.addAll(list(sql));
+        }else{
+            //给定评估任务参数
+            strSql = "SELECT taskname, taskname ||'平均分' as name," + strIndexSql + " where taskname=@taskname group by taskname";
+            Sql sql = Sqls.create(strSql).setParam("taskname",taskname);
+            //加入分组平均分
+            remarkData.addAll(list(sql));
+        }
+        return remarkData;
+    }
+    /**
+     * 得到发展性指标的平均分
+     * @return
+     */
+    public List<Record> getStatReport_Develop(String taskname){
+        //发展性指标
+        List<Record> customData =new ArrayList<>();
+        String strIndexSql=" (COALESCE(sum(evaluate_custom.score_p),0)/count(distinct evaluateid)):: numeric(5,2) as customsum"+
+                " FROM evaluate_records inner join evaluate_custom on evaluate_records.id=evaluate_custom.evaluateid \n";
+        String strSql ="";
+        //没给评估任务参数
+        if(StringUtils.isBlank(taskname)) {
+
+            strSql = "SELECT '全区平均分' as name," + strIndexSql;
+            Sql sql = Sqls.create(strSql);
+            sql.setCallback(Sqls.callback.record());
+            this.dao().execute(sql);
+            //全区平均分
+            Record stat = sql.getObject(Record.class);
+            customData.add(stat);
+            strSql = "SELECT evaluate_records.taskname,evaluate_records.taskname ||'平均分' as name," + strIndexSql + " Group by evaluate_records.taskname order by case evaluate_records.taskname\n" +
+                    "  when '第一组评估' then 1\n" +
+                    "  when '第二组评估' then 2\n" +
+                    "  when '第三组评估' then 3\n" +
+                    "  when '第四组评估' then 4\n" +
+                    "  when '第五组评估' then 5\n" +
+                    "  when '第六组评估' then 6\n" +
+                    "  end ";
+            sql = Sqls.create(strSql);
+            //加入分组平均分
+            customData.addAll(list(sql));
+        }else{
+            strSql = "SELECT evaluate_records.taskname,evaluate_records.taskname ||'平均分' as name," + strIndexSql + " where evaluate_records.taskname=@taskname group by evaluate_records.taskname";
+            Sql sql = Sqls.create(strSql).setParam("taskname",taskname);
+            //加入分组平均分
+            customData.addAll(list(sql));
+        }
+        return customData;
     }
 }
 
