@@ -5,6 +5,9 @@ import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
 import org.nutz.mvc.Mvcs;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Random;
 import java.util.regex.Pattern;
@@ -137,5 +140,19 @@ public class StringUtil {
      */
     public boolean contains(String str, String s) {
         return Strings.sNull(str).contains(Strings.sNull(s));
+    }
+    /**
+     * 判断字符串表达式的真假
+     * @param str 表达式。举例"1==1 && 0.8<1"
+     * @return
+     */
+    public boolean calculateExpression(String expression) throws ScriptException {
+        ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+        ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("JavaScript");
+//        String expression = "10 * 2 + 6 / (3 - 1)";
+
+        boolean result = (boolean)scriptEngine.eval(expression);
+        return result;
+
     }
 }
