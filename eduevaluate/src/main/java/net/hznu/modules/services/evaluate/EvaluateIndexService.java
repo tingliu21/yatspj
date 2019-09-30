@@ -1,8 +1,6 @@
 package net.hznu.modules.services.evaluate;
 
 import net.hznu.common.base.Service;
-import net.hznu.common.chart.EvaluateIndex;
-import net.hznu.common.chart.MonitorIndexReport;
 import net.hznu.common.chart.MonitorStat;
 import net.hznu.common.page.DataTableColumn;
 import net.hznu.common.page.DataTableOrder;
@@ -11,6 +9,7 @@ import net.hznu.common.util.XwpfUtil;
 import net.hznu.modules.models.evaluate.Evaluate_index;
 import net.hznu.modules.models.evaluate.Evaluate_records;
 import net.hznu.modules.models.evaluate.Evaluate_special;
+import net.hznu.modules.models.monitor.MonitorIndexReport;
 import net.hznu.modules.models.monitor.Monitor_catalog;
 import net.hznu.modules.models.monitor.Monitor_index;
 import net.hznu.modules.models.sys.Sys_config;
@@ -323,6 +322,7 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
         //评估相关信息
         String xzqh = evaluate.getUnitcode();
         int year = evaluate.getYear();
+        String eid=evaluate.getId();
         String proXZQH = xzqh.substring(0, 2) + "0000";
 
         String remark1,remark2,remarkp,strLoop;
@@ -467,13 +467,13 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
             //一级指标代码
             String catacode1 = catacode.substring(0, 2);
             //String suggestion = "";
-            Cnd cnd = Cnd.where("xzqhdm", "=", xzqh.trim()).and("year","=",year).and("code","like",code+"%");
+            Cnd cnd = Cnd.where("evaluateid", "=", eid.trim()).and("year","=",year).and("code","like",code+"%");
             //获取某年某xzq相应监测点的值
-            List<EvaluateIndex> EIValues = dao().query(EvaluateIndex.class, cnd);
+            List<Evaluate_index> EIValues = dao().query(Evaluate_index.class, cnd);
             //某些监测点的值需要将小项的值汇总
             double sumScore=0.0;
 
-            for(EvaluateIndex EIValue:EIValues){
+            for(Evaluate_index EIValue:EIValues){
                 BigDecimal bg = new BigDecimal(EIValue.getScore());
                 //sumScore +=mValue.getScore();
                 sumScore +=bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
@@ -485,7 +485,7 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
             suggestion = suggestion+((sumScore<threshold)?strRemark:"");
             if(condition!=null)
             {
-                
+
             }
             //按一级指标分5段评语来组织
 /*            if(catacode1.equals("01")){
@@ -502,8 +502,8 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
         }
 
         dao().execute(Sqls.create("insert into evaluate_special(evaluateid,remark1,remark2,remarkp,suggestion) values (@evaluateid,@remark1,@remark2,@remarkp,@suggestion)")
-                .setParam("evaluateid",evaluate.getId()).setParam("remark1",remark1).setParam("remark2",remark2).setParam("remarkp",remarkp).setParam("suggestion",suggestion));
-
+                .setParam("evaluateid",eid).setParam("remark1",remark1).setParam("remark2",remark2).setParam("remarkp",remarkp).setParam("suggestion",suggestion));
+        log.info("行政区："+xzqh+"的指标达成情况入库成功！");
     }
     /**
      * 导出word文件

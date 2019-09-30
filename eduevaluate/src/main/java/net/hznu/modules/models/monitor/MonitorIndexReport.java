@@ -1,4 +1,4 @@
-package net.hznu.common.chart;
+package net.hznu.modules.models.monitor;
 
 import org.nutz.dao.entity.annotation.Column;
 import org.nutz.dao.entity.annotation.Name;
