@@ -1,6 +1,8 @@
 <%
 layout("/layouts/platform.html"){
 %>
+<script src="${base!}/assets/plugins/ueditor/ueditor.config.js"></script>
+<script src="${base!}/assets/plugins/ueditor/ueditor.all.min.js"></script>
 <section class="content-wrap bg-white">
     <header class="header navbar bg-white shadow">
         <div class="btn-group tool-button">
@@ -52,11 +54,9 @@ layout("/layouts/platform.html"){
             <div class="tab-pane fade in active" id="cata1">
                 <div class="form-group no-b">
                     <div class="col-sm-6">
-                        <div class="panel">
-                            <div class="panel-body">
-                                <div id="amain" style="width: 800px; height: 750px;"></div>
-                            </div>
-                        </div>
+
+                        <div id="amain" style="width: 800px; height: 750px;"></div>
+
                     </div>
                     <div class="col-sm-6">
                         <div class="panel">
@@ -70,14 +70,12 @@ layout("/layouts/platform.html"){
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade in active" id="cata2">
+            <div class="tab-pane fade" id="cata2">
                 <div class="form-group no-b">
                     <div class="col-sm-6">
-                        <div class="panel">
-                            <div class="panel-body">
-                                <div id="bmain" style="width: 800px; height: 750px;"></div>
-                            </div>
-                        </div>
+
+                        <div id="bmain" style="width: 800px; height: 750px;"></div>
+
                     </div>
                     <div class="col-sm-6">
                         <div class="panel">
@@ -91,14 +89,12 @@ layout("/layouts/platform.html"){
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade in active" id="mpoint">
+            <div class="tab-pane fade" id="mpoint">
                 <div class="form-group no-b">
                     <div class="col-sm-6">
-                        <div class="panel">
-                            <div class="panel-body">
-                                <div id="cmain" style="width: 800px; height: 750px;"></div>
-                            </div>
-                        </div>
+
+                        <div id="cmain" style="width: 800px; height: 750px;"></div>
+
                     </div>
                     <div class="col-sm-6">
                         <div class="panel">
@@ -112,7 +108,7 @@ layout("/layouts/platform.html"){
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade in active" id="suggestions">
+            <div class="tab-pane fade" id="suggestions">
                 <div class="form-group no-b">
                     <div class="col-sm-8">
                         <div class="panel">
@@ -279,6 +275,11 @@ layout("/layouts/platform.html"){
         showScoreByCity1('${xzqh!}',chartRadar1);
         showScoreByCity2('${xzqh!}',chartBar2);
         showScoreByCityp('${xzqh!}',chartBarp);
+
+        setTimeout(function () {
+            ue= new baidu.editor.ui.Editor();
+            ue.render('suggestion');
+        },500);
 
         $("#export").on("click",function(){
             var chartExportUrl = '${base!}/platform/evaluate/exportCounty?evaluateId=${evaluateId!}';

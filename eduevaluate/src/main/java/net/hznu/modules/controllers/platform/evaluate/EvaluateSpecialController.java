@@ -5,6 +5,7 @@ import net.hznu.common.base.Result;
 import net.hznu.common.filter.PrivateFilter;
 import net.hznu.common.page.DataTableColumn;
 import net.hznu.common.page.DataTableOrder;
+import net.hznu.modules.models.evaluate.Evaluate_records;
 import net.hznu.modules.models.evaluate.Evaluate_special;
 import net.hznu.modules.models.sys.Sys_unit;
 import net.hznu.modules.models.sys.Sys_user;
@@ -193,5 +194,17 @@ public class EvaluateSpecialController {
 			return Result.error("system.error");
 		}
     }
+	@At
+	@Ok("beetl:/platform/evaluate/special/reviews.html")
+	@RequiresAuthentication
+	public void reviews(@Param("evaluateId") String evaluateId, HttpServletRequest req) {
+		if (org.apache.commons.lang.StringUtils.isNotBlank(evaluateId)) {
+			Evaluate_records record = evaluateRecordsService.fetch(evaluateId);
+			req.setAttribute("evaluateId",evaluateId);
+			req.setAttribute("xzqh", record.getUnitcode());
+			req.setAttribute("xzqhmc",record.getXzqhmc());
+		}
+
+	}
 
 }
