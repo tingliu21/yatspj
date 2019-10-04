@@ -76,7 +76,7 @@
                     return;
                 }
             <%}%>
-            $.post("${base}/platform/evaluate/records/verifyDo", {id:id,summaryurl:$("summaryurl").val()}, function (data) {
+            $.post("${base}/platform/evaluate/records/verifyDo", {id:id,summaryurl:$("#summaryurl").val()}, function (data) {
                 if (data.code == 0) {
                     Toast.success(data.msg);
                 } else {

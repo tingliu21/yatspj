@@ -526,10 +526,10 @@ public class EvaluateRecordsController {
 		if (!Strings.isBlank(id)) {
 			try {
 				Evaluate_records record =evaluateRecordsService.fetch(id);
-				if(record.getVerifyreport()!=null && record.getVerifyreport()==true){
-					return Result.error("组长已审核报告，不能再重新上传了");
-				}
-//				record.setId(id);
+//				if(record.getVerifyreport()!=null && record.getVerifyreport()==true){
+//					return Result.error("组长已审核报告，不能再重新上传了");
+//				}
+
 				if(!Strings.isBlank(summaryurl)) record.setSummaryurl(summaryurl);
 				Subject subject = SecurityUtils.getSubject();
 				Sys_user user = (Sys_user) subject.getPrincipal();
