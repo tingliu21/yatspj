@@ -7,8 +7,8 @@ import org.nutz.mvc.Mvcs;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
+import java.text.NumberFormat;
 import java.util.Random;
 import java.util.regex.Pattern;
 
@@ -141,18 +141,44 @@ public class StringUtil {
     public boolean contains(String str, String s) {
         return Strings.sNull(str).contains(Strings.sNull(s));
     }
+
     /**
-     * 判断字符串表达式的真假
-     * @param str 表达式。举例"1==1 && 0.8<1"
+     *
+     * @param value 需要判断的指标的分数（传入前已经是数组）
+     * @param condition 判断公式（方法中用split变成数组）
      * @return
      */
-    public boolean calculateExpression(String expression) throws ScriptException {
+    public static Integer calculateExpression(String[] value,String condition)  {
         ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
         ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("JavaScript");
-//        String expression = "10 * 2 + 6 / (3 - 1)";
-
-        boolean result = (boolean)scriptEngine.eval(expression);
-        return result;
-
+        String expression = "";
+        String[] target = condition.split(";");
+        try {
+            for(int i =0;i<target.length;i++){
+                String[] target_l = target[i].split(",");
+                expression += "(";
+                for(int j=0;j<target_l.length;j++){
+                    if(value[i].indexOf("%")!=-1){
+                        NumberFormat nf= NumberFormat.getPercentInstance();
+                        Number m=nf.parse(value[i]);
+                        expression += m + target_l[j] +"&&";
+                    }else
+                        expression += value[i] + target_l[j] +"&&";
+                }
+                expression = expression.substring(0,expression.length()-2);
+                expression +=")&&";
+            }
+            expression = expression.substring(0,expression.length()-2);
+            boolean result = (boolean) scriptEngine.eval(expression);
+            //boolean result = (boolean) scriptEngine.eval(expression);
+            if (result == true) {
+                return 1;
+            } else{
+                return 0;
+            }
+        } catch (Exception e) {
+            return -1;
+        }
     }
 }
+

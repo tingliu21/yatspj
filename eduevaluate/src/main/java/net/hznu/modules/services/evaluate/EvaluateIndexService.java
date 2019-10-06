@@ -5,6 +5,7 @@ import net.hznu.common.chart.MonitorStat;
 import net.hznu.common.page.DataTableColumn;
 import net.hznu.common.page.DataTableOrder;
 import net.hznu.common.page.OffsetPager;
+import net.hznu.common.util.StringUtil;
 import net.hznu.common.util.XwpfUtil;
 import net.hznu.modules.models.evaluate.Evaluate_index;
 import net.hznu.modules.models.evaluate.Evaluate_records;
@@ -449,58 +450,106 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
         }
         remarkp = remarkp.replace("@cnt",String.valueOf(fieldnames.size())).replace("@tplp_s",strLoop);
         //评语建议
-        List<MonitorIndexReport> rptTemps = dao().query(MonitorIndexReport.class, Cnd.orderBy().asc("catacode").asc("code"));
-
-        String remark01 = "";
-        String remark02 = "";
-        String remark03 = "";
-        String remark04 = "";
-        String remark05 = "";
         String suggestion = "";
-        for (MonitorIndexReport temp : rptTemps){
-            //得到监测点代码和临界值
-            String catacode = temp.getcatacode();
-            String code = temp.getcode();
-            double threshold = temp.getMvalue_threshold();
-            String condition=temp.getCondition();
-
-            //一级指标代码
-            String catacode1 = catacode.substring(0, 2);
-            //String suggestion = "";
-            Cnd cnd = Cnd.where("evaluateid", "=", eid.trim()).and("year","=",year).and("code","like",code+"%");
-            //获取某年某xzq相应监测点的值
-            List<Evaluate_index> EIValues = dao().query(Evaluate_index.class, cnd);
-            //某些监测点的值需要将小项的值汇总
-            double sumScore=0.0;
-
-            for(Evaluate_index EIValue:EIValues){
-                BigDecimal bg = new BigDecimal(EIValue.getScore());
-                //sumScore +=mValue.getScore();
-                sumScore +=bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        List<Monitor_catalog> catalogList1=dao().query(Monitor_catalog.class,Cnd.where("level","=",1).and("year","=",year).asc("catacode"));
+        for(Monitor_catalog catalog1:catalogList1) {
+            String cNo1 = "";
+            String strRemarks1="";
+            switch (catalog1.getCatacode()) {
+                case "01":
+                    cNo1 = "一、";
+                    break;
+                case "02":
+                    cNo1 = "二、";
+                    break;
+                case "03":
+                    cNo1 = "三、";
+                    break;
+                case "04":
+                    cNo1 = "四、";
+                    break;
+                case "05":
+                    cNo1 = "五、";
+                    break;
+                default:
+                    cNo1 = "";
+                    break;
             }
-            //评估分小于临界值时，自动生成评语
-            String strRemark=String.format("指标%s：%s；", code,temp.getMremark());
-            //去掉末尾分号
-            strRemark=strRemark.substring(0,strRemark.length()-1);
-            suggestion = suggestion+((sumScore<threshold)?strRemark:"");
-            if(condition!=null)
-            {
+            String strName1 = cNo1 + catalog1.getName();
+            suggestion += strName1+"\n";
+            List<Monitor_catalog> catalogList2 = dao().query(Monitor_catalog.class, Cnd.where("level", "=", 2).and("year", "=", year).
+                    and("catacode", "like", catalog1.getCatacode() + "%").asc("catacode"));
+            for (Monitor_catalog catalog2 : catalogList2) {
+                String strRemarks2="";
+                String cNo2 = "";
+                switch (catalog2.getCatacode().substring(2,4)) {
+                    case "01":
+                        cNo2 = "（一）";
+                        break;
+                    case "02":
+                        cNo2 = "（二）";
+                        break;
+                    case "03":
+                        cNo2 = "（三）";
+                        break;
+                    default:
+                        cNo2 = "";
+                        break;
+                }
+                String strName2 = cNo2 + "关于" + catalog2.getName();
+                suggestion += strName2+"\n\t";
+                strRemarks1+= strName2;
+                List<MonitorIndexReport> rptTemps1 = dao().query(MonitorIndexReport.class, Cnd.where("year","=",year).and("left(catacode,4)", "=", catalog2.getCatacode()).asc("catacode").asc("code"));
+                //List<String>iNos=null;
 
+                for (MonitorIndexReport temp : rptTemps1) {
+
+                    //得到监测点代码和临界值
+                    String code = temp.getcode();
+                    double threshold = temp.getMvalue_threshold();
+                    String condition = temp.getCondition();
+
+                    //获取某年某xzq相应监测点的值
+                    List<Evaluate_index> EIValues = dao().query(Evaluate_index.class, Cnd.where("evaluateid", "=", eid.trim()).and("year", "=", year).and("code", "like", code + "%"));
+                    //某些监测点的值需要将小项的值汇总
+                    double sumScore = 0.0;
+
+                    for (Evaluate_index EIValue : EIValues) {
+                        BigDecimal bg = new BigDecimal(EIValue.getScore());
+                        sumScore += bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    }
+                    //评估分小于临界值时，自动生成评语
+                    String strRemark = String.format("%s；", temp.getMremark());
+                    //去掉末尾分号
+                    strRemark = strRemark.substring(0, strRemark.length() - 1);
+                    Integer result=-1;
+                    if (!Strings.isEmpty(condition)) {
+                        String[] names = code.split(";");
+                        String[] scores = {};
+                        List<String> list = new ArrayList(Arrays.asList(scores));//**须定义时就进行转化**
+                        for (String name : names)
+                        {   //查询对应指标的分数，放入一个数组里，如这次的4401和4402
+                            Evaluate_index index = fetch(Cnd.where("evaluateid", "=", eid).and("code", "=", name));
+                            String score = String.valueOf(index.getScore());
+                            list.add(score);
+                        }
+                        String[] scores_1 = new String[list.size()];
+                        list.toArray(scores_1);
+
+                        result = StringUtil.calculateExpression(scores_1, condition);
+                    }
+                    strRemarks2+=((sumScore < threshold)||result==1? strRemark : "");
+                    suggestion+=((sumScore < threshold)||result==1? strRemark : "");
+                }
+                if (Strings.isEmpty(strRemarks2)) {
+                    suggestion+="无";
+                }
+                suggestion+="\n\n";
             }
-            //按一级指标分5段评语来组织
-/*            if(catacode1.equals("01")){
-                remark01+=mremark;
-            }else if(catacode1.equals("02")){
-                remark02+=mremark;
-            }else if(catacode1.equals("03")){
-                remark03+=mremark;
-            }else if(catacode1.equals("04")){
-                remark04+=mremark;
-            }else if(catacode1.equals("05")){
-                remark05+=mremark;
-            }*/
+            if (Strings.isEmpty(strRemarks1)) {
+                suggestion+="无";
+            }
         }
-
         dao().execute(Sqls.create("insert into evaluate_special(evaluateid,remark1,remark2,remarkp,suggestion) values (@evaluateid,@remark1,@remark2,@remarkp,@suggestion)")
                 .setParam("evaluateid",eid).setParam("remark1",remark1).setParam("remark2",remark2).setParam("remarkp",remarkp).setParam("suggestion",suggestion));
         log.info("行政区："+xzqh+"的指标达成情况入库成功！");
