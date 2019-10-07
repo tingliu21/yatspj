@@ -73,8 +73,7 @@ layout("/layouts/platform.html"){
                 {
                     "render": function (data, type, row) {
                         html ='<div class="btn-group tool-button">' +
-                            '<a class="btn btn-primary" href="${base}/platform/evaluate/special/?evaluateId=' + row.id + '" data-pjax>评估报告填写</a>' +
-                            '<a class="btn btn-primary" href="${base}/platform/evaluate/evaluate_county?evaluateId=' + row.id + '" target="_blank">查看指标达成度</a>' +
+                            '<a class="btn btn-primary" href="${base}/platform/evaluate/special/reviews?evaluateId=' + row.id + '" target="_blank">评估报告填写</a>' +
                             '</div>';
                         return html
                     },

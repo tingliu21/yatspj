@@ -26,7 +26,6 @@ import org.nutz.log.Logs;
 import org.nutz.mvc.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 @IocBean
@@ -197,14 +196,15 @@ public class EvaluateSpecialController {
 	@At
 	@Ok("beetl:/platform/evaluate/special/reviews.html")
 	@RequiresAuthentication
-	public void reviews(@Param("evaluateId") String evaluateId, HttpServletRequest req) {
+	public Object reviews(@Param("evaluateId") String evaluateId, HttpServletRequest req) {
 		if (org.apache.commons.lang.StringUtils.isNotBlank(evaluateId)) {
 			Evaluate_records record = evaluateRecordsService.fetch(evaluateId);
 			req.setAttribute("evaluateId",evaluateId);
 			req.setAttribute("xzqh", record.getUnitcode());
 			req.setAttribute("xzqhmc",record.getXzqhmc());
-		}
 
+		}
+		return evaluateSpecialService.fetch(evaluateId);
 	}
 
 }
