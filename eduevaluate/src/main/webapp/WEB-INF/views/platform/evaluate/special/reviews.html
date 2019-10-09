@@ -64,7 +64,7 @@ layout("/layouts/platform.html"){
                                 <h5><b>一级指标</b>达成情况</h5>
                             </div>
                             <div class="panel-body">
-                                <textarea id="remark1" name="remark1" class="form-control" data-parsley-required="true" style="width:100%;height:100px;" placeholder="一级指标达成情况">${obj.remark1!}</textarea>
+                                <textarea id="remark1" name="remark1"  data-parsley-required="true" style="width:100%;height:100px;" placeholder="一级指标达成情况">${obj.remark1!}</textarea>
                             </div>
                         </div>
                     </div>
@@ -83,7 +83,7 @@ layout("/layouts/platform.html"){
                                 <h5><b>二级指标</b>达成情况</h5>
                             </div>
                             <div class="panel-body">
-                                <textarea id="remark2" name="remark2" class="form-control" data-parsley-required="true" style="width:100%;height:100px;" placeholder="二级指标达成情况">${obj.remark2!}</textarea>
+                                <textarea id="remark2" name="remark2"  data-parsley-required="true" style="width:100%;height:100px;" placeholder="二级指标达成情况">${obj.remark2!}</textarea>
                             </div>
                         </div>
                     </div>
@@ -102,7 +102,7 @@ layout("/layouts/platform.html"){
                                 <h5><b>监测点</b>达成情况</h5>
                             </div>
                             <div class="panel-body">
-                                <textarea id="remarkp" name="remarkp" class="form-control" data-parsley-required="true" style="width:100%;height:100px;" placeholder="监测点达成情况" >${obj.remarkp!}</textarea>
+                                <textarea id="remarkp" name="remarkp"  style="width:100%;height:100px;" placeholder="监测点达成情况" >${obj.remarkp!}</textarea>
                             </div>
                         </div>
                     </div>
@@ -110,7 +110,7 @@ layout("/layouts/platform.html"){
             </div>
             <div class="tab-pane fade" id="suggestions">
                 <div class="form-group no-b">
-                    <div class="col-sm-8">
+                    <div class="col-sm-12">
                         <div class="panel">
                             <div class="panel-heading no-b">
                                 <h5><b>建议</b></h5>
@@ -277,13 +277,26 @@ layout("/layouts/platform.html"){
         showScoreByCityp('${xzqh!}',chartBarp);
 
         setTimeout(function () {
-            ue= new baidu.editor.ui.Editor();
+            var editorOption = {
+
+                elementPathEnabled: false,
+                wordCount: true,//关闭字数统计
+                pasteplain:true,
+                bold:true,
+                //自定义工具栏
+                toolbars: [[
+                    'undo', 'redo', '|'
+
+                ]]
+
+            }
+            ue= new baidu.editor.ui.Editor(editorOption);
             ue.render('suggestion');
-            ue1= new baidu.editor.ui.Editor();
+            ue1= new baidu.editor.ui.Editor(editorOption);
             ue1.render('remark1');
-            ue2= new baidu.editor.ui.Editor();
+            ue2= new baidu.editor.ui.Editor(editorOption);
             ue2.render('remark2');
-            uep= new baidu.editor.ui.Editor();
+            uep= new baidu.editor.ui.Editor(editorOption);
             uep.render('remarkp');
 
         },500);
