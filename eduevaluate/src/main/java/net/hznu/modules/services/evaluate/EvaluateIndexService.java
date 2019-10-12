@@ -457,26 +457,26 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
             String strRemarks1="";
             switch (catalog1.getCatacode()) {
                 case "01":
-                    cNo1 = "一、";
+                    cNo1 = "<p> <strong>(一)";
                     break;
                 case "02":
-                    cNo1 = "二、";
+                    cNo1 = "<p> <strong>(二)";
                     break;
                 case "03":
-                    cNo1 = "三、";
+                    cNo1 = "<p> <strong>(三)";
                     break;
                 case "04":
-                    cNo1 = "四、";
+                    cNo1 = "<p> <strong>(四)";
                     break;
                 case "05":
-                    cNo1 = "五、";
+                    cNo1 = "<p> <strong>(五)";
                     break;
                 default:
-                    cNo1 = "";
+                    cNo1 = "<p> <strong>";
                     break;
             }
-            String strName1 = cNo1 + catalog1.getName();
-            suggestion += strName1+"\n";
+
+            suggestion += cNo1 + catalog1.getName()+"</strong></p>";
             List<Monitor_catalog> catalogList2 = dao().query(Monitor_catalog.class, Cnd.where("level", "=", 2).and("year", "=", year).
                     and("catacode", "like", catalog1.getCatacode() + "%").asc("catacode"));
             for (Monitor_catalog catalog2 : catalogList2) {
@@ -484,21 +484,21 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
                 String cNo2 = "";
                 switch (catalog2.getCatacode().substring(2,4)) {
                     case "01":
-                        cNo2 = "（一）";
+                        cNo2 = "<p>&nbsp;&nbsp;<strong>1.";
                         break;
                     case "02":
-                        cNo2 = "（二）";
+                        cNo2 = "<p>&nbsp;&nbsp;<strong>2.";
                         break;
                     case "03":
-                        cNo2 = "（三）";
+                        cNo2 = "<p>&nbsp;&nbsp;<strong>3.";
                         break;
                     default:
-                        cNo2 = "";
+                        cNo2 = "<p>&nbsp;&nbsp;<strong>";
                         break;
                 }
-                String strName2 = cNo2 + "关于" + catalog2.getName();
-                suggestion += strName2+"\n\t";
-                strRemarks1+= strName2;
+
+                suggestion +=  cNo2 + "关于" + catalog2.getName()+"</strong><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                strRemarks1+= cNo2 + "关于" + catalog2.getName();
                 List<MonitorIndexReport> rptTemps1 = dao().query(MonitorIndexReport.class, Cnd.where("year","=",year).and("left(catacode,4)", "=", catalog2.getCatacode()).asc("catacode").asc("code"));
                 //List<String>iNos=null;
 
@@ -544,10 +544,10 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
                 if (Strings.isEmpty(strRemarks2)) {
                     suggestion+="无";
                 }
-                suggestion+="\n\n";
+                suggestion+="</p><br/>";
             }
             if (Strings.isEmpty(strRemarks1)) {
-                suggestion+="无";
+                suggestion+="<p>无</p>";
             }
         }
         dao().execute(Sqls.create("insert into evaluate_special(evaluateid,remark1,remark2,remarkp,suggestion) values (@evaluateid,@remark1,@remark2,@remarkp,@suggestion)")
