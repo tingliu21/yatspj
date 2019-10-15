@@ -23,6 +23,9 @@ import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 
 import net.hznu.common.chart.StatChart;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.nutz.lang.stream.StringOutputStream;
 
 /**
@@ -154,16 +157,41 @@ public class XwpfUtil {
             		}else {//文本替换
             			String value = String.valueOf(oValue);
             			if(value!=""){
-            				int iNewLine = value.indexOf("\n");
-            				if(iNewLine!=-1){
-            					XWPFRun run = para.createRun();
-								run.setText(value.substring(0,iNewLine));
-								run.addCarriageReturn();
-								run.addTab();
-								run.setText(value.substring(iNewLine,value.length()));
+							if(value.indexOf("<p>")!=-1){
+								org.jsoup.nodes.Document document = Jsoup.parseBodyFragment(value);
 
-							}else {
-								para.createRun().setText(value);
+								Elements paraEles = document.select("p");
+
+								for(Element element: paraEles){
+									XWPFRun run = para.createRun();
+									Elements boldElements = element.select("strong");
+									if(boldElements.size()>0) {
+										for (Element boldEle : boldElements) {
+											run.setBold(true);
+											run.setText(element.text());
+
+										}
+
+									}else{
+
+										run.setText(element.text());
+
+									}
+									run.addCarriageReturn();
+								}
+							}
+            				else {
+								int iNewLine = value.indexOf("\n");
+								if (iNewLine != -1) {
+									XWPFRun run = para.createRun();
+									run.setText(value.substring(0, iNewLine));
+									run.addCarriageReturn();
+									run.addTab();
+									run.setText(value.substring(iNewLine, value.length()));
+
+								} else {
+									para.createRun().setText(value);
+								}
 							}
                     	}
             		} 

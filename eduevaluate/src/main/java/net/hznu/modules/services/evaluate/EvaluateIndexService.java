@@ -15,10 +15,10 @@ import net.hznu.modules.models.monitor.Monitor_catalog;
 import net.hznu.modules.models.monitor.Monitor_index;
 import net.hznu.modules.models.sys.Sys_config;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFTable;
-import org.apache.poi.xwpf.usermodel.XWPFTableCell;
-import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.apache.poi.xwpf.usermodel.*;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
@@ -250,6 +250,9 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
             params.put("${remarkp}",specialReport.getRemarkp());
 
             //评语建议
+            String strSuggestion = specialReport.getSuggestion();
+            params.put("${suggestion}",strSuggestion);
+
 
             //报告行政区划信息
 //    		String pxzqhdm = xzqhdm.substring(0,4)+"00";

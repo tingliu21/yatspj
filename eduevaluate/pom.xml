@@ -47,6 +47,11 @@
             <artifactId>poi-ooxml</artifactId>
             <version>4.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.8.2</version>
+        </dependency>
 	    <!-- postgresql数据库驱动     -->
 	    <dependency>
 	        <groupId>org.postgresql</groupId>
