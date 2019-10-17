@@ -11,7 +11,7 @@
     <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
     <div id="main" style="width: 800px;height:600px;"></div>
     <script type="text/javascript">
-    var uploadedDataURL = "data/zjxzqh.json"; 
+    var uploadedDataURL = "data/zjxzqh_g.json"; 
     var myChart = echarts.init(document.getElementById('main'));
     function showProvince() {
         var name = 'zj';
@@ -22,22 +22,24 @@
             $.get('monitor/getTotalScore?year=2016&xzqhdm=330000').done(function (data) {
                 // 填入数据
                 var jsondata = data;
-                var titledata = ["婺城区", "滨江区", "嘉善县","泰顺县","瑞安市","下城区","镇海区","宁海县","长兴县","上城区" ];
+                var titledata =[];
+                //var titledata = ["婺城区", "滨江区", "嘉善县","泰顺县","瑞安市","下城区","镇海区","宁海县","长兴县","上城区" ];
                 var top10data=[];
-                for (var i = 0; i < 10; i++) {
+                for (var i = data.length-10; i < data.length; i++) {
                 		//titledata.push(jsondata[i].name);
                 		var d0 = {
                 		        name: jsondata[i].name,
                 		        value: jsondata[i].value
                 		    };
                 		top10data.push(d0);
+                		titledata.push(jsondata[i].name);
                 }
                 function NumDescSort(a,b){
                     return a.value-b.value;
                 }
 				console.log(titledata);
 				console.log(top10data);
-                top10data.sort(NumDescSort);
+                //top10data.sort(NumDescSort);
             	myChart.setOption(option = {
                         
                         title: {
@@ -49,8 +51,8 @@
                         },
                         
                         visualMap: {
-                            min: 40,
-                            max: 80,
+                            min: 125,
+                            max: 180,
                             left: 'left',
                             top: 'bottom',
                             text: ['高', '低'], // 文本，默认为数值文本
@@ -105,13 +107,20 @@
                             bottom: "5%",
                             label: {
                                 normal: {
-                                    show: true
+                                    show: false,
+                                    formatter: function(params){
+                                    	if(params.name.indexOf('区')!=-1)return '';
+                                    	else
+                                    	return params.data.name
+                                    }
                                 },
                                 emphasis: {
                                     textStyle: {
                                         color: '#fff'
                                     }
-                                }
+                                },
+                                
+                                
                             },
                             itemStyle: {
 

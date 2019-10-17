@@ -28,15 +28,23 @@ public class SysHomeController {
     @Inject
     SysMenuService menuService;
 
+//    @At("")
+//    @Ok("beetl:/platform/sys/home.html")
+//    @RequiresAuthentication
+//    public void home(HttpServletRequest req) {
+//        //SecurityUtils.getSubject().getSession().setTimeout(1000);
+//        req.setAttribute("EvaluateYear", Globals.MyConfig.get("EvaluateYear"));
+//
+//    }
+    //首页显示地图
     @At("")
-    @Ok("beetl:/platform/sys/home.html")
+    @Ok("beetl:/platform/evaluate/map.html")
     @RequiresAuthentication
-    public void home(HttpServletRequest req) {
+    public void map(HttpServletRequest req) {
         //SecurityUtils.getSubject().getSession().setTimeout(1000);
         req.setAttribute("EvaluateYear", Globals.MyConfig.get("EvaluateYear"));
 
     }
-
     @At
     @Ok("beetl:/platform/sys/left.html")
     @RequiresAuthentication

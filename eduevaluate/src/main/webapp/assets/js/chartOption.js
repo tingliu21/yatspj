@@ -1,4 +1,49 @@
+var mapOption={
+    title: {
+        text: "浙江省教育现代化综合得分",
+        left: 'center'
+    },
+    tooltip: {
+        trigger: 'item'
+    },
+    visualMap: {
+        min: 50,
+        max: 100,
+        left: 'left',
+        top: 'bottom',
+        text: ['高', '低'], // 文本，默认为数值文本
+        color: ['#c05050','#e5cf0d','#5ab1ef'],
+        calculable: true
+    },
+    grid: {
+        right: 40,
+        top: 50,
+        bottom: 40,
+        width: '30%'
+    },
+    xAxis: [{
+        position: 'top',
+        type: 'value',
+        boundaryGap: false,
+        splitLine: {
+            show: false
+        },
+        axisLine: {
+            show: false
+        },
+        axisTick: {
+            show: false
+        },
+    }],
+    yAxis: [{
+        type: 'category',
+        // data: titledata,
+        axisTick: {
+            alignWithLabel: true
+        }
+    }]
 
+};
 var radarOption= {
 	title : {
 		text : '一级指标达成度',
