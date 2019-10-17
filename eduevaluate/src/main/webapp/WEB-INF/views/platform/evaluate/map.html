@@ -1,0 +1,139 @@
+<%
+layout("/layouts/platform.html"){
+%>
+<section class="content-wrap bg-white">
+    <header class="header navbar bg-white shadow">
+        <div class="btn-group" style="padding-top: 5px;">
+            <div>
+                <label for="year">评估年度：</label>
+                <select id="year" name="year"  placeholder="选择评估年度" >
+                    <option value="2016">2016</option>
+                    <option value="2017">2017</option>
+                    <option value="2018" selected>2018</option>
+                </select>
+            </div>
+        </div>
+
+    </header>
+    <div class=panel-body style="padding-top: 50px;">
+        <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+        <div id="main" style="width: 900px;height:550px;margin:0 auto;"></div>
+    </div>
+</section>
+<footer style="margin: 0 auto;width:420px">
+
+    <address>
+        <strong>浙江省教育现代化研究与评价中心</strong>
+    </address>
+    <address>
+        <strong>刘婷</strong><br>
+        联系电话: 13735576259 &nbsp;
+        邮箱：<a href="mailto:#">yats521@163.com</a>
+    </address>
+
+</footer>
+<script type="text/javascript">
+    var uploadedDataURL = "${base!}/assets/data/zjxzqh.json";
+    var myChart = echarts.init(document.getElementById('main'));
+    function showProvince( year,chartMap) {
+        var name = 'zj';
+        $.get(uploadedDataURL, function (geoJson) {
+            echarts.registerMap(name, geoJson);
+            $.get('${base!}/platform/evaluate/getTotalScoreByCity?year='+year+'&xzqhdm=330000').done(function (data) {
+                // 填入数据
+                var jsondata = data;
+                var titledata = [];
+                //var titledata = ["婺城区", "滨江区", "嘉善县","泰顺县","瑞安市","下城区","镇海区","宁海县","长兴县","上城区" ];
+                var top10data = [];
+                for (var i = data.length - 10; i < data.length; i++) {
+                    //titledata.push(jsondata[i].name);
+                    var d0 = {
+                        name: jsondata[i].name,
+                        value: jsondata[i].value
+                    };
+                    top10data.push(d0);
+                    titledata.push(jsondata[i].name);
+                }
+                chartMap.setOption(mapOption);
+                chartMap.setOption({
+                    yAxis: {
+                        data: titledata,
+                    },
+                    series: [{
+                        z: 2,
+                        type: 'map',
+                        mapType: name,
+                        left: '10',
+                        right: '40%',
+                        top: 50,
+                        bottom: "0%",
+                        label: {
+                            normal: {
+                                show: true,
+                                formatter: function(params){
+                                    if(params.name.indexOf('区')!=-1)return '';
+                                    else
+                                        return params.data.name
+                                }
+                            },
+                            emphasis: {
+                                textStyle: {
+                                    color: '#fff'
+                                }
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                borderColor: '#389BB7',
+                                areaColor: '#fff',
+                            },
+                            emphasis: {
+                                areaColor: '#389BB7',
+                                borderWidth: 0
+                            }
+                        },
+                        animation: false,
+                        data:data
+
+                    }, {
+                        name: '全部',
+                        z: 1,
+                        type: 'bar',
+                        left: '50%',
+                        right: '5%',
+                        top: 10,
+                        bottom: "5%",
+                        label: {
+                            normal: {
+                                show: true
+                            },
+                            emphasis: {
+                                show: true,
+                            }
+                        },
+                        itemStyle: {
+                            emphasis: {
+                                color: "rgb(254,153,78)"
+                            }
+                        },
+                        data: top10data
+                    }]
+                });
+
+            });
+        });
+
+    }
+    $(document).ready(function () {
+        showProvince($("#year").val(),myChart);
+
+        $("#year").change(function () {
+            showProvince($("#city").val(),myChart);
+        });
+
+    });
+    window.addEventListener("resize", () => {
+        this.myChart.resize();
+    });
+</script>
+<%}%>
