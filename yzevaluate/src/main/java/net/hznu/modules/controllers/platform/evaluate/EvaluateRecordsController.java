@@ -426,17 +426,20 @@ public class EvaluateRecordsController {
 			}
 			String advantage = remark.getString("advantage");
 			String disadvantae = remark.getString("disadvantage");
+			//String remark_p=remark.getString("remark_p");
 			//合并过的指标，督评理由那里都是用\n拼接的，需要转换成\r\n
 			if(StringUtils.isNotBlank(advantage)){
-				advantage = advantage.replaceAll("\n","\r\n");
+				advantage = advantage.replaceAll("\n","\r\n").trim();
 			}
 			if(StringUtils.isNotBlank(disadvantae)){
-				disadvantae = disadvantae.replaceAll("\n","\r\n");
+				disadvantae = disadvantae.replaceAll("\n","\r\n").trim();
 			}
-
+			//if(StringUtils.isNotBlank(remark_p)){
+			//	remark_p = remark_p.replaceAll("\n","\r\n");
+			//}
 			parametersMap.put("ad_i" + code, advantage);
 			parametersMap.put("disad_i" + code, disadvantae);
-
+			//parametersMap.put("remarkp_i"+code,remark_p);
 		}
 		//获取专家评估的发展性指标
 		List<Evaluate_custom> customList =evaluateCustomService.query(Cnd.where("evaluateid","=",evalId).asc("location"));
@@ -486,8 +489,24 @@ public class EvaluateRecordsController {
 			}else{
 				parametersMap.put("p_i" + location, "");
 			}
-			//String remarkids = record.getString("id");
-			//String[] remarkIdList = org.apache.commons.lang.StringUtils.split(remarkids,",");
+			String advantage = record.getString("advantage");
+			String disadvantae = record.getString("disadvantage");
+			String remark_p=record.getString("remark_p");
+			if(StringUtils.isNotBlank(advantage)){
+				parametersMap.put("ad_i" + location, advantage);
+			}else {
+				parametersMap.put("ad_i" + location, "");
+			}
+			if(StringUtils.isNotBlank(disadvantae)){
+				parametersMap.put("disad_i" + location, disadvantae);
+			}else {
+				parametersMap.put("disad_i" + location, "");
+			}
+			if(StringUtils.isNotBlank(remark_p)){
+				parametersMap.put("remarkp_i" + location, remark_p);
+			}else{
+				parametersMap.put("remarkp_i" + location, "");
+			}
 
 		}
 		wordDataMap.put("parametersMap", parametersMap);

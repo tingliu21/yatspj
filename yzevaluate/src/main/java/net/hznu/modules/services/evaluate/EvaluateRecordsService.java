@@ -246,7 +246,7 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
         return sql.getList(String.class);
     }
     public List<Record> getSpecialRemarkData(String eid){
-        Sql sql = Sqls.create("SELECT monitor_catalog.path,sum(score_p) as score_p, string_agg(advantage,'\n') as advantage, string_agg(disadvantage,'\n') as disadvantage" +
+        Sql sql = Sqls.create("SELECT monitor_catalog.path,sum(score_p) as score_p, string_agg(advantage,'\n') as advantage, string_agg(disadvantage,'\n') as disadvantage,string_agg(remark_p,'\n') as remark_p" +
                 "  FROM evaluate_remark_view " +
                 "  inner join monitor_catalog on catalogid = monitor_catalog.id" +
                 "  where depttype ='Special' and evaluateid=@evaluateid " +
@@ -257,7 +257,7 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
     public List<Record> getRemarkData(String eid){
         //Sql sql = Sqls.create("select location,sum(score_s) as score_s, sum(score_p) as score_p ,string_agg(remark_s,'\n' order by indexname ) as remark_s,string_agg(id,',') as id FROM evaluate_remark_view where evaluateid=@eid group by location").setParam("evaluateid",eid);
         //return list(sql);
-        List<Record> remarkList = list(Sqls.create("select location,sum(score_s) as score_s, sum(score_p) as score_p ,string_agg(remark_s,'\n' order by indexname ) as remark_s,string_agg(id,',') as id FROM evaluate_remark_view where evaluateid=@eid group by location ")
+        List<Record> remarkList = list(Sqls.create("select location,sum(score_s) as score_s, sum(score_p) as score_p ,string_agg(remark_s,'\n' order by indexname ) as remark_s,advantage,disadvantage,remark_p,string_agg(id,',') as id FROM evaluate_remark_view where evaluateid=@eid group by location,advantage,disadvantage,remark_p")
                 .setParam("eid",eid));
         return remarkList;
     }
