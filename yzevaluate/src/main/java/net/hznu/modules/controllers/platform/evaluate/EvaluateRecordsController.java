@@ -612,7 +612,7 @@ public class EvaluateRecordsController {
 		return evaluateRecordsService.getIndexReport(evaIds);
 	}
 	@At
-	@Ok("json")
+	@Ok("void")
 	@RequiresAuthentication
 	public void ExportReport(@Param("taskname") String taskname,HttpServletResponse resp) {
 		//String[] ids = StringUtils.split(indexIds, ",");
@@ -692,4 +692,70 @@ public class EvaluateRecordsController {
 		table_aggregate.add(map);
 		return table_aggregate;
 	}
+
+	/**
+	 * 按分组汇总导出59所幼儿园评分和意见，临时用，不提供界面给用户使用
+	 * @param resp
+	 */
+	@At
+	@Ok("void")
+	@RequiresAuthentication
+	public void ExportEvaluate(HttpServletResponse resp) {
+		//String[] ids = StringUtils.split(indexIds, ",");
+
+		Map<String,Object> wordDataMap = packageEvaluateObject();
+		XwpfUtil xwpfUtil = new XwpfUtil();
+		//读入word模板
+		InputStream is = getClass().getClassLoader().getResourceAsStream("template/EvaluateReport-yz.docx");
+		try {
+			String filename = "宁波市鄞州区2018学年幼儿园发展性评估专家评分汇总表.docx";
+			filename = URLEncoder.encode(filename, "UTF-8");
+
+			xwpfUtil.exportWord(wordDataMap,is,resp,filename);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
+	}
+	public Map<String, Object> packageEvaluateObject() {
+		Map<String,Object> wordDataMap = new HashMap<String,Object>();
+		Map<String, Object> parametersMap = new HashMap<String, Object>();
+
+
+		List<Record> listGroup = evaluateRecordsService.getGrouplist();
+		for(int i=0;i<listGroup.size();i++){
+			List<Map<String, Object>> table_aggregate = new ArrayList<Map<String, Object>>();
+			String taskname = listGroup.get(i).getString("taskname");
+			List<Record> schoolRecordsBasic = evaluateRecordsService.getSchoolReport_Basic3(taskname);
+			List<Record> schoolRecordsDevelop = evaluateRecordsService.getSchoolReport_Develop3(taskname);
+			for(int j =0;j<schoolRecordsBasic.size();j++) {
+				table_aggregate.addAll(packageEvaluateObject(schoolRecordsBasic.get(j), schoolRecordsDevelop.get(j)));
+			}
+			//第i组汇总
+			wordDataMap.put("table_aggregate"+(i+1),table_aggregate);
+			parametersMap.put("taskname"+(i+1),taskname);
+		}
+
+		wordDataMap.put("parametersMap", parametersMap);
+		return wordDataMap;
+
+	}
+	public List<Map<String, Object>> packageEvaluateObject(Record recordBasic,Record recordDevelop) {
+		List<Map<String, Object>> table_aggregate = new ArrayList<Map<String, Object>>();
+		Map<String, Object> map=new HashMap<>();
+		map.put("school",recordDevelop.getString("name"));
+		for(int i =1;i<=25;i++){
+			map.put("score_"+i, recordBasic.getString("index_"+i));
+			map.put("remark_"+i, recordBasic.getString("remark_"+i));
+		}
+		map.put("score_custom", recordDevelop.getString("customsum"));
+		map.put("remark_custom", recordDevelop.getString("customremark"));
+		map.put("sum", formatDouble(recordBasic.getDouble("indexsum")+ recordDevelop.getDouble("customsum")));
+
+		table_aggregate.add(map);
+		return table_aggregate;
+	}
+	//到这里结束临时导出表
 }

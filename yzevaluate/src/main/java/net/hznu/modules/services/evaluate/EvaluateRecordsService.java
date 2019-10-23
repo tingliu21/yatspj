@@ -521,5 +521,53 @@ public class EvaluateRecordsService extends Service<Evaluate_records> {
         }
         return customData;
     }
+
+    /**
+     * 按3级指标获取学校的评估得分和评估意见
+     * @param Taskname
+     * @return
+     */
+    public List<Record> getSchoolReport_Basic3(String Taskname){
+        //基础性指标
+        String strSql="SELECT evaluateid,";
+        String strIndexSql="";
+        for(int i=1;i<=25;i++){//25个基础性三级指标
+            strIndexSql+=" sum(case when monitor_index.location="+i+" then evaluate_remark.score_p else 0 end) as index_"+i
+                    +",string_agg(case when monitor_index.location="+i+" then COALESCE(remark_p,'')||COALESCE(disadvantage,'')  else '' end,'') as remark_"+i+",";
+        }
+        strIndexSql += " COALESCE(sum(evaluate_remark.score_p),0) as indexsum\n";
+
+        strSql += strIndexSql;
+        //分组总分
+
+        strSql += " FROM evaluate_records inner join evaluate_remark on evaluate_records.id=evaluate_remark.evaluateid\n"+
+                " inner join monitor_index on monitor_index.id = evaluate_remark.indexid\n" +
+                " where taskname = @taskname "+
+                " group by evaluateid ,evaluate_records.score_p order by evaluate_records.score_p desc";
+
+        Sql sql = Sqls.create(strSql).setParam("taskname",Taskname);
+        List<Record> remarkData = list(sql);
+        return remarkData;
+    }
+
+    /**
+     * 获取学校发展性指标评估得分和评估意见
+     * @param Taskname
+     * @return
+     */
+    public List<Record> getSchoolReport_Develop3(String Taskname){
+        //发展性指标
+        String strSql="SELECT evaluateid,sys_unit.name,COALESCE(sum(evaluate_custom.score_p),0) as customsum,"+
+                " string_agg(disadvantage ,'') as customremark,evaluate_records.score_p as sum";
+
+        strSql += " FROM evaluate_records inner join evaluate_custom on evaluate_records.id=evaluate_custom.evaluateid\n"+
+                " inner join sys_unit on sys_unit.id = schoolid\n" +
+                " where evaluate_records.taskname = @taskname "+
+                " group by evaluateid ,evaluate_records.score_p,sys_unit.name order by evaluate_records.score_p desc";
+
+        Sql sql = Sqls.create(strSql).setParam("taskname",Taskname);
+        List<Record> remarkData = list(sql);
+        return remarkData;
+    }
 }
 
