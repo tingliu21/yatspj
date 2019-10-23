@@ -393,7 +393,7 @@ public class EvaluateIndexController {
 		chart.setFileType("png");
 		chart.setHeight(710);
 		chart.setWidth(420);
-		paramsPara.put("${bar55}", chart);
+		paramsPara.put("${barp}", chart);
 		chart = new StatChart();
 		chart.setFilePath(picBark);
 		chart.setFileType("png");
