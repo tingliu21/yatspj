@@ -38,11 +38,11 @@ public class Evaluate_index extends Model implements Serializable{
 
     @Column
     @Comment("评估值")
-    @ColDefine(type = ColType.FLOAT, width = 8)
+    @ColDefine(type = ColType.FLOAT, width = 12)
     private Double value;
     @Column
     @Comment("评估值")
-    @ColDefine(type = ColType.VARCHAR, width = 8)
+    @ColDefine(type = ColType.VARCHAR, width = 20)
     private String svalue;
 
     @Column
@@ -59,6 +59,12 @@ public class Evaluate_index extends Model implements Serializable{
     @Column
     @Readonly
     private String name;
+    @Column
+    @Readonly
+    private String xzqhmc;
+    @Column
+    @Readonly
+    private String unitcode;
 
     public String getId() {
         return id;
@@ -114,6 +120,21 @@ public class Evaluate_index extends Model implements Serializable{
         this.name = name;
     }
 
+    public String getUnitcode() {
+        return unitcode;
+    }
+
+    public void setUnitcode(String unitcode) {
+        this.unitcode = unitcode;
+    }
+
+    public String getXzqhmc() {
+        return xzqhmc;
+    }
+
+    public void setXzqhmc(String xzqhmc) {
+        this.xzqhmc = xzqhmc;
+    }
     public Double getValue() {
         return value;
     }

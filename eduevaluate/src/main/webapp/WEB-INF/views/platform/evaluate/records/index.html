@@ -8,12 +8,21 @@ layout("/layouts/platform.html"){
                 <!--<a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/add" data-pjax><i class="ti-plus"></i> 新建Evaluate_records</a>-->
             <!--<button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>-->
         </div>
+        <div class="btn-group" style="padding-top: 5px;">
+            <div>
+                <label for="year">评估年度：</label>
+                <select id="year" name="year"  placeholder="选择评估年度" >
+                    <option value="2018" selected>2018</option>
+                </select>
+            </div>
+        </div>
         <div class="pull-right">
             <div class="btn-group tool-button">
                 <a class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/upload" data-toggle="modal" data-target="#dialogImp"><i class="ti-import"></i>评估结果导入</a>
             </div>
         </div>
     </header>
+
     <div class=panel-body style="padding-top: 50px;">
         <div class="table-responsive no-border">
             <table class="table table-bordered table-striped mg-t datatable">
@@ -87,7 +96,7 @@ layout("/layouts/platform.html"){
                 "url": "${base}/platform/evaluate/records/data",
                 "type": "post",
                 "data": function (d) {
-                    //d.nutz = $('#nutz').val();
+                    d.year=$('#year').val();
                 }
             },
             "order": [[1, "asc"]],
