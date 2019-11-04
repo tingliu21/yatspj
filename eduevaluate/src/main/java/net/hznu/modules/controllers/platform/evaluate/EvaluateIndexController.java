@@ -9,6 +9,7 @@ import net.hznu.common.page.DataTableColumn;
 import net.hznu.common.page.DataTableOrder;
 import net.hznu.common.util.ImgBase64Util;
 import net.hznu.common.util.XwpfUtil;
+import net.hznu.modules.models.evaluate.Evaluate_index;
 import net.hznu.modules.models.evaluate.Evaluate_records;
 import net.hznu.modules.models.monitor.Monitor_catalog;
 import net.hznu.modules.models.monitor.Monitor_index;
@@ -16,6 +17,7 @@ import net.hznu.modules.models.sys.Sys_unit;
 import net.hznu.modules.models.sys.Sys_user;
 import net.hznu.modules.services.evaluate.EvaluateIndexService;
 import net.hznu.modules.services.evaluate.EvaluateRecordsService;
+import net.hznu.modules.services.evaluate.EvaluateSpecialService;
 import net.hznu.modules.services.monitor.MonitorCatalogService;
 import net.hznu.modules.services.monitor.MonitorIndexService;
 import net.hznu.modules.services.sys.SysUnitService;
@@ -24,15 +26,20 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.subject.Subject;
 import org.nutz.dao.Cnd;
+import org.nutz.dao.Dao;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -50,7 +57,10 @@ public class EvaluateIndexController {
 	private MonitorIndexService monitorIndexService;
 	@Inject
 	private MonitorCatalogService monitorCatalogService;
-
+	@Inject
+	private EvaluateSpecialService evaluateSpecialService;
+	@Inject
+	protected Dao dao;
 	@Inject
 	private SysUnitService sysUnitService;
 
@@ -402,10 +412,14 @@ public class EvaluateIndexController {
 		paramsPara.put("${bar_key}", chart);
 		//读入word模板
 
-		System.out.println(getClass().getClassLoader().getResource("template/Countytemplate_"+Globals.EvaluateYear+".docx"));
-		InputStream is = getClass().getClassLoader().getResourceAsStream("template/Countytemplate_"+Globals.EvaluateYear+".docx");
+		System.out.println(getClass().getClassLoader().getResource("template/CountyTemplate_"+Globals.EvaluateYear+".docx"));
+		InputStream is = getClass().getClassLoader().getResourceAsStream("template/CountyTemplate_"+Globals.EvaluateYear+".docx");
 		try {
-			String filename = "浙江省县（市、区）教育现代化发展水平报告_"+evaluateId+".docx";
+			Evaluate_records rcd = evaluateRecordsService.fetch(evaluateId);
+			String unitid = rcd.getUnitID();
+			Sys_unit unit = sysUnitService.fetch(unitid);
+			String xzqhmc = unit.getXzqhmc();
+			String filename = "浙江省县（市、区）教育现代化发展水平报告_" + xzqhmc + ".docx";
 			filename = URLEncoder.encode(filename, "UTF-8");
 
 			XwpfUtil xwpfUtil = new XwpfUtil();
@@ -521,5 +535,22 @@ public class EvaluateIndexController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@At
+	@Ok("json")
+	@RequiresAuthentication
+	public Object get(@Param("unitcode") String unitcode, @Param("year") int year) {
+		Cnd cnd = Strings.isBlank(unitcode) ? null : Cnd.where("unitcode", "=", unitcode.trim());
+		if (year != 0) {
+			if (cnd == null)
+				cnd = Cnd.where("year", "=", year);
+			else
+				cnd = cnd.and("year", "=", year);
+		}
+		// 获得某年某行政区的所有监测指标值及得分
+		List<Evaluate_index> list = dao.query(Evaluate_index.class, cnd, null);
+
+		return list;
 	}
 }

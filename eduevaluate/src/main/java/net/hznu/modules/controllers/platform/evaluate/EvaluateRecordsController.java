@@ -74,8 +74,9 @@ public class EvaluateRecordsController {
     @At
     @Ok("json:full")
     @RequiresAuthentication
-    public Object data(@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
+    public Object data(@Param("year") int year,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
         Cnd cnd = Cnd.NEW();
+        cnd.and("year","=",year);
         return evaluateRecordsService.data(length, start, draw, order, columns, cnd, "unit");
     }
     //获取专家评审列表
@@ -144,14 +145,14 @@ public class EvaluateRecordsController {
 
                     //插入评估记录
                     records = evaluateRecordsService.insert(records);
-                    List<Monitor_index> monitorIndexs = monitorIndexService.query();
+                    List<Monitor_index> monitorIndexs = monitorIndexService.query(Cnd.where("year", "=", year).and("haschildren","=",false));
 
                     for (Monitor_index index : monitorIndexs) {
                         Evaluate_index evaluate = new Evaluate_index();
                         evaluate.setEvaluateId(records.getId());
                         evaluate.setIndexId(index.getId());
                         evaluate.setCode(index.getCode());
-
+                        evaluate.setYear(year);
                         //插入监测指标记录
                         evaluateIndexService.insert(evaluate);
                     }
