@@ -7,8 +7,8 @@ var mapOption={
         trigger: 'item'
     },
     visualMap: {
-        min: 50,
-        max: 100,
+        // min: 50,
+        // max: 100,
         left: 'left',
         top: 'bottom',
         text: ['高', '低'], // 文本，默认为数值文本

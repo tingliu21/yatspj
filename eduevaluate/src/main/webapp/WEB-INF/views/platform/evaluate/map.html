@@ -17,7 +17,7 @@ layout("/layouts/platform.html"){
     </header>
     <div class=panel-body style="padding-top: 50px;">
         <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-        <div id="main" style="width: 900px;height:550px;margin:0 auto;"></div>
+        <div id="main" style="width:100%;height:800px;margin:0 auto;"></div>
     </div>
 </section>
 <footer style="margin: 0 auto;width:420px">
@@ -54,10 +54,17 @@ layout("/layouts/platform.html"){
                     top10data.push(d0);
                     titledata.push(jsondata[i].name);
                 }
+                var min,max;
+                min = Math.floor( data[0].value/5)*5;
+                max = Math.ceil(data[data.length-1].value/5)*5;
                 chartMap.setOption(mapOption);
                 chartMap.setOption({
                     yAxis: {
                         data: titledata,
+                    },
+                    visualMap: {
+                      min:min,
+                        max:max,
                     },
                     series: [{
                         z: 2,

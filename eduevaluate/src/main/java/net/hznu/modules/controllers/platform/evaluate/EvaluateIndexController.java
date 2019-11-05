@@ -358,8 +358,11 @@ public class EvaluateIndexController {
 	@At
 	@Ok("json")
 	@RequiresAuthentication
-	public Object getTotalScoreByCity(@Param("xzqhdm") String xzqh) {
-		List<MonitorSumValue> monitorSumValueList = evaluateRecordsService.getTotalScore(Globals.EvaluateYear,xzqh);
+	public Object getTotalScoreByCity(@Param("year")int year,@Param("xzqhdm") String xzqh) {
+		if (year == 0) {
+			year = Globals.EvaluateYear;
+		}
+		List<MonitorSumValue> monitorSumValueList = evaluateRecordsService.getTotalScore(year,xzqh);
 		return monitorSumValueList;
 	}
 	//导出县报告

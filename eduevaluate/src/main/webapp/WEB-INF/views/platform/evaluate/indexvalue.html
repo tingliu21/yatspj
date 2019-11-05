@@ -147,13 +147,13 @@ layout("/layouts/platform.html"){
     $(function () {
         initDatatable();
         //绑定添加界面的公司、部门、直属经理
-        BindSelect("cataid", "/platform/monitor/catalog/tree2?year="+$("#year").val());
+        BindSelect("cataid", "${base}/platform/monitor/catalog/tree2?year="+$("#year").val());
         $("#year").on("change",function (e) {
-            BindSelect("cataid", "/platform/monitor/catalog/tree2?year="+$("#year").val());
+            BindSelect("cataid", "${base}/platform/monitor/catalog/tree2?year="+$("#year").val());
         })
         $("#cataid").on("change", function (e) {
             var catacode = $("#cataid").val();
-            BindSelect("indexid", "/platform/monitor/index/tree?year="+$("#year").val()+"&catacode="+ catacode);
+            BindSelect("indexid", "${base}/platform/monitor/index/tree?year="+$("#year").val()+"&catacode="+ catacode);
         });
 
 
