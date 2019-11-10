@@ -11,6 +11,7 @@ import net.hznu.common.util.ImgBase64Util;
 import net.hznu.common.util.XwpfUtil;
 import net.hznu.modules.models.evaluate.Evaluate_index;
 import net.hznu.modules.models.evaluate.Evaluate_records;
+import net.hznu.modules.models.evaluate.Evaluate_special;
 import net.hznu.modules.models.monitor.Monitor_catalog;
 import net.hznu.modules.models.monitor.Monitor_index;
 import net.hznu.modules.models.sys.Sys_unit;
@@ -40,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -365,11 +367,12 @@ public class EvaluateIndexController {
 		List<MonitorSumValue> monitorSumValueList = evaluateRecordsService.getTotalScore(year,xzqh);
 		return monitorSumValueList;
 	}
+
 	//导出县报告
 	@At
 	@Ok("void")
-	public void exportCounty(HttpServletResponse resp, HttpServletRequest req, @Param("evaluateId") String evaluateId,
-						  @Param("radar1") String picRadar1, @Param("bar2") String picBar2, @Param("barp") String picBarp, @Param("bark") String picBark) {
+	public void exportCounty2(HttpServletResponse resp, HttpServletRequest req, @Param("evaluateId") String evaluateId,
+							 @Param("radar1") String picRadar1, @Param("bar2") String picBar2, @Param("barp") String picBarp, @Param("bark") String picBark) {
 		log.debug("导出word文件开始>>>>>>>>>>>>>");
 		//获取行政区划信息
 		Evaluate_records record = evaluateRecordsService.fetch(evaluateId);
@@ -415,8 +418,8 @@ public class EvaluateIndexController {
 		paramsPara.put("${bar_key}", chart);
 		//读入word模板
 
-		System.out.println(getClass().getClassLoader().getResource("template/CountyTemplate_"+Globals.EvaluateYear+".docx"));
-		InputStream is = getClass().getClassLoader().getResourceAsStream("template/CountyTemplate_"+Globals.EvaluateYear+".docx");
+		System.out.println(getClass().getClassLoader().getResource("template/CountyTemplate2_"+Globals.EvaluateYear+".docx"));
+		InputStream is = getClass().getClassLoader().getResourceAsStream("template/CountyTemplate2_"+Globals.EvaluateYear+".docx");
 		try {
 			Evaluate_records rcd = evaluateRecordsService.fetch(evaluateId);
 			String unitid = rcd.getUnitID();
@@ -436,6 +439,133 @@ public class EvaluateIndexController {
 			e.printStackTrace();
 		}
 	}
+
+	//导出县报告
+	@At
+	@Ok("void")
+	public void exportCounty(HttpServletResponse resp, HttpServletRequest req, @Param("evaluateId") String evaluateId,
+							 @Param("radar1") String picRadar1, @Param("bar2") String picBar2, @Param("barp") String picBarp, @Param("bark") String picBark) {
+		String tempPath = req.getSession().getServletContext().getRealPath("/tmp");
+		log.debug("导出word文件开始>>>>>>>>>>>>>");
+
+		//读入word模板
+		if (!Strings.isBlank(evaluateId)) {
+			Map<String, Object> wordDataMap = packageObject(evaluateId,tempPath,picRadar1,picBar2,picBarp,picBark);
+
+			XwpfUtil xwpfUtil = new XwpfUtil();
+			//读入word模板
+			InputStream is = getClass().getClassLoader().getResourceAsStream("template/CountyTemplate_" + Globals.EvaluateYear + ".docx");
+			try {
+				Evaluate_records rcd = evaluateRecordsService.fetch(evaluateId);
+				String unitid = rcd.getUnitID();
+				Sys_unit unit = sysUnitService.fetch(unitid);
+				String xzqhmc = unit.getXzqhmc();
+				String filename = "浙江省县（市、区）教育现代化发展水平报告_" + xzqhmc + ".docx";
+				filename = URLEncoder.encode(filename, "UTF-8");
+				xwpfUtil.exportWord(wordDataMap, is, resp, filename);
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * 组装word文档中需要显示数据的集合
+	 * @return
+	 */
+	public Map<String, Object> packageObject(String evalId,String tempPath,String picRadar1,String picBar2, String picBarp, String picBark) {
+		Map<String,Object> wordDataMap = new HashMap<String,Object>();
+		Map<String, Object> paramsPara = new HashMap<String, Object>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy 年 MM 月 dd 日");
+		paramsPara.put("date",sdf.format(new Date()));
+
+        Evaluate_special special = dao.fetch(Evaluate_special.class,evalId);
+        paramsPara.put("remark1",special.getRemark1());
+        paramsPara.put("remark2",special.getRemark2());
+        paramsPara.put("remarkp",special.getRemarkp());
+
+        //评语建议
+        String strSuggestion = special.getSuggestion();
+        paramsPara.put("suggestion",strSuggestion);
+
+        //省平均值
+        Evaluate_records record = evaluateRecordsService.fetch(evalId);
+        List<Evaluate_index> mValueList = evaluateIndexService.getAvgEvaluateIndex(Globals.EvaluateYear,record.getUnitcode().substring(0,2)+"0000");
+        double tScore =0.0;
+
+        for(Evaluate_index mValue:mValueList){
+            String strKey = String.format("as%s", mValue.getCode());
+            double value = mValue.getScore();
+            tScore +=value;
+            //保留2位小数
+            BigDecimal bg = new BigDecimal(value);
+            paramsPara.put(strKey,  bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+        }
+        paramsPara.put("as_t", new BigDecimal(tScore).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+        //县评估值及得分
+        mValueList = evaluateIndexService.query(Cnd.where("year","=",Globals.EvaluateYear).and("unitcode","=",record.getUnitcode()));
+        tScore =0.0;
+        for(Evaluate_index mValue:mValueList){
+            String strKey = String.format("s%s", mValue.getCode());
+            Double value = mValue.getScore();
+            if(value!=null){
+                tScore += value;
+                // 保留2位小数
+                BigDecimal bg = new BigDecimal(value);
+                paramsPara.put(strKey, bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+            }
+            //县评估值
+            strKey = String.format("v%s", mValue.getCode());
+            if(StringUtils.isNotBlank(mValue.getSvalue())) {
+                paramsPara.put(strKey, mValue.getSvalue());
+            }
+        }
+        paramsPara.put("s_t", new BigDecimal(tScore).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+
+        //统计图表
+		// 传递过正中  "+" 变为了 " "
+		picRadar1 = picRadar1.replaceAll(" ", "+");
+		picBar2 = picBar2.replaceAll(" ", "+");
+		picBarp = picBarp.replaceAll(" ", "+");
+//        picBart = picBart.replaceAll(" ", "+");
+
+		ImgBase64Util imgUtil = new ImgBase64Util();
+
+		String picRadar1Path = imgUtil.decodeBase64(picRadar1, new File(tempPath));     // 读取图片信息，返回图片保存路径
+		String picBar2Path = imgUtil.decodeBase64(picBar2, new File(tempPath));     // 读取图片信息，返回图片保存路径
+		String picBar55Path = imgUtil.decodeBase64(picBarp, new File(tempPath));     // 读取图片信息，返回图片保存路径
+//		String picBartPath = imgUtil.decodeBase64(picBart, new File(tempPath));     // 读取图片信息，返回图片保存路径
+
+		StatChart chart = new StatChart();
+		chart.setFilePath(picRadar1Path);
+		chart.setFileType("png");
+		chart.setHeight(350);
+		chart.setWidth(350);
+		paramsPara.put("radar1", chart);
+		chart = new StatChart();
+		chart.setFilePath(picBar2Path);
+		chart.setFileType("png");
+		chart.setHeight(270);
+		chart.setWidth(420);
+		paramsPara.put("bar2", chart);
+		chart = new StatChart();
+		chart.setFilePath(picBar55Path);
+		chart.setFileType("png");
+		chart.setHeight(710);
+		chart.setWidth(420);
+		paramsPara.put("barp", chart);
+		chart = new StatChart();
+		chart.setFilePath(picBark);
+		chart.setFileType("png");
+		chart.setHeight(470);
+		chart.setWidth(420);
+		paramsPara.put("bar_key", chart);
+
+		wordDataMap.put("parametersMap", paramsPara);
+		return wordDataMap;
+	}
+
 	//导出省报告
 	@At
 	@Ok("void")

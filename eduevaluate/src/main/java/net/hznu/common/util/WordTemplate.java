@@ -1,5 +1,14 @@
 package net.hznu.common.util;
 
+import net.hznu.common.chart.StatChart;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.util.Units;
+import org.apache.poi.xwpf.usermodel.*;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,17 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.poi.xwpf.usermodel.BodyElementType;
-import org.apache.poi.xwpf.usermodel.IBodyElement;
-import org.apache.poi.xwpf.usermodel.PositionInParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.apache.poi.xwpf.usermodel.XWPFTable;
-import org.apache.poi.xwpf.usermodel.XWPFTableCell;
-import org.apache.poi.xwpf.usermodel.XWPFTableRow;
-
 /**
  *
  * 对docx文件中的文本及表格中的内容进行替换 --模板仅支持对 {key} 标签的替换
@@ -341,9 +339,55 @@ public class WordTemplate {
                     // 该run标签只有{**}
                     XWPFRun insertNewRun = xWPFParagraph.insertNewRun(beginRunIndex);
                     insertNewRun.getCTR().setRPr(beginRun.getCTR().getRPr());
-                    // 设置文本
                     key.append(beginRunText.substring(1, endIndex));
-                    insertNewRun.setText(getValueBykey(key.toString(),parametersMap));
+                    Object oValue = parametersMap.get(key.toString());
+                    if(oValue instanceof StatChart) {//图表添加
+                        StatChart chart = (StatChart)oValue ;
+                        try {
+
+                            InputStream input = new FileInputStream(chart.getFilePath());
+
+                            insertNewRun.addPicture(input, getPictureType(chart.getFileType()),
+                                    chart.getFilePath(), Units.toEMU(chart.getWidth()), Units.toEMU(chart.getHeight()));
+                        } catch (InvalidFormatException | IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }else {//文本替换
+                        // 设置文本
+                        String value = String.valueOf(oValue);
+                        if(value!=""){
+                            if(value.indexOf("<p>")!=-1){
+                                org.jsoup.nodes.Document document = Jsoup.parseBodyFragment(value);
+                                Elements paraEles = document.select("p");
+                                for(Element element: paraEles){
+
+                                    Elements boldElements = element.select("strong");
+                                    if(boldElements.size()>0) {
+                                        for (Element boldEle : boldElements) {
+                                            //insertNewRun.setBold(true);
+                                            insertNewRun.setText(element.text());
+                                        }
+
+                                    }else{
+                                        insertNewRun.setText(element.text());
+                                    }
+                                    insertNewRun.addCarriageReturn();
+                                }
+                            }
+                            else {
+                                int iNewLine = value.indexOf("\n");
+                                if (iNewLine != -1) {
+                                    insertNewRun.setText(value.substring(0, iNewLine));
+                                    insertNewRun.addCarriageReturn();
+                                    insertNewRun.addTab();
+                                    insertNewRun.setText(value.substring(iNewLine, value.length()));
+                                } else {
+                                    insertNewRun.setText(value);
+                                }
+                            }
+                        }
+                    }
                     xWPFParagraph.removeRun(beginRunIndex + 1);
                 } else {
                     // 该run标签为**{**}** 或者 **{**} 或者{**}**，替换key后，还需要加上原始key前后的文本
@@ -444,6 +488,28 @@ public class WordTemplate {
 
     }
 
+    /**
+     * 根据图片类型，取得对应的图片类型代码
+     * @param picType
+     * @return int
+     */
+    private  int getPictureType(String picType){
+        int res = XWPFDocument.PICTURE_TYPE_PICT;
+        if(picType != null){
+            if(picType.equalsIgnoreCase("png")){
+                res = XWPFDocument.PICTURE_TYPE_PNG;
+            }else if(picType.equalsIgnoreCase("dib")){
+                res = XWPFDocument.PICTURE_TYPE_DIB;
+            }else if(picType.equalsIgnoreCase("emf")){
+                res = XWPFDocument.PICTURE_TYPE_EMF;
+            }else if(picType.equalsIgnoreCase("jpg") || picType.equalsIgnoreCase("jpeg")){
+                res = XWPFDocument.PICTURE_TYPE_JPEG;
+            }else if(picType.equalsIgnoreCase("wmf")){
+                res = XWPFDocument.PICTURE_TYPE_WMF;
+            }
+        }
+        return res;
+    }
 
     /**
      * 复制表格行XWPFTableRow格式
