@@ -1,6 +1,16 @@
 package net.hznu.common.util;
 
-import java.io.File;
+import net.hznu.common.chart.StatChart;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.util.Units;
+import org.apache.poi.xwpf.usermodel.*;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,23 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.util.Units;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.apache.poi.xwpf.usermodel.XWPFTable;
-import org.apache.poi.xwpf.usermodel.XWPFTableCell;
-import org.apache.poi.xwpf.usermodel.XWPFTableRow;
-
-import net.hznu.common.chart.StatChart;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.nutz.lang.stream.StringOutputStream;
 
 /**
  * 根据模板导出word文件工具类
@@ -67,6 +60,35 @@ public class XwpfUtil {
 			os.close();
 		} catch (IOException e) {
 			logger.error("文件导出错误");
+		}
+	}
+
+	public void exportWord(Map<String, Object> wordDataMap, InputStream is,
+						   HttpServletResponse response, String filename) {
+		try {
+
+			OutputStream os = response.getOutputStream();
+			response.setContentType("application/vnd.ms-excel");
+			response.setHeader("Content-disposition","attachment;filename="+filename);//文件名中文不显示
+
+//            File file = new File("/Users/maofeng/Documents/GitHub/yatspj/evaluate/target/nutzwk/WEB-INF/classes/template/SelfEvaluate.docx");//改成你本地文件所在目录
+
+			// 读取word模板
+//            FileInputStream fileInputStream = new FileInputStream(file);
+			WordTemplate template = new WordTemplate(is);
+
+			// 替换数据
+			template.replaceDocument(wordDataMap);
+
+			template.getDocument().write(os);
+
+			//关闭流
+			close(os);
+			close(is);
+			os.flush();
+			os.close();
+		} catch (IOException e) {
+//            logger.error("文件导出错误");
 		}
 	}
 
