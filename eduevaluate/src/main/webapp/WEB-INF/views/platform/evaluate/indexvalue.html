@@ -43,7 +43,7 @@ layout("/layouts/platform.html"){
             <div class="btn-group tool-button">
                 <button class="btn btn-primary navbar-btn" href="" id="searchBtn"><i class="fa fa-sliders"></i>查询</button>
             </div>
-            <a class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records" id="goback" data-pjax><i class="ti-angle-left"></i> 返回</a>
+            <a class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/indexvalue" id="goback" data-pjax><i class="ti-angle-left"></i> 返回</a>
         </div>
     </header>
     <div class=panel-body style="padding-top: 50px;">
@@ -56,6 +56,7 @@ layout("/layouts/platform.html"){
                     <th>指标序号</th>
                     <th>指标名称</th>
                     <th>监测值</th>
+                    <th>评估值</th>
                     <th>评估得分</th>
 
                 </tr>
@@ -88,7 +89,7 @@ layout("/layouts/platform.html"){
                 "url": "${base}/platform/evaluate/data",
                 "type": "post",
                 "data": function (d) {
-                    d.evaluateId = $('#evaluateId').val();
+                    //d.evaluateId = $('#evaluateId').val();
                     d.xzqhdm = $('#xzqhdm').val();
                     d.year=$('#year').val();
                     d.catacode=$('#cataid').val();
@@ -100,6 +101,7 @@ layout("/layouts/platform.html"){
                 {"data": "location", "bSortable": true},
                 {"data": "name", "bSortable": true},
                 {"data": "value", "bSortable": true},
+                {"data": "svalue", "bSortable": true},
                 {"data": "score", "bSortable": true},
                 {"data": "code","bSortable": true,"visible":false},
             ],

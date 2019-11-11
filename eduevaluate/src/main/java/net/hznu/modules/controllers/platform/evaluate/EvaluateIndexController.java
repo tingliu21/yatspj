@@ -88,7 +88,7 @@ public class EvaluateIndexController {
 				//req.setAttribute("cataList",cataList);
 				return "beetl:/platform/evaluate/indexvalue.html";
 			} else {
-				return "redirect:/platform/evaluate/records";
+				return "beetl:/platform/evaluate/records/indexvalueindex.html";
 			}
 		}
 	}
@@ -100,10 +100,11 @@ public class EvaluateIndexController {
 						   @Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
 		Cnd cnd = Cnd.NEW();
 		if(StringUtils.isNotBlank(evaluateId)){
-			cnd = cnd.and("evaluateId","=",evaluateId);
-		}else if(StringUtils.isNotBlank(xzqhdm)){
-			cnd = cnd.and("unitcode","=",xzqhdm).and("year","=",year);
+			Evaluate_index index=evaluateIndexService.fetch(evaluateId);
+			cnd = cnd.and("unitcode","=",index.getUnitcode());
 		}
+		cnd.and("year","=",year);
+
 		if(StringUtils.isNotBlank(catacode)){
 			cnd = cnd.and("catacode","like",catacode+"%");
 		}
