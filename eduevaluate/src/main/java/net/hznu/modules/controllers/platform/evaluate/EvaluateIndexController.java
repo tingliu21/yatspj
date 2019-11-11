@@ -100,7 +100,7 @@ public class EvaluateIndexController {
 						   @Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
 		Cnd cnd = Cnd.NEW();
 		if(StringUtils.isNotBlank(evaluateId)){
-			Evaluate_index index=evaluateIndexService.fetch(evaluateId);
+			Evaluate_index index=evaluateIndexService.fetch(Cnd.where("evaluateid","=",evaluateId));
 			cnd = cnd.and("unitcode","=",index.getUnitcode());
 		}
 		cnd.and("year","=",year);
