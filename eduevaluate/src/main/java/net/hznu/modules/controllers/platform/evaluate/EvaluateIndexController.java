@@ -674,14 +674,11 @@ public class EvaluateIndexController {
 	@At
 	@Ok("json")
 	@RequiresAuthentication
-	public Object get(@Param("unitcode") String unitcode, @Param("year") int year) {
-		Cnd cnd = Strings.isBlank(unitcode) ? null : Cnd.where("unitcode", "=", unitcode.trim());
-		if (year != 0) {
+	public Object get(@Param("evaluateId") String evaluateId, @Param("year") int year) {
+		Cnd cnd = Strings.isBlank(evaluateId) ? null : Cnd.where("evaluateid", "=", evaluateId.trim());
 			if (cnd == null)
-				cnd = Cnd.where("year", "=", year);
-			else
-				cnd = cnd.and("year", "=", year);
-		}
+			{cnd = Cnd.where("year", "=", Globals.EvaluateYear);}
+
 		// 获得某年某行政区的所有监测指标值及得分
 		List<Evaluate_index> list = dao.query(Evaluate_index.class, cnd, null);
 

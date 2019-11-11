@@ -111,7 +111,6 @@ layout("/layouts/platform.html"){
                     "render": function (data, type, row) {
                         html ='<div class="btn-group tool-button">' +
                             '<a class="btn btn-primary" href="${base}/platform/evaluate/evaluate_county?evaluateId=' + row.id + '" data-pjax>指标达成度</a>' +
-                            '<a class="btn btn-success" href="${base}/platform/evaluate/indexvalue?evaluateId=' + row.id + '" data-pjax>监测结果查询</a>'+
                             '</div>';
                         return html
                     },

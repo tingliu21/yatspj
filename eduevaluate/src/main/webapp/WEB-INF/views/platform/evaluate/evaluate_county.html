@@ -21,17 +21,14 @@ layout("/layouts/platform.html"){
 </style>
 <section class="content-wrap bg-white">
 	<header class="header navbar bg-white shadow">
-		<div class="btn-group tool-button">
-		<a class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/evaluate_county" id="goback" data-pjax><i class="ti-angle-left"></i> 返回</a>
-		</div>
-		<div class="btn-group tool-button">
 
-			<!--<p class="navbar-text">${xzqhmc!}监测指标</p>-->
 
-		</div>
 		<div class="pull-right">
 			<div class="btn-group tool-button">
 				<button class="btn btn-primary navbar-btn" id="export"  type="submit" data-pjax><i class="ti-share"></i> 导出报告</button>
+			</div>
+			<div class="btn-group tool-button">
+				<a class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/evaluate_county" id="goback" data-pjax><i class="ti-angle-left"></i> 返回</a>
 			</div>
 		</div>
 
@@ -887,7 +884,7 @@ layout("/layouts/platform.html"){
          showScoreByCity1('${xzqh!}',chartRadar1);
          showScoreByCity2('${xzqh!}',chartBar2);
          showScoreByCityp('${xzqh!}',chartBarp);
-         htmlobj=$.ajax({url:"${base}/platform/evaluate/get?unitcode=330102&year=2018", success: function(data){
+         htmlobj=$.ajax({url:"${base}/platform/evaluate/get?evaluateId=${evaluateId!}&year=2018", success: function(data){
                  // for(var key in data){
                  //     var value = data[key];
                  //     $("#"+key).text(value);
