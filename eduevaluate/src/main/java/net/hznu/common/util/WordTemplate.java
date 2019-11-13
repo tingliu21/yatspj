@@ -364,11 +364,13 @@ public class WordTemplate {
                                     Elements boldElements = element.select("strong");
                                     if(boldElements.size()>0) {
                                         for (Element boldEle : boldElements) {
-                                            run.setBold(true);
+                                            run.getCTR().setRPr(beginRun.getCTR().getRPr());
+                                            //run.setBold(true);
                                             run.setText(element.text());
 
                                         }
                                     }else{
+                                        run.addTab();
                                         run.setText(element.text());
                                     }
                                     run.addCarriageReturn();
@@ -384,7 +386,7 @@ public class WordTemplate {
                                     run.setText(value.substring(iNewLine, value.length()));
 
                                 } else {
-                                    xWPFParagraph.createRun().setText(value);
+                                    insertNewRun.setText(value);
                                 }
                             }
                         }
