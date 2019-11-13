@@ -884,7 +884,7 @@ layout("/layouts/platform.html"){
          showScoreByCity1('${xzqh!}',chartRadar1);
          showScoreByCity2('${xzqh!}',chartBar2);
          showScoreByCityp('${xzqh!}',chartBarp);
-         htmlobj=$.ajax({url:"${base}/platform/evaluate/get?evaluateId=${evaluateId!}&year=2018", success: function(data){
+         htmlobj=$.ajax({url:"${base}/platform/evaluate/get?evaluateId=${evaluateId!}", success: function(data){
                  // for(var key in data){
                  //     var value = data[key];
                  //     $("#"+key).text(value);

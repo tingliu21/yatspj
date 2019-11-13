@@ -354,36 +354,37 @@ public class WordTemplate {
                             e.printStackTrace();
                         }
                     }else {//文本替换
-                        // 设置文本
                         String value = String.valueOf(oValue);
                         if(value!=""){
                             if(value.indexOf("<p>")!=-1){
                                 org.jsoup.nodes.Document document = Jsoup.parseBodyFragment(value);
                                 Elements paraEles = document.select("p");
                                 for(Element element: paraEles){
-
+                                    XWPFRun run = xWPFParagraph.createRun();
                                     Elements boldElements = element.select("strong");
                                     if(boldElements.size()>0) {
                                         for (Element boldEle : boldElements) {
-                                            //insertNewRun.setBold(true);
-                                            insertNewRun.setText(element.text());
-                                        }
+                                            run.setBold(true);
+                                            run.setText(element.text());
 
+                                        }
                                     }else{
-                                        insertNewRun.setText(element.text());
+                                        run.setText(element.text());
                                     }
-                                    insertNewRun.addCarriageReturn();
+                                    run.addCarriageReturn();
                                 }
                             }
                             else {
                                 int iNewLine = value.indexOf("\n");
                                 if (iNewLine != -1) {
-                                    insertNewRun.setText(value.substring(0, iNewLine));
-                                    insertNewRun.addCarriageReturn();
-                                    insertNewRun.addTab();
-                                    insertNewRun.setText(value.substring(iNewLine, value.length()));
+                                    XWPFRun run = xWPFParagraph.createRun();
+                                    run.setText(value.substring(0, iNewLine));
+                                    run.addCarriageReturn();
+                                    run.addTab();
+                                    run.setText(value.substring(iNewLine, value.length()));
+
                                 } else {
-                                    insertNewRun.setText(value);
+                                    xWPFParagraph.createRun().setText(value);
                                 }
                             }
                         }

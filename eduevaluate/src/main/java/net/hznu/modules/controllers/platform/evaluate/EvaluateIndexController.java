@@ -369,7 +369,7 @@ public class EvaluateIndexController {
 		return monitorSumValueList;
 	}
 
-	//导出县报告
+	//导出县报告(2017年的导出方式)
 	@At
 	@Ok("void")
 	public void exportCounty2(HttpServletResponse resp, HttpServletRequest req, @Param("evaluateId") String evaluateId,
@@ -441,7 +441,7 @@ public class EvaluateIndexController {
 		}
 	}
 
-	//导出县报告
+	//导出县报告（2018年的导出方式，更替了模板，XwpfUtil-->Wordtemplate）
 	@At
 	@Ok("void")
 	public void exportCounty(HttpServletResponse resp, HttpServletRequest req, @Param("evaluateId") String evaluateId,
@@ -457,11 +457,8 @@ public class EvaluateIndexController {
 			//读入word模板
 			InputStream is = getClass().getClassLoader().getResourceAsStream("template/CountyTemplate_" + Globals.EvaluateYear + ".docx");
 			try {
-				Evaluate_records rcd = evaluateRecordsService.fetch(evaluateId);
-				String unitid = rcd.getUnitID();
-				Sys_unit unit = sysUnitService.fetch(unitid);
-				String xzqhmc = unit.getXzqhmc();
-				String filename = "浙江省县（市、区）教育现代化发展水平报告_" + xzqhmc + ".docx";
+
+				String filename = "县级教育现代化水平报告_" + evaluateId + ".docx";
 				filename = URLEncoder.encode(filename, "UTF-8");
 				xwpfUtil.exportWord(wordDataMap, is, resp, filename);
 			} catch (UnsupportedEncodingException e) {
@@ -674,7 +671,7 @@ public class EvaluateIndexController {
 	@At
 	@Ok("json")
 	@RequiresAuthentication
-	public Object get(@Param("evaluateId") String evaluateId, @Param("year") int year) {
+	public Object get(@Param("evaluateId") String evaluateId) {
 		Cnd cnd = Strings.isBlank(evaluateId) ? null : Cnd.where("evaluateid", "=", evaluateId.trim());
 			if (cnd == null)
 			{cnd = Cnd.where("year", "=", Globals.EvaluateYear);}
