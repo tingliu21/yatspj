@@ -365,7 +365,6 @@ public class WordTemplate {
                                     if(boldElements.size()>0) {
                                         for (Element boldEle : boldElements) {
                                             run.getCTR().setRPr(beginRun.getCTR().getRPr());
-                                            //run.setBold(true);
                                             run.setText(element.text());
 
                                         }

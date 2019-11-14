@@ -15,10 +15,10 @@ import net.hznu.modules.models.monitor.Monitor_catalog;
 import net.hznu.modules.models.monitor.Monitor_index;
 import net.hznu.modules.models.sys.Sys_config;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.xwpf.usermodel.*;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
@@ -500,7 +500,7 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
                         break;
                 }
 
-                suggestion +=  cNo2 + "关于" + catalog2.getName()+"</strong><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                suggestion +=  cNo2 + "关于" + catalog2.getName()+"</strong><p>";
                 strRemarks1+= cNo2 + "关于" + catalog2.getName();
                 List<MonitorIndexReport> rptTemps1 = dao().query(MonitorIndexReport.class, Cnd.where("year","=",year).and("left(catacode,4)", "=", catalog2.getCatacode()).asc("catacode").asc("code"));
                 //List<String>iNos=null;
