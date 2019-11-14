@@ -500,7 +500,7 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
                         break;
                 }
 
-                suggestion +=  cNo2 + "关于" + catalog2.getName()+"</strong><p>";
+                suggestion +=  cNo2 + "关于" + catalog2.getName()+"</strong><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                 strRemarks1+= cNo2 + "关于" + catalog2.getName();
                 List<MonitorIndexReport> rptTemps1 = dao().query(MonitorIndexReport.class, Cnd.where("year","=",year).and("left(catacode,4)", "=", catalog2.getCatacode()).asc("catacode").asc("code"));
                 //List<String>iNos=null;
