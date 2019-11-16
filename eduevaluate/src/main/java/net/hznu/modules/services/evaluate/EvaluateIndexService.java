@@ -487,21 +487,24 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
                 String cNo2 = "";
                 switch (catalog2.getCatacode().substring(2,4)) {
                     case "01":
-                        cNo2 = "<p>&nbsp;&nbsp;<strong>1.";
+                        cNo2 = "<p>&nbsp;&nbsp;<strong>1.关于";
                         break;
                     case "02":
-                        cNo2 = "<p>&nbsp;&nbsp;<strong>2.";
+                        cNo2 = "<p>&nbsp;&nbsp;<strong>2.关于";
                         break;
                     case "03":
-                        cNo2 = "<p>&nbsp;&nbsp;<strong>3.";
+                        cNo2 = "<p>&nbsp;&nbsp;<strong>3.关于";
                         break;
-                    default:
-                        cNo2 = "<p>&nbsp;&nbsp;<strong>";
+                    default://"00"的情况，如反向扣分
+                        cNo2 = "";
                         break;
                 }
-
-                suggestion +=  cNo2 + "关于" + catalog2.getName()+"</strong><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-                strRemarks1+= cNo2 + "关于" + catalog2.getName();
+                if(!cNo2.isEmpty()) {
+                    suggestion += cNo2 + catalog2.getName() + "</strong></p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                }else {
+                    suggestion +=  "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                }
+                strRemarks1+= cNo2  + catalog2.getName();
                 List<MonitorIndexReport> rptTemps1 = dao().query(MonitorIndexReport.class, Cnd.where("year","=",year).and("left(catacode,4)", "=", catalog2.getCatacode()).asc("catacode").asc("code"));
                 //List<String>iNos=null;
 
@@ -549,9 +552,7 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
                 }
                 suggestion+="</p><br/>";
             }
-            if (Strings.isEmpty(strRemarks1)) {
-                suggestion+="<p>无</p>";
-            }
+
         }
         dao().execute(Sqls.create("insert into evaluate_special(evaluateid,remark1,remark2,remarkp,suggestion) values (@evaluateid,@remark1,@remark2,@remarkp,@suggestion)")
                 .setParam("evaluateid",eid).setParam("remark1",remark1).setParam("remark2",remark2).setParam("remarkp",remarkp).setParam("suggestion",suggestion));
