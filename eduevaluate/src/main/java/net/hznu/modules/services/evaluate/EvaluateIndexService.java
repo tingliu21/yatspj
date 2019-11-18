@@ -433,10 +433,10 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
         for(int i=0;i<values_c.length;i++){
             if(values_c[i]==0){
                 num_0++;
-                str_0 += tplConfig.get("tplp_l").replace("@n_i",indexList.get(i).getName());
+                str_0 += tplConfig.get("tplp_l").replace("@i",indexList.get(i).getCode()).replace("@n_i",indexList.get(i).getName());
             }else if(values_c[i]<values_p[i]){
                 num_s++;
-                str_s += tplConfig.get("tplp_l").replace("@n_i",indexList.get(i).getName());
+                str_s += tplConfig.get("tplp_l").replace("@i",indexList.get(i).getCode()).replace("@n_i",indexList.get(i).getName());
             }
         }
         //去掉末尾顿号；
@@ -449,7 +449,6 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
         if(str_s!="") {
             str_s = str_s.substring(0,str_s.length()-1);
             strLoop	= tplConfig.get("tplp_s").replace("@cnt_s",String.valueOf(num_s)).replace("@tplp_l",str_s);
-
         }
         remarkp = remarkp.replace("@cnt",String.valueOf(fieldnames.size())).replace("@tplp_s",strLoop);
         //评语建议
