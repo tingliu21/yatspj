@@ -35,11 +35,12 @@ layout("/layouts/platform.html"){
 <script type="text/javascript">
     var uploadedDataURL = "${base!}/assets/data/zjxzqh.json";
     var myChart = echarts.init(document.getElementById('main'));
+    var name = 'zj';
+    $.get(uploadedDataURL, function (geoJson) {
+        echarts.registerMap('zj', geoJson);
+    });
     function showProvince( year,chartMap) {
-        var name = 'zj';
-        $.get(uploadedDataURL, function (geoJson) {
-            echarts.registerMap(name, geoJson);
-            $.get('${base!}/platform/evaluate/getTotalScoreByCity?year='+year+'&xzqhdm=330000').done(function (data) {
+        $.get('${base!}/platform/evaluate/getTotalScoreByCity?year='+year+'&xzqhdm=330000').done(function (data) {
                 // 填入数据
                 var jsondata = data;
                 var titledata = [];
@@ -126,10 +127,12 @@ layout("/layouts/platform.html"){
                         data: top10data
                     }]
                 });
+                chartMap.on('click',function (params) {
+                    console.log(params.data.code);
+
+                })
 
             });
-        });
-
     }
     $(document).ready(function () {
         showProvince($("#year").val(),myChart);
