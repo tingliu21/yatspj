@@ -113,22 +113,23 @@ layout("/layouts/platform.html"){
                     "render": function (data, type, row) {
                         html = '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/detail/' + row.id + '" data-toggle="modal" data-target="#dialogDetail"><span class="glyphicon glyphicon-eye-open"></span>查看</a>';
                         //2019-01-06 专家可以看到所有的指标
-                        if(row.department == '${@shiro.getPrincipalProperty("unitid")}'){
+                        //如果用户有专家审核的所有权限，能进行考评
+                        <% if(@shiro.hasPermission("evaluate.verify.special.all")){%>
+                            html+='<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/speceva/' + row.id + '"  data-backdrop="false" data-toggle="modal" data-target="#dialogEvaluate">' +
+                                '   <span class="glyphicon glyphicon-pencil"></span> 评价</a>' +
+                                '</div>';
+                        <%}else{%>
+                        if(row.department == '${@shiro.getPrincipalProperty("unitid")}' && row.specialid == '${@shiro.getPrincipalProperty("id")}'){
                             //判断记录是否锁定
                             //if(row.locked == false) {
                             //专家只能考评自己负责的指标
-                            if (row.specialid == '${@shiro.getPrincipalProperty("id")}') {
-                                html += '<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/speceva/' + row.id + '"   data-backdrop="false" data-toggle="modal" data-target="#dialogEvaluate">' + '   <i class="ti-plus"></i> 考评</a>' + '</div>';
-                            }
+
+                            html += '<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/speceva/' + row.id + '"   data-backdrop="false" data-toggle="modal" data-target="#dialogEvaluate">' + '   <i class="ti-plus"></i> 考评</a>' + '</div>';
+
                             //}
-                        }else {
-                            //如果用户不属于专家部门，但有专家审核的所有权限，也能进行考评
-                            <% if(@shiro.hasPermission("evaluate.verify.special.all")){%>
-                                html+='<div class="btn-group-vertical"><a class="btn btn-warning" href="${base}/platform/evaluate/remark/speceva/' + row.id + '"  data-backdrop="false" data-toggle="modal" data-target="#dialogEvaluate">' +
-                                    '   <span class="glyphicon glyphicon-pencil"></span> 评价</a>' +
-                                    '</div>';
-                            <%}%>
                         }
+
+                        <%}%>
                         return  html;
                     },
 
