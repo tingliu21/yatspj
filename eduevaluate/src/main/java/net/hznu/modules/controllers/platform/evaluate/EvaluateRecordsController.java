@@ -62,9 +62,10 @@ public class EvaluateRecordsController {
     @At("")
     @Ok("beetl:/platform/evaluate/records/index.html")
     @RequiresAuthentication
-    public void index() {
-
+    public void index(HttpServletRequest req) {
+        req.setAttribute("cityList",sysUnitService.query(Cnd.where("level","=",2).and("unitcode","like","33%").asc("unitcode")));
     }
+
     @At("/special")
     @Ok("beetl:/platform/evaluate/records/specialindex.html")
     @RequiresAuthentication
@@ -74,9 +75,18 @@ public class EvaluateRecordsController {
     @At
     @Ok("json:full")
     @RequiresAuthentication
-    public Object data(@Param("year") int year,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
+    public Object data(@Param("year") int year,@Param("unitcode") String unitcode,@Param("xzqhmc") String xzqhmc,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
         Cnd cnd = Cnd.NEW();
-        cnd.and("year","=",year);
+        if(year!=0) {
+            cnd.and("year", "=", year);
+        }
+        if(!Strings.isEmpty(unitcode)) {
+            cnd.and("unitcode", "like", unitcode.substring(0, 4) + "%");
+        }
+        if(!Strings.isEmpty(xzqhmc)) {
+            cnd.and("xzqhmc", "like", "%"+xzqhmc + "%");
+        }
+        cnd.desc("year").asc("unitcode");
         return evaluateRecordsService.data(length, start, draw, order, columns, cnd, "unit");
     }
     //获取专家评审列表

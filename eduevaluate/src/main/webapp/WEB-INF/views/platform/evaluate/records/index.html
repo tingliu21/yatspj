@@ -17,6 +17,9 @@ layout("/layouts/platform.html"){
             </div>
         </div>
         <div class="pull-right">
+            <button class="btn btn-primary navbar-btn" onclick="sublime.toggleFilter('.cd-panel')"><i
+                    class="fa fa-sliders"></i> 筛选
+            </button>
             <div class="btn-group tool-button">
                 <a class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/upload" data-toggle="modal" data-target="#dialogImp"><i class="ti-import"></i>评估结果导入</a>
             </div>
@@ -39,6 +42,29 @@ layout("/layouts/platform.html"){
         </div>
     </div>
 </section>
+<div class="cd-panel from-right">
+    <header class="cd-panel-header">
+        <h4>高级筛选</h4>
+    </header>
+    <div class="cd-panel-container">
+        <div class="cd-panel-content shadow">
+            <div class="form-group">
+                <label for="city">市级评估单位</label>
+                <select class="form-control" id="city" name="city"  placeholder="选择地市" >
+                    <% for(obj in cityList){
+                    %>
+                    <option value=${obj.unitcode!}>${obj.xzqhmc!}</option>
+                    <%} %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="county">县级评估单位</label>
+                <input type="text" id="county" name="county" onclick="this.value=''" class="form-control" placeholder="县级评估单位">
+            </div>
+            <button id="searchBtn" type="button" class="btn btn-default">查询</button>
+        </div>
+    </div>
+</div>
 <div id="dialogDelete" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -97,6 +123,8 @@ layout("/layouts/platform.html"){
                 "type": "post",
                 "data": function (d) {
                     d.year=$('#year').val();
+                    d.xzqhmc=$('#county').val();
+                    d.unitcode=$('#city').val();
                 }
             },
             "order": [[1, "asc"]],

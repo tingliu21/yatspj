@@ -61,6 +61,9 @@ public class Evaluate_index extends Model implements Serializable{
     private String name;
     @Column
     @Readonly
+    private String weights;
+    @Column
+    @Readonly
     private String xzqhmc;
     @Column
     @Readonly

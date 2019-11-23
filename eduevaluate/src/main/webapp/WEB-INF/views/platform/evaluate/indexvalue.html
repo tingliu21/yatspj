@@ -9,16 +9,6 @@ layout("/layouts/platform.html"){
 <section class="content-wrap bg-white">
     <header class="header navbar bg-white shadow">
         <div class="btn-group" style="padding-top: 5px;">
-            <div>
-                <label for="year">评估年度：</label>
-                <select id="year" name="year"  placeholder="选择评估年度" >
-                    <option value="2016">2016</option>
-                    <option value="2017">2017</option>
-                    <option value="2018" selected>2018</option>
-                </select>
-            </div>
-        </div>
-        <div class="btn-group" style="padding-top: 5px;">
 
             <div >
                 <select id="cataid" name="cataid" class=""   placeholder="选择监测指标" style="width: 100%">
@@ -33,7 +23,6 @@ layout("/layouts/platform.html"){
                 </select>
             </div>
         </div>
-        注：改变年度后需重新选择指标监测点
         <!--<div class="btn-group tool-button">-->
             <!--<p class="navbar-text">监测评估单位列表</p>-->
             <!---->
@@ -49,16 +38,17 @@ layout("/layouts/platform.html"){
     </header>
     <div class=panel-body style="padding-top: 50px;">
         <input type="hidden" id="evaluateId" value="${evaluateId!}"/>
+        <input type="hidden" id="year" value="${year!}"/>
         <div class="table-responsive no-border">
             <table class="table table-bordered table-striped mg-t datatable">
                 <thead>
                 <tr>
                     <th>指标序号</th>
                     <th>指标名称</th>
+                    <th>权重</th>
                     <th>监测值</th>
                     <th>评估值</th>
                     <th>评估得分</th>
-
                 </tr>
                 </thead>
             </table>
@@ -100,6 +90,7 @@ layout("/layouts/platform.html"){
             "columns": [
                 {"data": "location", "bSortable": true},
                 {"data": "name", "bSortable": true},
+                {"data": "weights", "bSortable": true},
                 {"data": "value", "bSortable": true},
                 {"data": "svalue", "bSortable": true},
                 {"data": "score", "bSortable": true},
@@ -118,6 +109,7 @@ layout("/layouts/platform.html"){
             datatable.ajax.reload();
         });
     }
+
 
     //绑定字典内容到指定的Select控件
     function BindSelect(ctrlName, url) {
@@ -145,16 +137,15 @@ layout("/layouts/platform.html"){
             });
         });
     }
-
+    var catacode=null;
     $(function () {
         initDatatable();
         //绑定添加界面的公司、部门、直属经理
         BindSelect("cataid", "${base}/platform/monitor/catalog/tree2?year="+$("#year").val());
-        $("#year").on("change",function (e) {
-            BindSelect("cataid", "${base}/platform/monitor/catalog/tree2?year="+$("#year").val());
-        })
+        catacode = $('#cataid').val();
+        BindSelect("indexid", "${base}/platform/monitor/index/tree?year="+$("#year").val()+"&catacode="+ catacode);
         $("#cataid").on("change", function (e) {
-            var catacode = $("#cataid").val();
+             catacode = $('#cataid').val();
             BindSelect("indexid", "${base}/platform/monitor/index/tree?year="+$("#year").val()+"&catacode="+ catacode);
         });
 

@@ -154,4 +154,13 @@ public class SysUnitController {
         }
         return tree;
     }
+
+    //根据地市获取县级hzqh
+    @At
+    @Ok("json")
+    @RequiresAuthentication
+    public Object GetCountysByCity(@Param("unitcode") String unitcode) {
+        List<Sys_unit> countyList=unitService.query(Cnd.where("unitcode","like",unitcode.substring(0,4)+"%").and("level","=",3).asc("unitcode"));
+        return countyList;
+    }
 }

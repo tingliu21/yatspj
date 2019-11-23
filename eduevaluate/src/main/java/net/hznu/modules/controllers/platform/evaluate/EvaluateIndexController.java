@@ -69,12 +69,12 @@ public class EvaluateIndexController {
 	@At
 	@Ok("re")
 	@RequiresAuthentication
-	public String indexvalue(@Param("evaluateId") String evaluateId, HttpServletRequest req) {
+	public String indexvalue(@Param("year") int year,@Param("evaluateId") String evaluateId, HttpServletRequest req) {
 
 
 		if (StringUtils.isNotBlank(evaluateId)) {
 			req.setAttribute("evaluateId", evaluateId);
-
+			req.setAttribute("year",year);
 			return "beetl:/platform/evaluate/indexvalue.html";
 		} else {
 			//获取当前用户id
@@ -85,9 +85,12 @@ public class EvaluateIndexController {
 			int level = sysUnit.getLevel();
 			if (level == 3) {
 				req.setAttribute("xzqhdm", sysUnit.getUnitcode());
+				req.setAttribute("year",year);
 				//req.setAttribute("cataList",cataList);
 				return "beetl:/platform/evaluate/indexvalue.html";
 			} else {
+				req.setAttribute("year",year);
+				req.setAttribute("cityList",sysUnitService.query(Cnd.where("level","=",2).and("unitcode","like","33%").asc("unitcode")));
 				return "beetl:/platform/evaluate/records/indexvalueindex.html";
 			}
 		}
