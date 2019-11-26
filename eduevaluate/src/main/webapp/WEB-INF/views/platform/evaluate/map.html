@@ -3,6 +3,7 @@ layout("/layouts/platform.html"){
 %>
 <section class="content-wrap bg-white">
     <header class="header navbar bg-white shadow">
+        <input type="hidden" id="unitcode"/>
         <div class="btn-group" style="padding-top: 5px;">
             <div>
                 <label for="year">评估年度：</label>
@@ -71,6 +72,7 @@ layout("/layouts/platform.html"){
                         z: 2,
                         type: 'map',
                         mapType: name,
+                        roam: true,
                         left: '10',
                         right: '40%',
                         top: 50,
@@ -128,8 +130,8 @@ layout("/layouts/platform.html"){
                     }]
                 });
                 chartMap.on('click',function (params) {
-                    console.log(params.data.code);
-
+                    $('#unitcode').val(params.data.code);
+                    window.location.href="${base}/platform/evaluate/evaluate_county?unitcode="+$('#unitcode').val();
                 })
 
             });

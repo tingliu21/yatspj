@@ -122,14 +122,23 @@ public class EvaluateIndexController {
 	@Ok("re")
 	//@Ok("beetl:/platform/evaluate/evaluate_county.html")
 	@RequiresAuthentication
-	public String evaluate_county(@Param("evaluateId") String evaluateId, HttpServletRequest req) {
+	public String evaluate_county(@Param("evaluateId") String evaluateId,@Param("unitcode") String unitcode, HttpServletRequest req) {
 		if (StringUtils.isNotBlank(evaluateId)) {
 			Evaluate_records record = evaluateRecordsService.fetch(evaluateId);
 			req.setAttribute("evaluateId",evaluateId);
 			req.setAttribute("xzqh", record.getUnitcode());
 			req.setAttribute("xzqhmc",record.getXzqhmc());
 			return "beetl:/platform/evaluate/evaluate_county.html";
-		} else {
+		}
+		else if(StringUtils.isNotBlank(unitcode))
+        {
+            Evaluate_records record=evaluateRecordsService.fetch(Cnd.where("unitcode","=",unitcode).and("year","=",Globals.EvaluateYear));
+            req.setAttribute("xzqh",unitcode);
+            req.setAttribute("evaluateId",record.getId());
+            req.setAttribute("xzqhmc",record.getXzqhmc());
+            return "beetl:/platform/evaluate/evaluate_county.html";
+        }
+		else {
 			//获取当前用户id
 			Subject subject = SecurityUtils.getSubject();
 			Sys_user user = (Sys_user) subject.getPrincipal();
