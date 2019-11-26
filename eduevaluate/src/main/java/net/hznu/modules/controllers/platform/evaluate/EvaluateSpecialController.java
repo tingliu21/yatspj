@@ -45,9 +45,9 @@ public class EvaluateSpecialController {
 	@At("")
 	@Ok("beetl:/platform/evaluate/special/index.html")
 	@RequiresAuthentication
-	public Object index(@Param("evaluateId") String evaluateId, HttpServletRequest req) {
+	public void index(HttpServletRequest req) {
 
-		return evaluateSpecialService.fetch(evaluateId);
+
 	}
 
 	@At
@@ -202,7 +202,6 @@ public class EvaluateSpecialController {
 			req.setAttribute("evaluateId",evaluateId);
 			req.setAttribute("xzqh", record.getUnitcode());
 			req.setAttribute("xzqhmc",record.getXzqhmc());
-
 		}
 		return evaluateSpecialService.fetch(evaluateId);
 	}

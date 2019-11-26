@@ -9,7 +9,7 @@ import java.io.Serializable;
  * Created by liuting on 2019/8/23.
  */
 @Table("evaluate_special")
-
+@View("evaluate_special_view")
 public class Evaluate_special extends Model implements Serializable {
     @Column
     @Name
@@ -38,6 +38,15 @@ public class Evaluate_special extends Model implements Serializable {
     @Comment("建议评语")
     @ColDefine(type = ColType.VARCHAR, width = 2000)
     private String suggestion;
+    @Column
+    @Readonly
+    private String unitcode;
+    @Column
+    @Readonly
+    private String xzqhmc;
+    @Column
+    @Readonly
+    private boolean status;
 
     public String getEvaluateId() {
         return evaluateId;
@@ -85,5 +94,27 @@ public class Evaluate_special extends Model implements Serializable {
 
     public void setSuggestion(String suggestion) {
         this.suggestion = suggestion;
+    }
+    public String getUnitcode() {
+        return unitcode;
+    }
+
+    public void setUnitcode(String unitcode) {
+        this.unitcode = unitcode;
+    }
+
+    public String getXzqhmc() {
+        return xzqhmc;
+    }
+
+    public void setXzqhmc(String xzqhmc) {
+        this.xzqhmc = xzqhmc;
+    }
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 }
