@@ -36,10 +36,9 @@ layout("/layouts/platform.html"){
 <script type="text/javascript">
     var uploadedDataURL = "${base!}/assets/data/zjxzqh.json";
     var myChart = echarts.init(document.getElementById('main'));
-    var name = 'zj';
-    $.get(uploadedDataURL, function (geoJson) {
-        echarts.registerMap('zj', geoJson);
-    });
+
+
+
     function showProvince( year,chartMap) {
         $.get('${base!}/platform/evaluate/getTotalScoreByCity?year='+year+'&xzqhdm=330000').done(function (data) {
                 // 填入数据
@@ -71,7 +70,7 @@ layout("/layouts/platform.html"){
                     series: [{
                         z: 2,
                         type: 'map',
-                        mapType: name,
+                        map: 'Zhejiang',
                         roam: true,
                         left: '10',
                         right: '40%',
@@ -137,11 +136,16 @@ layout("/layouts/platform.html"){
             });
     }
     $(document).ready(function () {
-        showProvince($("#year").val(),myChart);
-
-        $("#year").change(function () {
+        $.get(uploadedDataURL, function (geoJson) {
+            echarts.registerMap('Zhejiang', geoJson);
+            $("#year").change(function () {
+                showProvince($("#year").val(),myChart);
+            });
             showProvince($("#year").val(),myChart);
         });
+
+
+
 
     });
     window.addEventListener("resize", () => {

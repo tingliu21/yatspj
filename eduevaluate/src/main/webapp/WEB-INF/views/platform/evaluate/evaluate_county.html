@@ -21,8 +21,6 @@ layout("/layouts/platform.html"){
 </style>
 <section class="content-wrap bg-white">
 	<header class="header navbar bg-white shadow">
-
-
 		<div class="pull-right">
 			<div class="btn-group tool-button">
 				<button class="btn btn-primary navbar-btn" id="export"  type="submit" data-pjax><i class="ti-share"></i> 导出报告</button>
@@ -899,6 +897,10 @@ layout("/layouts/platform.html"){
 				}
              }});
          $("#export").on("click",function(){
+             if('${status!}'==='false'){
+                 Toast.error("报告还在修改中，不能导出");
+                 return false;
+             }
              var chartExportUrl = '${base!}/platform/evaluate/exportCounty?evaluateId=${evaluateId!}';
              var picRadar1 = chartRadar1.getDataURL();//获取echarts图的base64编码，为png格式。
              var picBar2 = chartBar2.getDataURL();//获取echarts图的base64编码，为png格式。

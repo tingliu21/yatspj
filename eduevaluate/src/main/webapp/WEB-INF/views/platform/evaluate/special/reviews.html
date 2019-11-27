@@ -22,7 +22,7 @@ layout("/layouts/platform.html"){
     <form id="addForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
           action="${base}/platform/evaluate/special/editDo" method="post">
         <input id="evaluateId" name="evaluateId" value="${obj.evaluateId!}" type="hidden">
-        <input id="bSubmit" name="bSubmit" value="false" type="hidden">
+        <input id="bSubmit" name="bSubmit" value="${obj.status!}" type="hidden">
 
         <div class=panel-body style="padding-top: 50px;">
             <!-- 为ECharts准备具备大小（宽高）的Dom -->
@@ -171,7 +171,7 @@ layout("/layouts/platform.html"){
 
     var ue,ue1,ue2,uep;
     function sub() {
-        if($('#bSubmit').val()){
+        if($('#bSubmit').val()==='true'){
             Toast.error("已提交，不能重复提交");
             return false;
         }
@@ -306,10 +306,11 @@ layout("/layouts/platform.html"){
         },500);
 
         $("#save").on("click",function(){
+            if($('#bSubmit').val()==='true'){
+                Toast.error("已提交，不能再保存");
+                return false;
+            }
             $("#footer_content").val(ue.getContent());
-            /*$("#footer_content").val(ue1.getContent());
-            $("#footer_content").val(ue2.getContent());
-            $("#footer_content").val(uep.getContent());*/
             $('#addForm').submit();
         });
         $('#addForm').ajaxForm({
@@ -320,7 +321,7 @@ layout("/layouts/platform.html"){
             success: function (data, statusText, xhr, form) {
                 if (data.code == 0) {
                     Toast.success(data.msg);
-                    if($("#bSubmit").val()){
+                    if($("#bSubmit").val()==='true'){
                         //点击提交后返回评估指标列表页
                         setTimeout(function () {
                             $("#goback").trigger("click");

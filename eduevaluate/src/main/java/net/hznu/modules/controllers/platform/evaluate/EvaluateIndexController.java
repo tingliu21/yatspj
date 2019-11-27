@@ -150,6 +150,7 @@ public class EvaluateIndexController {
 				req.setAttribute("evaluateId",record.getId());
 				req.setAttribute("xzqh", sysUnit.getUnitcode());
 				req.setAttribute("xzqhmc",sysUnit.getXzqhmc());
+				req.setAttribute("status",record.isStatus());
 				return "beetl:/platform/evaluate/evaluate_county.html";
 			} else {
 				return "redirect:/platform/evaluate/records";
