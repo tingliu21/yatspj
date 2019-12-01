@@ -49,6 +49,7 @@
                             <label for="score_p" class="col-sm-2 control-label">审核得分</label>
                             <div class="col-sm-8">
                                 <input type="text" id="score_p" class="form-control" name="score_p" data-parsley-required="true"
+                                       data-parsley-min="0" data-parsley-max="${obj.index.weights}"
                                        placeholder="专家打分" value="${obj.score_p}" >
                             </div>
                         </div>
