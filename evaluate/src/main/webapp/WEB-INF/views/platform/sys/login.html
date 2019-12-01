@@ -91,7 +91,7 @@
                                             <p id="tip" class="bg-danger p15" style="display:none"></p>
 
                                             <div class="show">
-                                                <button class="btn btn-primary btn-lg btn-block" type="submit"
+                                                <button class="btn btn-primary btn-lg btn-block" type="submit"  id="sub" disabled="disabled"
                                                         data-loading-text="${msg['login.submit']}...">
                                                     ${msg['login.submit']}
                                                 </button>
@@ -152,7 +152,7 @@
                                             <p id="tip1" class="bg-danger p15" style="display:none"></p>
 
                                             <div class="show">
-                                                <button class="btn btn-danger btn-lg btn-block" type="submit"
+                                                <button class="btn btn-danger btn-lg btn-block" type="submit" id="schoolSub"  disabled="disabled"
                                                         data-loading-text="${msg['login.submit']}...">
                                                     ${msg['login.submit']}
                                                     <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
@@ -204,7 +204,7 @@
                                             <p id="tip2" class="bg-danger p15" style="display:none"></p>
 
                                             <div class="show">
-                                                <button class="btn btn-success btn-lg btn-block" type="submit"
+                                                <button class="btn btn-success btn-lg btn-block" type="submit"  id="specialSub"  disabled="disabled"
                                                         data-loading-text="${msg['login.submit']}...">
                                                     ${msg['login.submit']}
                                                     <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
@@ -284,6 +284,9 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $("#year").html(new Date().getFullYear());
+        $('#sub').removeAttr("disabled");
+        $('#schoolSub').removeAttr("disabled");
+        $('#specialSub').removeAttr("disabled");
         $("#loginForm").ajaxForm({
             dataType: 'json',
             beforeSubmit: function (arr, form, options) {
