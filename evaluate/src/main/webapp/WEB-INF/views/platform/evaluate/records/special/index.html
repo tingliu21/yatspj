@@ -8,6 +8,15 @@ layout("/layouts/platform.html"){
             <p class="navbar-text"><i class="fa mr5"></i>专家审核评估</p>
 
         </div>
+        <div class="pull-right">
+        <div class="btn-group tool-button">
+            <a id="add" class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/add" data-pjax><i class="ti-plus"></i>初始化数据</a>
+
+        </div>
+        <button class="btn btn-primary navbar-btn" onclick="sublime.toggleFilter('.cd-panel')"><i
+                class="fa fa-sliders"></i> 筛选
+        </button>
+        </div>
     </header>
     <div class=panel-body style="padding-top: 50px;">
         <div class="table-responsive no-border">
@@ -15,13 +24,13 @@ layout("/layouts/platform.html"){
                 <thead>
                     <tr>
                             <th class="col-md-1">学年</th>
+                            <th class="col-md-1">评估组别</th>
                             <th class="col-md-1">学校类型</th>
                             <th>学校名称</th>
                             <th class="col-md-1">权重</th>
                             <th class="col-md-1">评估得分</th>
                             <th class="col-md-1">评估进度</th>
                             <th class="col-md-1">评估状态</th>
-
                             <th>操作</th>
                     </tr>
                 </thead>
@@ -29,6 +38,31 @@ layout("/layouts/platform.html"){
         </div>
     </div>
 </section>
+<div class="cd-panel from-right">
+    <header class="cd-panel-header">
+        <h4>高级筛选</h4>
+    </header>
+    <div class="cd-panel-container">
+        <div class="cd-panel-content shadow">
+            <div class="form-group">
+                <label for="year">评估学年</label>
+                <select class="form-control" name="year" id="year">
+                    <option value="2018">2018</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="taskname">评估组别</label>
+                <select class="form-control" name="taskname" id="taskname">
+                    <option value="">请选择</option>
+                    <option value="第一批">第一批</option>
+                    <option value="第二批">第二批</option>
+                    <option value="第三批">第三批</option>
+                </select>
+            </div>
+            <button id="searchBtn" type="button" class="btn btn-default">查询</button>
+        </div>
+    </div>
+</div>
 <div id="dialogDelete" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -80,12 +114,14 @@ layout("/layouts/platform.html"){
                 "url": "${base}/platform/evaluate/records/specdata",
                 "type": "post",
                 "data": function (d) {
-                    //d.nutz = $('#nutz').val();
+                    d.taskname=$('#taskname').val();
+                    d.year=$('#year').val();
                 }
             },
             "order": [[0, "desc"]],
             "columns": [
                     {"data": "year", "bSortable": true},
+                    {"data": "taskname", "bSortable": true},
                     {"data": "school.unitType", "bSortable": true},
                     {"data": "school.name", "bSortable": true},
                     {"data": "weights", "bSortable": true},
@@ -104,7 +140,7 @@ layout("/layouts/platform.html"){
                         return '<i id="disable_' + row.id + '" class="fa">初中</i>';
                     }
                 },
-                "targets": 1
+                "targets": 2
             },
             {
                 "render": function (data, type, row) {
@@ -114,17 +150,17 @@ layout("/layouts/platform.html"){
                         return '<i id="disable_' + row.id + '" class="fa fa-circle text-danger ml5">已完成</i>';
                     }
                 },
-                "targets": 6
+                "targets": 7
             },
             {
                 "render": function (data, type, row) {
                     return '<div class="btn-group tool-button"><a class="btn btn-info" href="${base}/platform/evaluate/remark/special?evaluateId=' + row.id + '&unitType='+row.school.unitType+'" data-pjax>专家评估</a>'+
-                        '<a class="btn btn-success" href="${base}/platform/evaluate/opinion/edit/' + row.id + '"  data-toggle="modal" data-target="#dialogDetail">评估意见</a>'+
+                        '<a class="btn btn-success" href="${base}/platform/evaluate/opinion/edit/' + row.id + '" data-backdrop="false" data-toggle="modal" data-target="#dialogDetail">评估意见</a>'+
 //                        '<a class="btn btn-danger" href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a>'+
                         '<a class="btn btn-primary" href="${base}/platform/evaluate/records/special/download/' + row.id + '" data-pjax>导出评估表</a>' +
                         '</div>';
                 },
-                "targets": 7
+                "targets": 8
             }
             ]
         });

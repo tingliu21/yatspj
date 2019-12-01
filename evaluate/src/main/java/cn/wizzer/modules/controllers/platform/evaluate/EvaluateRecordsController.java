@@ -101,7 +101,7 @@ public class EvaluateRecordsController {
 	@At
 	@Ok("json:full")
 	@RequiresPermissions("evaluate.verify.special")
-	public Object specdata(@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
+	public Object specdata(@Param("year") Integer year,@Param("taskname") String taskname,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
 		Cnd cnd = Cnd.NEW();
 		//获取专家id
 		Subject subject = SecurityUtils.getSubject();
@@ -120,8 +120,14 @@ public class EvaluateRecordsController {
 			//2018-12-21修改，可以先由专家审核,专家只审核自己分配的学校
 			cnd = Cnd.where("id", "in", evaluateids).and("status_p", "=", false);
 		}
-
-
+		if(!Strings.isBlank(taskname))
+		{
+			cnd.and("taskname","=",taskname);
+		}
+		if(year!=0)
+		{
+			cnd.and("year","=",year);
+		}
 		return evaluateRecordsService.data(length, start, draw, order, columns, cnd, "school");
 	}
 
