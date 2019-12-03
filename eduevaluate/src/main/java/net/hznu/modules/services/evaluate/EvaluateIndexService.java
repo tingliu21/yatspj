@@ -484,22 +484,24 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
             for (Monitor_catalog catalog2 : catalogList2) {
                 String strRemarks2="";
                 String cNo2 = "";
-                switch (catalog2.getCatacode().substring(2,4)) {
-                    case "01":
-                        cNo2 = "<p>&nbsp;&nbsp;<strong>1.关于";
-                        break;
-                    case "02":
-                        cNo2 = "<p>&nbsp;&nbsp;<strong>2.关于";
-                        break;
-                    case "03":
-                        cNo2 = "<p>&nbsp;&nbsp;<strong>3.关于";
-                        break;
-                    default://"00"的情况，如反向扣分
-                        cNo2 = "";
-                        break;
+                if(catalog1.isMark()) {//false是反向扣分和社会认可
+                    switch (catalog2.getCatacode().substring(2, 4)) {
+                        case "01":
+                            cNo2 = "<p>&nbsp;&nbsp;<strong>1.关于"+ catalog2.getName();
+                            break;
+                        case "02":
+                            cNo2 = "<p>&nbsp;&nbsp;<strong>2.关于"+ catalog2.getName();
+                            break;
+                        case "03":
+                            cNo2 = "<p>&nbsp;&nbsp;<strong>3.关于"+ catalog2.getName();
+                            break;
+                        default:
+                            cNo2 = "";
+                            break;
+                    }
                 }
                 if(!cNo2.isEmpty()) {
-                    suggestion += cNo2 + catalog2.getName() + "</strong></p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                    suggestion += cNo2  + "</strong></p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                 }else {
                     suggestion +=  "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                 }

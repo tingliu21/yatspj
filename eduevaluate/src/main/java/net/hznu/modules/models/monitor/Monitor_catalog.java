@@ -31,6 +31,11 @@ public class Monitor_catalog extends Model implements Serializable{
     @ColDefine(type = ColType.VARCHAR, width = 100)
     private String catacode;
 
+    @Column
+    @Comment("标识")
+    @ColDefine(type = ColType.BOOLEAN)
+    private boolean mark;
+
 
     @Column
     @Comment("指标名称")
@@ -111,6 +116,14 @@ public class Monitor_catalog extends Model implements Serializable{
 
     public void setTarget(String target) {
         this.target = target;
+    }
+
+    public boolean isMark() {
+        return mark;
+    }
+
+    public void setMark(boolean mark) {
+        this.mark = mark;
     }
 
     public boolean isShow() {
