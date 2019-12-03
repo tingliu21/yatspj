@@ -21,6 +21,8 @@ public class MonitorIndexReport {
     private String catacode;
     @Column
     private String condition;
+    @Column
+    private int year;
     public String getcode() {
         return code;
     }
@@ -62,5 +64,11 @@ public class MonitorIndexReport {
     }
     public void setCondition(String condition) {
         this.condition = condition;
+    }
+    public int getYear() {
+        return year;
+    }
+    public void setYear(int year) {
+        this.year = year;
     }
 }

@@ -456,7 +456,6 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
         List<Monitor_catalog> catalogList1=dao().query(Monitor_catalog.class,Cnd.where("level","=",1).and("year","=",year).asc("catacode"));
         for(Monitor_catalog catalog1:catalogList1) {
             String cNo1 = "";
-            String strRemarks1="";
             switch (catalog1.getCatacode()) {
                 case "01":
                     cNo1 = "<p> <strong>(一)";
@@ -477,87 +476,76 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
                     cNo1 = "<p> <strong>";
                     break;
             }
-
             suggestion += cNo1 + catalog1.getName()+"</strong></p>";
-            List<Monitor_catalog> catalogList2 = dao().query(Monitor_catalog.class, Cnd.where("level", "=", 2).and("year", "=", year).
-                    and("catacode", "like", catalog1.getCatacode() + "%").asc("catacode"));
-            for (Monitor_catalog catalog2 : catalogList2) {
-                String strRemarks2="";
-                String cNo2 = "";
-                if(catalog1.isMark()) {//false是反向扣分和社会认可
-                    switch (catalog2.getCatacode().substring(2, 4)) {
-                        case "01":
-                            cNo2 = "<p>&nbsp;&nbsp;<strong>1.关于"+ catalog2.getName();
-                            break;
-                        case "02":
-                            cNo2 = "<p>&nbsp;&nbsp;<strong>2.关于"+ catalog2.getName();
-                            break;
-                        case "03":
-                            cNo2 = "<p>&nbsp;&nbsp;<strong>3.关于"+ catalog2.getName();
-                            break;
-                        default:
-                            cNo2 = "";
-                            break;
-                    }
+            List<MonitorIndexReport> rptTemps1=null;
+            if(catalog1.isMark()) {//false是反向扣分和社会认可
+                List<Monitor_catalog> catalogList2 = dao().query(Monitor_catalog.class, Cnd.where("level", "=", 2).and("year", "=", year).
+                        and("catacode", "like", catalog1.getCatacode() + "%").asc("catacode"));
+                for (Monitor_catalog catalog2 : catalogList2) {
+                    suggestion += "<p>&nbsp;&nbsp;<strong>" + Integer.valueOf(catalog2.getCatacode().substring(3, 4)) + ".关于" + catalog2.getName() + "</strong></p>";
+                    rptTemps1 = dao().query(MonitorIndexReport.class, Cnd.where("year", "=", year).and("catacode", "like", catalog2.getCatacode() + "%").asc("catacode").asc("code"));
+                    suggestion=monitorIndexReport(eid,suggestion,rptTemps1);
                 }
-                if(!cNo2.isEmpty()) {
-                    suggestion += cNo2  + "</strong></p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-                }else {
-                    suggestion +=  "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-                }
-                strRemarks1+= cNo2  + catalog2.getName();
-                List<MonitorIndexReport> rptTemps1 = dao().query(MonitorIndexReport.class, Cnd.where("year","=",year).and("left(catacode,4)", "=", catalog2.getCatacode()).asc("catacode").asc("code"));
-                //List<String>iNos=null;
-
-                for (MonitorIndexReport temp : rptTemps1) {
-
-                    //得到监测点代码和临界值
-                    String code = temp.getcode();
-                    double threshold = temp.getMvalue_threshold();
-                    String condition = temp.getCondition();
-
-                    //获取某年某xzq相应监测点的值
-                    List<Evaluate_index> EIValues = dao().query(Evaluate_index.class, Cnd.where("evaluateid", "=", eid.trim()).and("year", "=", year).and("code", "like", code + "%"));
-                    //某些监测点的值需要将小项的值汇总
-                    double sumScore = 0.0;
-
-                    for (Evaluate_index EIValue : EIValues) {
-                        BigDecimal bg = new BigDecimal(EIValue.getScore());
-                        sumScore += bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                    }
-                    //评估分小于临界值时，自动生成评语
-                    String strRemark = String.format("%s；", temp.getMremark());
-                    //去掉末尾分号
-                    strRemark = strRemark.substring(0, strRemark.length() - 1);
-                    Integer result=-1;
-                    if (!Strings.isEmpty(condition)) {
-                        String[] names = code.split(";");
-                        String[] scores = {};
-                        List<String> list = new ArrayList(Arrays.asList(scores));//**须定义时就进行转化**
-                        for (String name : names)
-                        {   //查询对应指标的分数，放入一个数组里，如这次的4401和4402
-                            Evaluate_index index = fetch(Cnd.where("evaluateid", "=", eid).and("code", "=", name));
-                            String score = String.valueOf(index.getScore());
-                            list.add(score);
-                        }
-                        String[] scores_1 = new String[list.size()];
-                        list.toArray(scores_1);
-
-                        result = StringUtil.calculateExpression(scores_1, condition);
-                    }
-                    strRemarks2+=((sumScore < threshold)||result==1? strRemark : "");
-                    suggestion+=((sumScore < threshold)||result==1? strRemark : "");
-                }
-                if (Strings.isEmpty(strRemarks2)) {
-                    suggestion+="无";
-                }
-                suggestion+="</p><br/>";
+            }else {
+                    rptTemps1= dao().query(MonitorIndexReport.class, Cnd.where("year","=",year).and("catacode", "like", catalog1.getCatacode()+"%").asc("catacode").asc("code"));
+                    suggestion=monitorIndexReport(eid,suggestion,rptTemps1);
             }
-
         }
         dao().execute(Sqls.create("insert into evaluate_special(evaluateid,remark1,remark2,remarkp,suggestion) values (@evaluateid,@remark1,@remark2,@remarkp,@suggestion)")
                 .setParam("evaluateid",eid).setParam("remark1",remark1).setParam("remark2",remark2).setParam("remarkp",remarkp).setParam("suggestion",suggestion));
         log.info("行政区："+xzqh+"的指标达成情况入库成功！");
+    }
+    /**
+     * 是否保留评语
+     * @param suggestion
+     * @param rptTemps1
+     */
+    public String monitorIndexReport(String eid,String suggestion,List<MonitorIndexReport>rptTemps1){
+        String strRemarks2 = "";
+        suggestion+="<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        for (MonitorIndexReport temp : rptTemps1) {
+            //得到监测点代码和临界值
+            String code = temp.getcode();
+            double threshold = temp.getMvalue_threshold();
+            String condition = temp.getCondition();
+
+            //获取某年某xzq相应监测点的值
+            List<Evaluate_index> EIValues = dao().query(Evaluate_index.class, Cnd.where("evaluateid", "=", eid.trim()).and("year", "=", temp.getYear()).and("code", "like", code + "%"));
+            //某些监测点的值需要将小项的值汇总
+            double sumScore = 0.0;
+
+            for (Evaluate_index EIValue : EIValues) {
+                BigDecimal bg = new BigDecimal(EIValue.getScore());
+                sumScore += bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            }
+            //评估分小于临界值时，自动生成评语
+            String strRemark = String.format("%s；", temp.getMremark());
+            //去掉末尾分号
+            strRemark = strRemark.substring(0, strRemark.length() - 1);
+            Integer result=-1;
+            if (!Strings.isEmpty(condition)) {
+                String[] names = code.split(";");
+                String[] scores = {};
+                List<String> list = new ArrayList(Arrays.asList(scores));//**须定义时就进行转化**
+                for (String name : names)
+                {   //查询对应指标的分数，放入一个数组里，如这次的4401和4402
+                    Evaluate_index index = fetch(Cnd.where("evaluateid", "=", eid).and("code", "=", name));
+                    String score = String.valueOf(index.getScore());
+                    list.add(score);
+                }
+                String[] scores_1 = new String[list.size()];
+                list.toArray(scores_1);
+
+                result = StringUtil.calculateExpression(scores_1, condition);
+            }
+            strRemarks2+=((sumScore < threshold)||result==1? strRemark : "");
+            suggestion+=((sumScore < threshold)||result==1? strRemark : "");
+        }
+        if (Strings.isEmpty(strRemarks2)) {
+            suggestion+="无";
+        }
+        suggestion+="</p><br/>";
+        return suggestion;
     }
     /**
      * 导出word文件
