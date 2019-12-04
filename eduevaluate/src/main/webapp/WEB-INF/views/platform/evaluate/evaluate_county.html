@@ -21,6 +21,9 @@ layout("/layouts/platform.html"){
 </style>
 <section class="content-wrap bg-white">
 	<header class="header navbar bg-white shadow">
+		<div class="btn-group tool-button">
+			<p class="navbar-text"><i class="fa fa-chevron-right"></i> ${year}年指标达成度<i class="fa  fa-chevron-right"></i>${xzqhmc}</p>
+		</div>
 		<div class="pull-right">
 			<div class="btn-group tool-button">
 				<button class="btn btn-primary navbar-btn" id="export"  type="submit" data-pjax><i class="ti-share"></i> 导出报告</button>
@@ -29,7 +32,6 @@ layout("/layouts/platform.html"){
 				<a class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/evaluate_county" id="goback" data-pjax><i class="ti-angle-left"></i> 返回</a>
 			</div>
 		</div>
-
 	</header>
 	<div class=panel-body style="padding-top: 50px;">
 		<!-- 为ECharts准备具备大小（宽高）的Dom -->

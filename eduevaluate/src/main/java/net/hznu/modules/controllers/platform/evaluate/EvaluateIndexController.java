@@ -70,10 +70,10 @@ public class EvaluateIndexController {
 	@Ok("re")
 	@RequiresAuthentication
 	public String indexvalue(@Param("year") int year,@Param("evaluateId") String evaluateId, HttpServletRequest req) {
-
-
 		if (StringUtils.isNotBlank(evaluateId)) {
+			Evaluate_records records=evaluateRecordsService.fetch(evaluateId);
 			req.setAttribute("evaluateId", evaluateId);
+			req.setAttribute("xzqhmc",records.getXzqhmc());
 			req.setAttribute("year",year);
 			return "beetl:/platform/evaluate/indexvalue.html";
 		} else {
@@ -85,11 +85,12 @@ public class EvaluateIndexController {
 			int level = sysUnit.getLevel();
 			if (level == 3) {
 				req.setAttribute("xzqhdm", sysUnit.getUnitcode());
+				req.setAttribute("xzqhmc",sysUnit.getName());
 				req.setAttribute("year",year);
-				//req.setAttribute("cataList",cataList);
 				return "beetl:/platform/evaluate/indexvalue.html";
 			} else {
 				req.setAttribute("year",year);
+				req.setAttribute("xzqhmc",sysUnit.getName());
 				req.setAttribute("cityList",sysUnitService.query(Cnd.where("level","=",2).and("unitcode","like","33%").asc("unitcode")));
 				return "beetl:/platform/evaluate/records/indexvalueindex.html";
 			}
@@ -128,6 +129,7 @@ public class EvaluateIndexController {
 			req.setAttribute("evaluateId",evaluateId);
 			req.setAttribute("xzqh", record.getUnitcode());
 			req.setAttribute("xzqhmc",record.getXzqhmc());
+			req.setAttribute("year",record.getYear());
 			return "beetl:/platform/evaluate/evaluate_county.html";
 		}
 		else if(StringUtils.isNotBlank(unitcode))

@@ -8,20 +8,25 @@ layout("/layouts/platform.html"){
 
 <section class="content-wrap bg-white">
     <header class="header navbar bg-white shadow">
-        <div class="btn-group" style="padding-top: 5px;">
-
+        <div class="btn-group tool-button">
+            <p class="navbar-text"><i class="fa fa-chevron-right"></i> ${year}年指标查询<i class="fa  fa-chevron-right"></i>${xzqhmc}</p>
+        </div>
+        <div class="btn-group" style="padding-top: 5px;position: relative;">
             <div >
                 <select id="cataid" name="cataid" class=""   placeholder="选择监测指标" style="width: 100%">
 
                 </select>
             </div>
         </div>
-        <div class="btn-group" style="padding-top: 5px;">
+        <div class="btn-group" style="padding-top: 5px;position:relative;">
             <div >
                 <select id="indexid" name="indexid"  placeholder="选择监测点"  style="width: 100%">
 
                 </select>
             </div>
+        </div>
+        <div class="btn-group tool-button" style="padding-top: 5px;position:relative;">
+            <button id="searchBtn"></i>查询</button>
         </div>
         <!--<div class="btn-group tool-button">-->
             <!--<p class="navbar-text">监测评估单位列表</p>-->
@@ -30,9 +35,7 @@ layout("/layouts/platform.html"){
             <!--&lt;!&ndash;<button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i> 删除选中</button>&ndash;&gt;-->
         <!--</div>-->
         <div class="pull-right">
-            <div class="btn-group tool-button">
-                <button class="btn btn-primary navbar-btn" href="" id="searchBtn"><i class="fa fa-sliders"></i>查询</button>
-            </div>
+
             <a class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/indexvalue" id="goback" data-pjax><i class="ti-angle-left"></i> 返回</a>
         </div>
     </header>
