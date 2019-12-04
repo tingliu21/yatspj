@@ -379,6 +379,15 @@ public class EvaluateIndexController {
 	@Ok("json")
 	@RequiresAuthentication
 	public Object getTotalScoreByCity(@Param("year")int year,@Param("xzqhdm") String xzqh) {
+		//获取id
+		Subject subject = SecurityUtils.getSubject();
+		Sys_user user = (Sys_user) subject.getPrincipal();
+		Sys_unit unit=sysUnitService.fetch(Cnd.where("id","=",user.getUnitid()));
+		String unitcode=unit.getUnitcode();
+		if(!Strings.isBlank(unitcode))
+		{
+			xzqh=unitcode;
+		}
 		if (year == 0) {
 			year = Globals.EvaluateYear;
 		}
