@@ -37,8 +37,6 @@ layout("/layouts/platform.html"){
     var uploadedDataURL = "${base!}/assets/data/zjxzqh.json";
     var myChart = echarts.init(document.getElementById('main'));
 
-
-
     function showProvince( year,chartMap) {
         $.get('${base!}/platform/evaluate/getTotalScoreByCity?year='+year+'&xzqhdm=330000').done(function (data) {
                 // 填入数据
@@ -46,14 +44,27 @@ layout("/layouts/platform.html"){
                 var titledata = [];
                 //var titledata = ["婺城区", "滨江区", "嘉善县","泰顺县","瑞安市","下城区","镇海区","宁海县","长兴县","上城区" ];
                 var top10data = [];
-                for (var i = data.length - 10; i < data.length; i++) {
-                    //titledata.push(jsondata[i].name);
-                    var d0 = {
-                        name: jsondata[i].name,
-                        value: jsondata[i].value
-                    };
-                    top10data.push(d0);
-                    titledata.push(jsondata[i].name);
+                if(data.length>10) {
+                    for (var i = data.length - 10; i < data.length; i++) {
+                        //titledata.push(jsondata[i].name);
+                        var d0 = {
+                            name: jsondata[i].name,
+                            value: jsondata[i].value
+                        };
+                        top10data.push(d0);
+                        titledata.push(jsondata[i].name);
+                    }
+                }else
+                {
+                    for (var i=0;i<data.length;i++){
+                        var d0 = {
+                            name: jsondata[i].name,
+                            value: jsondata[i].value
+                        };
+                        top10data.push(d0);
+                        titledata.push(jsondata[i].name);
+
+                    }
                 }
                 var min,max;
                 min = Math.floor( data[0].value/5)*5;
@@ -62,6 +73,11 @@ layout("/layouts/platform.html"){
                 chartMap.setOption({
                     yAxis: {
                         data: titledata,
+                    },
+                    xAxis:{
+                        axisLine: {             // 坐标轴线
+                            show: true,// 默认显示，属性show控制显示与否
+                        },
                     },
                     visualMap: {
                       min:min,
@@ -108,6 +124,8 @@ layout("/layouts/platform.html"){
                         name: '全部',
                         z: 1,
                         type: 'bar',
+                        barWidth:40,
+                        barMaxWidth:40,
                         left: '50%',
                         right: '5%',
                         top: 10,
@@ -128,6 +146,7 @@ layout("/layouts/platform.html"){
                         data: top10data
                     }]
                 });
+            //window.onresize = myChart.resize;
                 chartMap.on('click',function (params) {
                     $('#unitcode').val(params.data.code);
                     window.location.href="${base}/platform/evaluate/evaluate_county?unitcode="+$('#unitcode').val();
@@ -135,6 +154,7 @@ layout("/layouts/platform.html"){
 
             });
     }
+
     $(document).ready(function () {
         $.get(uploadedDataURL, function (geoJson) {
             echarts.registerMap('Zhejiang', geoJson);
