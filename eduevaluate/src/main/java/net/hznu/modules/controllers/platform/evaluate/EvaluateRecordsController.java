@@ -73,6 +73,14 @@ public class EvaluateRecordsController {
 
     }
     @At
+    @Ok("json")
+    @RequiresAuthentication
+    public Object getEvaluateId(@Param("unitcode")String unitcode,@Param("year")int year) {
+
+        Evaluate_records record=evaluateRecordsService.fetch(Cnd.where("unitcode","=",unitcode).and("year","=",year));
+        return record.getId();
+    }
+    @At
     @Ok("json:full")
     @RequiresAuthentication
     public Object data(@Param("year") int year,@Param("unitcode") String unitcode,@Param("xzqhmc") String xzqhmc,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {

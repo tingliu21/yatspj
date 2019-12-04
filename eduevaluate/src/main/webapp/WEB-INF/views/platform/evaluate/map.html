@@ -148,8 +148,12 @@ layout("/layouts/platform.html"){
                 });
             //window.onresize = myChart.resize;
                 chartMap.on('click',function (params) {
-                    $('#unitcode').val(params.data.code);
-                    window.location.href="${base}/platform/evaluate/evaluate_county?unitcode="+$('#unitcode').val();
+                    if(params.data.code!=undefined){
+                        $('#unitcode').val(params.data.code);
+                        $.get('${base!}/platform/evaluate/records/getEvaluateId?year='+$("#year").val()+'&unitcode='+params.data.code).done(function (data) {
+                            window.location.href = "${base}/platform/evaluate/evaluate_county?evaluateId=" + data;
+                        });
+                    }
                 })
 
             });
