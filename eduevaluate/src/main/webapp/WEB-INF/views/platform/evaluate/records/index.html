@@ -200,7 +200,7 @@ layout("/layouts/platform.html"){
         }
     }
     $(function () {
-
+        $('#city').val('');
         initDatatable();
         $("#dialogDetail").on("hidden.bs.modal", function () {
             $(this).removeData("bs.modal");
