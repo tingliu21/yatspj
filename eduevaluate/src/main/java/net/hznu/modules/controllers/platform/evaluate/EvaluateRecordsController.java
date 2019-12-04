@@ -85,6 +85,21 @@ public class EvaluateRecordsController {
     @RequiresAuthentication
     public Object data(@Param("year") int year,@Param("unitcode") String unitcode,@Param("xzqhmc") String xzqhmc,@Param("length") int length, @Param("start") int start, @Param("draw") int draw, @Param("::order") List<DataTableOrder> order, @Param("::columns") List<DataTableColumn> columns) {
         Cnd cnd = Cnd.NEW();
+        //获取当前用户id
+        Subject subject = SecurityUtils.getSubject();
+        Sys_user user = (Sys_user) subject.getPrincipal();
+        Sys_unit sysUnit = user.getUnit();
+        String xzqhdm=sysUnit.getUnitcode();
+        if(!Strings.isEmpty(xzqhdm)) {
+            String statXZQ=xzqhdm;
+            if(xzqhdm.endsWith("00")) {
+                statXZQ = xzqhdm.substring(0, xzqhdm.lastIndexOf("00"));
+                if (statXZQ.endsWith("00")) {
+                    statXZQ = statXZQ.substring(0, statXZQ.lastIndexOf("00"));
+                }
+            }
+            cnd.and("unitcode", "like", statXZQ+"%");
+        }
         if(year!=0) {
             cnd.and("year", "=", year);
         }

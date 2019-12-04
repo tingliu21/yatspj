@@ -80,20 +80,27 @@ public class EvaluateIndexController {
 			//获取当前用户id
 			Subject subject = SecurityUtils.getSubject();
 			Sys_user user = (Sys_user) subject.getPrincipal();
-
 			Sys_unit sysUnit = user.getUnit();
+			String unitcode=sysUnit.getUnitcode();
 			int level = sysUnit.getLevel();
-			if (level == 3) {
-				req.setAttribute("xzqhdm", sysUnit.getUnitcode());
-				req.setAttribute("xzqhmc",sysUnit.getName());
+			//if (level == 3) {
+				//req.setAttribute("xzqhdm", sysUnit.getUnitcode());
+				//req.setAttribute("xzqhmc",sysUnit.getName());
+				//req.setAttribute("year",year);
+				//return "beetl:/platform/evaluate/indexvalue.html";
+			//} else {
 				req.setAttribute("year",year);
-				return "beetl:/platform/evaluate/indexvalue.html";
-			} else {
-				req.setAttribute("year",year);
 				req.setAttribute("xzqhmc",sysUnit.getName());
-				req.setAttribute("cityList",sysUnitService.query(Cnd.where("level","=",2).and("unitcode","like","33%").asc("unitcode")));
-				return "beetl:/platform/evaluate/records/indexvalueindex.html";
+			String statXZQ=unitcode;
+			if(unitcode.endsWith("00")) {
+				statXZQ = unitcode.substring(0, unitcode.lastIndexOf("00"));
+				if (statXZQ.endsWith("00")) {
+					statXZQ = statXZQ.substring(0, statXZQ.lastIndexOf("00"));
+				}
 			}
+			req.setAttribute("cityList", sysUnitService.query(Cnd.where("level", "=", 2).and("unitcode", "like", statXZQ+"%").asc("unitcode")));
+				return "beetl:/platform/evaluate/records/indexvalueindex.html";
+			//}
 		}
 	}
 
