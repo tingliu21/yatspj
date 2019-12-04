@@ -138,6 +138,7 @@ public class EvaluateIndexController {
             req.setAttribute("xzqh",unitcode);
             req.setAttribute("evaluateId",record.getId());
             req.setAttribute("xzqhmc",record.getXzqhmc());
+			req.setAttribute("year",record.getYear());
             return "beetl:/platform/evaluate/evaluate_county.html";
         }
 		else {
@@ -153,6 +154,7 @@ public class EvaluateIndexController {
 				req.setAttribute("xzqh", sysUnit.getUnitcode());
 				req.setAttribute("xzqhmc",sysUnit.getXzqhmc());
 				req.setAttribute("status",record.isStatus());
+				req.setAttribute("year",record.getYear());
 				return "beetl:/platform/evaluate/evaluate_county.html";
 			} else {
 				return "redirect:/platform/evaluate/records";
