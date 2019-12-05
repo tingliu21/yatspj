@@ -26,13 +26,10 @@ layout("/layouts/platform.html"){
             <select name="county" id="county" style="width: 100%;">
             </select>
         </div>
-        <!--<div class="btn-group tool-button">
-            <p class="navbar-text">监测评估单位列表</p>
-        </div>-->
+        <div class="btn-group tool-button" style="padding-top: 5px;position:relative;">
+            <button class="btn btn-primary navbar-btn" id="searchBtn"><i class="fa fa-sliders"></i>查询</button>
+        </div>
         <div class="pull-right">
-            <div class="btn-group tool-button">
-                <button class="btn btn-primary navbar-btn" href="" id="searchBtn"><i class="fa fa-sliders"></i>查询</button>
-            </div>
             <a class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/indexvalue" id="goback" data-pjax><i class="ti-angle-left"></i> 返回</a>
         </div>
     </header>
