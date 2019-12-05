@@ -389,12 +389,13 @@ public class EvaluateIndexController {
 		//获取id
 		Subject subject = SecurityUtils.getSubject();
 		Sys_user user = (Sys_user) subject.getPrincipal();
+
 		Sys_unit unit=sysUnitService.fetch(Cnd.where("id","=",user.getUnitid()));
-		String unitcode=unit.getUnitcode();
-		if(!Strings.isBlank(unitcode))
-		{
-			xzqh=unitcode;
+		//市县用户只能看自己辖区内的地区分数
+		if(unit.getLevel()==2 || unit.getLevel() ==3){
+			xzqh=unit.getUnitcode();
 		}
+
 		if (year == 0) {
 			year = Globals.EvaluateYear;
 		}

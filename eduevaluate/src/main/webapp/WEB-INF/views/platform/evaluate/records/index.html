@@ -21,7 +21,9 @@ layout("/layouts/platform.html"){
                     class="fa fa-sliders"></i> 筛选
             </button>
             <div class="btn-group tool-button">
+                <% if(@shiro.hasRole("sysadmin")){%>
                 <a class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/records/upload" data-toggle="modal" data-target="#dialogImp"><i class="ti-import"></i>评估结果导入</a>
+                <%}%>
             </div>
         </div>
     </header>
