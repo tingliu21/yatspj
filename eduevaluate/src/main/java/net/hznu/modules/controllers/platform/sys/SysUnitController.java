@@ -160,7 +160,11 @@ public class SysUnitController {
     @Ok("json")
     @RequiresAuthentication
     public Object GetCountysByCity(@Param("unitcode") String unitcode) {
-        List<Sys_unit> countyList=unitService.query(Cnd.where("unitcode","like",unitcode.substring(0,4)+"%").and("level","=",3).asc("unitcode"));
-        return countyList;
+        List<Sys_unit> countyList;
+        if(!Strings.isBlank(unitcode)) {
+            countyList = unitService.query(Cnd.where("unitcode", "like", unitcode.substring(0, 4) + "%").and("level", "=", 3).asc("unitcode"));
+            return countyList;
+        }
+        return null;
     }
 }

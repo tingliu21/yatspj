@@ -899,10 +899,12 @@ layout("/layouts/platform.html"){
 				}
              }});
          $("#export").on("click",function(){
-             if('${status!}'==='false'){
-                 Toast.error("报告还在修改中，不能导出");
-                 return false;
+         <% if(!@shiro.hasRole("sysadmin")){%>
+			if('${status!}'==='false'){
+                Toast.error("报告还在修改中，不能导出");
+				return false;
              }
+		<%}%>
              var chartExportUrl = '${base!}/platform/evaluate/exportCounty?evaluateId=${evaluateId!}';
              var picRadar1 = chartRadar1.getDataURL();//获取echarts图的base64编码，为png格式。
              var picBar2 = chartBar2.getDataURL();//获取echarts图的base64编码，为png格式。

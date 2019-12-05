@@ -90,6 +90,7 @@ public class EvaluateRecordsController {
         Sys_user user = (Sys_user) subject.getPrincipal();
         Sys_unit sysUnit = user.getUnit();
         String xzqhdm=sysUnit.getUnitcode();
+        //这里的xzqhdm是登陆用户的，用于用户只能看自己的数据
         if(!Strings.isEmpty(xzqhdm)) {
             String statXZQ=xzqhdm;
             if(xzqhdm.endsWith("00")) {

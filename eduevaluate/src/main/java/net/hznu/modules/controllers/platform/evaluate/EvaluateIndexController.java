@@ -132,22 +132,15 @@ public class EvaluateIndexController {
 	@RequiresAuthentication
 	public String evaluate_county(@Param("evaluateId") String evaluateId,@Param("unitcode") String unitcode, HttpServletRequest req) {
 		if (StringUtils.isNotBlank(evaluateId)) {
+
 			Evaluate_records record = evaluateRecordsService.fetch(evaluateId);
 			req.setAttribute("evaluateId",evaluateId);
 			req.setAttribute("xzqh", record.getUnitcode());
 			req.setAttribute("xzqhmc",record.getXzqhmc());
 			req.setAttribute("year",record.getYear());
+			req.setAttribute("status",record.isStatus());
 			return "beetl:/platform/evaluate/evaluate_county.html";
 		}
-		else if(StringUtils.isNotBlank(unitcode))
-        {
-            Evaluate_records record=evaluateRecordsService.fetch(Cnd.where("unitcode","=",unitcode).and("year","=",Globals.EvaluateYear));
-            req.setAttribute("xzqh",unitcode);
-            req.setAttribute("evaluateId",record.getId());
-            req.setAttribute("xzqhmc",record.getXzqhmc());
-			req.setAttribute("year",record.getYear());
-            return "beetl:/platform/evaluate/evaluate_county.html";
-        }
 		else {
 			//获取当前用户id
 			Subject subject = SecurityUtils.getSubject();
@@ -389,13 +382,11 @@ public class EvaluateIndexController {
 		//获取id
 		Subject subject = SecurityUtils.getSubject();
 		Sys_user user = (Sys_user) subject.getPrincipal();
-
-		Sys_unit unit=sysUnitService.fetch(Cnd.where("id","=",user.getUnitid()));
+		Sys_unit unit = user.getUnit();
 		//市县用户只能看自己辖区内的地区分数
 		if(unit.getLevel()==2 || unit.getLevel() ==3){
 			xzqh=unit.getUnitcode();
 		}
-
 		if (year == 0) {
 			year = Globals.EvaluateYear;
 		}
