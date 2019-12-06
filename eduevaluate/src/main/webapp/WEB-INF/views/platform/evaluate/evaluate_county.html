@@ -22,7 +22,7 @@ layout("/layouts/platform.html"){
 <section class="content-wrap bg-white">
 	<header class="header navbar bg-white shadow">
 		<div class="btn-group tool-button">
-			<p class="navbar-text"><i class="fa fa-chevron-right"></i> ${year}年指标达成度<i class="fa  fa-chevron-right"></i>${xzqhmc}</p>
+			<p class="navbar-text"><i class="fa fa-chevron-right"></i> 指标达成度<i class="fa  fa-chevron-right"></i>${xzqhmc}</p>
 		</div>
 		<div class="pull-right">
 			<div class="btn-group tool-button">
@@ -900,7 +900,7 @@ layout("/layouts/platform.html"){
              }});
          $("#export").on("click",function(){
          <% if(!@shiro.hasRole("sysadmin")){%>
-			if('${status!}'==='false'){
+			if('${status!}'==='true'){
                 Toast.error("报告还在修改中，不能导出");
 				return false;
              }
