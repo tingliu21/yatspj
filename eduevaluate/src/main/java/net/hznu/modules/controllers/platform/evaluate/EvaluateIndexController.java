@@ -476,6 +476,7 @@ public class EvaluateIndexController {
 
 		//读入word模板
 		if (!Strings.isBlank(evaluateId)) {
+			Evaluate_records records=evaluateRecordsService.fetch(evaluateId);
 			Map<String, Object> wordDataMap = packageObject(evaluateId,tempPath,picRadar1,picBar2,picBarp,picBark);
 
 			XwpfUtil xwpfUtil = new XwpfUtil();
@@ -483,7 +484,7 @@ public class EvaluateIndexController {
 			InputStream is = getClass().getClassLoader().getResourceAsStream("template/CountyTemplate_" + Globals.EvaluateYear + ".docx");
 			try {
 
-				String filename = "县级教育现代化水平报告_" + evaluateId + ".docx";
+				String filename = "县级教育现代化水平报告_" + records.getXzqhmc() + ".docx";
 				filename = URLEncoder.encode(filename, "UTF-8");
 				xwpfUtil.exportWord(wordDataMap, is, resp, filename);
 			} catch (UnsupportedEncodingException e) {
@@ -500,9 +501,10 @@ public class EvaluateIndexController {
 	public Map<String, Object> packageObject(String evalId,String tempPath,String picRadar1,String picBar2, String picBarp, String picBark) {
 		Map<String,Object> wordDataMap = new HashMap<String,Object>();
 		Map<String, Object> paramsPara = new HashMap<String, Object>();
+		Evaluate_records records=evaluateRecordsService.fetch(evalId);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy 年 MM 月 dd 日");
 		paramsPara.put("date",sdf.format(new Date()));
-
+		paramsPara.put("name",records.getXzqhmc());
         Evaluate_special special = dao.fetch(Evaluate_special.class,evalId);
         paramsPara.put("remark1",special.getRemark1());
         paramsPara.put("remark2",special.getRemark2());
