@@ -502,7 +502,7 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
      */
     public String monitorIndexReport(String eid,String suggestion,List<MonitorIndexReport>rptTemps1){
         String strRemarks2 = "";
-        suggestion+="<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        suggestion+="<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         for (MonitorIndexReport temp : rptTemps1) {
             //得到监测点代码和临界值
             String code = temp.getcode();

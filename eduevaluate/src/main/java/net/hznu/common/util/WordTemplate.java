@@ -369,7 +369,7 @@ public class WordTemplate {
 
                                         }
                                     }else{
-                                        run.addTab();
+                                        //run.addTab();
                                         run.setText(element.text());
                                     }
                                     run.addCarriageReturn();
