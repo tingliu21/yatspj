@@ -5,9 +5,6 @@ import net.hznu.modules.models.sys.Sys_route;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +27,8 @@ public class Globals {
     public static String AppUploadPath = "/upload";
     //评估年度
     public static int EvaluateYear=2018;
+    //县报告导出的日期
+    public static String CountyExportDate="2019年9月10日";
     //系统自定义参数
     public static Map<String, String> MyConfig;
     //自定义路由
@@ -59,7 +58,9 @@ public class Globals {
 
                     String evaluateYear = sysConfig.getConfigValue();
                     Globals.EvaluateYear=  Integer.parseInt(evaluateYear);
-
+                case "CountyExportDate":
+                    Globals.CountyExportDate=sysConfig.getConfigValue();
+                    break;
                 default:
                     Globals.MyConfig.put(sysConfig.getConfigKey(), sysConfig.getConfigValue());
                     break;

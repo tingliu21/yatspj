@@ -502,9 +502,23 @@ public class EvaluateIndexController {
 		Map<String,Object> wordDataMap = new HashMap<String,Object>();
 		Map<String, Object> paramsPara = new HashMap<String, Object>();
 		Evaluate_records records=evaluateRecordsService.fetch(evalId);
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy 年 MM 月 dd 日");
-		paramsPara.put("date",sdf.format(new Date()));
-		paramsPara.put("name",records.getXzqhmc());
+		//时间变为系统参数里的时间
+		//SimpleDateFormat sdf = new SimpleDateFormat("yyyy 年 MM 月 dd 日");
+		paramsPara.put("date",Globals.CountyExportDate);
+		//地区名前加上级单位
+		String name=records.getXzqhmc();
+		Sys_unit unit=sysUnitService.fetch(records.getUnitID());
+		Sys_unit punit=sysUnitService.fetch(unit.getParentId());
+		//如上城区改为杭州市上城区，桐庐县改为浙江省桐庐县
+		String a=name.substring(name.length()-1);
+		if("区".equals(name.substring(name.length()-1)))
+		{
+			name=punit.getXzqhmc()+name;
+		}else
+		{
+			name="浙江省"+name;
+		}
+		paramsPara.put("name",name);
         Evaluate_special special = dao.fetch(Evaluate_special.class,evalId);
         paramsPara.put("remark1",special.getRemark1());
         paramsPara.put("remark2",special.getRemark2());
