@@ -1,6 +1,7 @@
 package net.hznu.modules.controllers.platform.evaluate;
 
 import net.hznu.common.base.Globals;
+import net.hznu.common.base.Result;
 import net.hznu.common.chart.MonitorStat;
 import net.hznu.common.chart.MonitorSumValue;
 import net.hznu.common.chart.StatChart;
@@ -33,6 +34,7 @@ import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+import org.nutz.mvc.adaptor.WhaleAdaptor;
 import org.nutz.mvc.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -721,5 +723,32 @@ public class EvaluateIndexController {
 		List<Evaluate_index> list = dao.query(Evaluate_index.class, cnd, null);
 
 		return list;
+	}
+
+	//上传自评报告
+	@At("/upload/?")
+	@Ok("beetl:/platform/evaluate/self/upload.html")
+	@RequiresAuthentication
+	public void upload(String evaluateId,HttpServletRequest req) {
+		req.setAttribute("evaluateId", evaluateId);
+	}
+	@At("/uploadDo")
+	@Ok("json")
+	@AdaptBy(type = WhaleAdaptor.class)
+	@RequiresAuthentication
+	public Object uploadDo(@Param("evaluateId") String evaluateId,@Param("selfevaurl") String selfevaurl,@Param("planurl") String planurl, HttpServletResponse resp) {
+		if (!Strings.isBlank(evaluateId)) {
+			try {
+				Evaluate_records record = evaluateRecordsService.fetch(evaluateId);
+				record.setId(evaluateId);
+				if(!Strings.isBlank(selfevaurl)) record.setSelfevaurl(selfevaurl);
+				evaluateRecordsService.updateIgnoreNull(record);
+//				evaluateRecordsSelfService.upload(id, selfevaurl, planurl);
+				return Result.success("system.success");
+			} catch (Exception e) {
+				return Result.error("system.error");
+			}
+		}
+		return null;
 	}
 }

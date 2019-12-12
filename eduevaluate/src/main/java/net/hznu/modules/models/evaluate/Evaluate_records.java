@@ -43,6 +43,11 @@ public class Evaluate_records  extends Model implements Serializable {
     private boolean status;
 
     @Column
+    @Comment("自评报告路径")
+    @ColDefine(type = ColType.VARCHAR,width = 100)
+    private String selfevaurl;
+
+    @Column
     @Readonly
     private String unitcode;
     @Column
@@ -107,9 +112,17 @@ public class Evaluate_records  extends Model implements Serializable {
 
     public String getXzqhmc() {
         return xzqhmc;
+    }public String getSelfevaurl() {
+        return selfevaurl;
+    }
+
+    public void setSelfevaurl(String selfevaurl) {
+        this.selfevaurl = selfevaurl;
     }
 
     public void setXzqhmc(String xzqhmc) {
         this.xzqhmc = xzqhmc;
     }
+
+
 }
