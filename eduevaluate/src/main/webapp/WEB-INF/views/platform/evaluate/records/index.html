@@ -142,9 +142,9 @@ layout("/layouts/platform.html"){
                 {
                     "render": function (data, type, row) {
                         html ='<div class="btn-group tool-button">' +
-                            '<a class="btn btn-primary" href="${base}/platform/evaluate/evaluate_county?evaluateId=' + row.id + '" data-pjax>指标达成度查看</a>' +
+                            '<a class="btn btn-primary" href="${base}/platform/evaluate/evaluate_county?evaluateId=' + row.id + '" data-pjax>指标达成度查看</a>'
                             <% if(@shiro.hasRole("sysadmin")){%>
-                            '<a class="btn btn-primary" href="${base}/platform/evaluate/upload/' + row.id + '" data-toggle="modal" data-target="#dialogImp">评估报告上传</a>'
+                            html+='<a class="btn btn-primary" href="${base}/platform/evaluate/upload/' + row.id + '" data-toggle="modal" data-target="#dialogImp">评估报告上传</a>'
                             <%}%>
 
                         if (data!=null && data!="") {
