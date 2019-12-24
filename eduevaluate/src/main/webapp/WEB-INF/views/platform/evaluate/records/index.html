@@ -37,7 +37,6 @@ layout("/layouts/platform.html"){
                             <th>行政区代码</th>
                             <th>行政区名称</th>
                             <th>评估得分</th>
-                            <th>评估报告下载</th>
                             <th>操作</th>
                     </tr>
                 </thead>
@@ -139,27 +138,22 @@ layout("/layouts/platform.html"){
                 {"data": "selfevaurl", "bSortable": true}
             ],
             "columnDefs": [
-                {
-                    "render": function (data, type, row) {
-                        if (data!=null && data!="") {
-                            return '<a href="' + row.selfevaurl + '" class="fa  text-success ml5">下载</a>';
-                        } else {
-                            return '<div  class="fa  text-danger ml5">未上传</div>';
-                        }
-                    },
-                    "targets": 4
-                },
+
                 {
                     "render": function (data, type, row) {
                         html ='<div class="btn-group tool-button">' +
                             '<a class="btn btn-primary" href="${base}/platform/evaluate/evaluate_county?evaluateId=' + row.id + '" data-pjax>指标达成度查看</a>' +
                             <% if(@shiro.hasRole("sysadmin")){%>
-                            '<a class="btn btn-primary" href="${base}/platform/evaluate/upload/' + row.id + '" data-toggle="modal" data-target="#dialogImp">评估报告上传</a>' +
+                            '<a class="btn btn-primary" href="${base}/platform/evaluate/upload/' + row.id + '" data-toggle="modal" data-target="#dialogImp">评估报告上传</a>'
                             <%}%>
-                        '</div>';
+
+                        if (data!=null && data!="") {
+                            html+= '<a class="btn btn-primary" href="' + row.selfevaurl + '" class="fa  text-success ml5">评估报告下载</a>';
+                        }
+                        html+='</div>';
                         return html
                     },
-                    "targets": 5
+                    "targets": 4
                 }
             ]
         });
