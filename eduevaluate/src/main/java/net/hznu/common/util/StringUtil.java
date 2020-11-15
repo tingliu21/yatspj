@@ -144,8 +144,8 @@ public class StringUtil {
 
     /**
      *
-     * @param value 需要判断的指标的分数（传入前已经是数组）
-     * @param condition 判断公式（方法中用split变成数组）
+     * @param value 需要判断的指标的分数（传入前已经是数组）元素个数与条件分割后个数一致
+     * @param condition 判断公式（方法中用split变成数组）；代表and ，代表or
      * @return
      */
     public static Integer calculateExpression(String[] value,String condition)  {
@@ -154,16 +154,19 @@ public class StringUtil {
         String expression = "";
         String[] target = condition.split(";");
         try {
+            int indexOfValue=0;
             for(int i =0;i<target.length;i++){
                 String[] target_l = target[i].split(",");
                 expression += "(";
                 for(int j=0;j<target_l.length;j++){
-                    if(value[i].indexOf("%")!=-1){
+                    if(value[indexOfValue].indexOf("%")!=-1){
                         NumberFormat nf= NumberFormat.getPercentInstance();
-                        Number m=nf.parse(value[i]);
-                        expression += m + target_l[j] +"&&";
+                        Number m=nf.parse(value[indexOfValue]);
+                        expression += m + target_l[j] +"||";
                     }else
-                        expression += value[i] + target_l[j] +"&&";
+                        expression += value[indexOfValue] + target_l[j] +"||";
+                    //完成一次值和条件的逻辑表达式后，开始下一个值的比较
+                    indexOfValue ++;
                 }
                 expression = expression.substring(0,expression.length()-2);
                 expression +=")&&";

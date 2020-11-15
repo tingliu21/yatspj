@@ -32,4 +32,4 @@ NutzWk 3.x 新特性：
 浙江省教育现代化发展水平监测2017年     https://github.com/tingliu21/yatspj/tree/master/edudevelop  
 拱墅区中小学现代化优质评估           https://github.com/tingliu21/yatspj/tree/master/evaluate
 鄞州区幼儿园现代化评估                 https://github.com/tingliu21/yatspj/tree/master/yzevaluate
-浙江省教育现代化发展水平监测2018
+浙江省教育现代化发展水平监测2018      https://github.com/tingliu21/yatspj/tree/master/eduevaluate

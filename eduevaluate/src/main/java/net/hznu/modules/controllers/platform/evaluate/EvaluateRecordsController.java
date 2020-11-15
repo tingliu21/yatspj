@@ -110,7 +110,7 @@ public class EvaluateRecordsController {
         if(!Strings.isEmpty(xzqhmc)) {
             cnd.and("xzqhmc", "like", "%"+xzqhmc + "%");
         }
-        cnd.desc("year").asc("unitcode");
+        //cnd.desc("year").asc("unitcode");
         return evaluateRecordsService.data(length, start, draw, order, columns, cnd, "unit");
     }
     //获取专家评审列表

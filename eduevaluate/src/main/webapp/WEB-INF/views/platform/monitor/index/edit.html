@@ -57,41 +57,6 @@ layout("/layouts/platform.html"){
                                        placeholder="权重" value="${obj.weights}" >
                             </div>
                         </div>
-                        <div class="form-group has-feedback">
-                            <label for="parentId" class="col-sm-2 control-label">送审部门</label>
-
-                            <div class="col-sm-8">
-                                <div class="input-group">
-                                    <input id="parentId" type="text" class="form-control" placeholder="选择送审部门" disabled
-                                           value="<%if(!isEmpty(obj.dept)){%>${obj.dept.name}<%}%>"  data-parsley-required="true"/>
-
-                                    <span class="input-group-btn">
-			                             			<button type="button" class="btn btn-primary" data-toggle="modal"
-                                                            data-target="#dialogSelectParentUnit"><i class="ti-plus"></i>选择
-                                                    </button>
-			                             		</span>
-                                </div>
-                                <input type="hidden" name="department" value="<%if(!isEmpty(obj)){%>${obj.department}<%}%>">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="masterrole" class="col-sm-2 control-label">评测专家</label>
-                            <div class="col-sm-8">
-                                <select class="form-control" name="masterrole" id="masterrole">
-
-                                </select>
-                            </div>
-                        </div>
-
-
-                        <!--<div class="form-group">
-                            <label for="qualify" class="col-sm-2 control-label">是否达标性指标</label>
-                            <div class="col-sm-8 switcha">
-                                <div class="mr15">
-                                    <input type="checkbox" id="qualify" name="qualify" class="js-switch-blue" <%if(obj.qualify){%>checked<%}%> >
-                                </div>
-                            </div>
-                        </div>-->
 
                     </div>
                 </div>
@@ -159,32 +124,10 @@ layout("/layouts/platform.html"){
         $("#dialogSelectParentUnit").modal("hide");
         selectMasterRole();
     }
-    //选择审核角色
-    function selectMasterRole(){
-        var deptid = $("#editForm input[name='department']").val();
-        if(deptid!='') {
-            $.ajax({
-                url: "${base}/platform/sys/role/roledata?uid=" + deptid,
-                async:false,
-                type: "get",
-                dataType: "json",
-                success: function (data) {
-                    $("#masterrole").empty();
-                    if (data.length > 0) {
-                        for (var i=0;i< data.length;i++) {
-                            $("#masterrole").append("<option value='" + data[i].id + "'>" + data[i].text + "</option>")
-                        }
-                    }
 
-                }
-            });
-        }
-    }
     $(document).ready(function () {
         initTreeView();
-        selectMasterRole();
-        //$("#masterrole").val("<%if(!isEmpty(obj)){%>${obj.masterrole}<%}%>");
-        $("#masterrole").find("option[value='<%if(!isEmpty(obj)){%>${obj.masterrole}<%}%>']").attr("selected",true);
+
 
         $('#editForm').ajaxForm({
             dataType: 'json',

@@ -12,7 +12,8 @@ layout("/layouts/platform.html"){
             <div>
                 <label for="year">评估年度：</label>
                 <select id="year" name="year"  placeholder="选择评估年度" >
-                    <option value="2018" selected>2018</option>
+                    <option value="2018">2018</option>
+                    <option value="2019" selected>2019</option>
                 </select>
             </div>
         </div>
@@ -215,6 +216,14 @@ layout("/layouts/platform.html"){
         initDatatable();
         $("#dialogDetail").on("hidden.bs.modal", function () {
             $(this).removeData("bs.modal");
+        });
+        $("#year").change(function(){
+            if(datatable) {
+                datatable.ajax.reload();
+            }else{
+                initDatatable();
+            }
+
         });
     });
 </script>

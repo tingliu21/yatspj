@@ -1,0 +1,965 @@
+<%
+layout("/layouts/platform.html"){
+%>
+<style type="text/css">
+	th{
+		border: 1px solid #95B8E7;
+		margin: 0;
+		padding: 2px 4px;
+	}
+	td{
+		border: 1px solid #95B8E7;
+		margin: 0;
+		padding: 2px 4px;
+	}
+	table{
+		border: 1px solid #95B8E7;
+		border-style: solid;
+		padding: 0px ;
+		margin: 0;
+	}
+</style>
+<section class="content-wrap bg-white">
+	<header class="header navbar bg-white shadow">
+		<div class="btn-group tool-button">
+			<p class="navbar-text"><i class="fa fa-chevron-right"></i> ${year}年指标达成度<i class="fa  fa-chevron-right"></i>${xzqhmc}</p>
+		</div>
+		<div class="pull-right">
+			<% if(@shiro.hasPermission("evaluate.index.export")){%>
+			<div class="btn-group tool-button">
+				<button class="btn btn-primary navbar-btn" id="export"  type="submit" data-pjax><i class="ti-share"></i> 导出指标达成度报告</button>
+			</div>
+			<%}%>
+			<%if(!isEmpty(selfevaurl)){%>
+			<div class="btn-group tool-button">
+				<a class="btn btn-primary" href="${selfevaurl}" class="fa  text-success ml5">评估报告下载</a>
+			</div>
+			<%}%>
+			<div class="btn-group tool-button">
+				<a class="btn btn-primary navbar-btn" href="${base}/platform/evaluate/evaluate_county" id="goback" data-pjax><i class="ti-angle-left"></i> 返回</a>
+			</div>
+		</div>
+	</header>
+	<div class=panel-body style="padding-top: 50px;">
+		<!-- 为ECharts准备具备大小（宽高）的Dom -->
+		<ul id="myTab" class="nav nav-tabs">
+			<li class="active">
+				<a href="#cata1" data-toggle="tab">
+					一级指标
+				</a>
+			</li>
+			<li>
+				<a href="#cata2" data-toggle="tab">
+					二级指标
+				</a>
+			</li>
+			<li>
+				<a href="#mpoint" data-toggle="tab">
+					监测点
+				</a>
+			</li>
+			<li>
+				<a href="#mpoint_chart" data-toggle="tab">
+					监测评估表
+				</a>
+			</li>
+		</ul>
+
+		<!-- 每个tab页对应的内容 -->
+		<div id="myTabContent" class="tab-content">
+			<div class="tab-pane fade in active" id="cata1">
+				<div id="amain" style="width: 800px; height: 750px;"></div>
+			</div>
+			<div class="tab-pane fade" id="cata2">
+				<div id="bmain" style="width: 800px; height: 500px;"></div>
+			</div>
+			<div class="tab-pane fade" id="mpoint">
+				<div id="cmain" style="width: 800px; height: 1500px;"></div>
+			</div>
+			<div class="tab-pane fade" id="mpoint_chart">
+				<table  title="监测指标"  cellspacing="0" style="width:1000px;height:550px;">
+					<thead>
+					<tr>
+						<th width="80">一级指标</th>
+						<th width="80">二级指标</th>
+						<th width="80">三级指标</th>
+						<th colspan="3" width="300">监测点</th>
+						<th width="80" align="center">目标值</th>
+						<th width="60" align="center">权重</th>
+						<th width="60" align="center">监测值</th>
+						<th width="60"  align="center">得分</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<td rowspan="41">优先发展（35分）</td>
+						<td rowspan="11">经费保障（10分）</td>
+						<td rowspan="10">财政依法拨款</td>
+						<td rowspan="5">1.生均公共财政预算教育事业费比上一年度增长</td>
+						<td colspan="2">幼儿园</td>
+						<td >达到</td>
+						<td >0.8</td>
+						<td id="P_0101"></td>
+						<td id="G_0101"></td>
+					</tr>
+					<tr>
+						<td colspan="2">小学</td>
+						<td >达到</td>
+						<td >0.8</td>
+						<td id="P_0102"></td>
+						<td id="G_0102"></td>
+					</tr>
+					<tr>
+						<td colspan="2">初中</td>
+						<td >达到</td>
+						<td >0.8</td>
+						<td id="P_0103"></td>
+						<td id="G_0103"></td>
+					</tr>
+					<tr>
+						<td colspan="2">普通高中</td>
+						<td >达到</td>
+						<td >0.8</td>
+						<td id="P_0104"></td>
+						<td id="G_0104"></td>
+					</tr>
+					<tr>
+						<td colspan="2">中职学校</td>
+						<td >达到</td>
+						<td >0.8</td>
+						<td id="P_0105"></td>
+						<td id="G_0105"></td>
+					</tr>
+					<tr>
+						<td rowspan="5">
+							2.生均公共财政预算公用经费比上一年度增长</td>
+						<td colspan="2">幼儿园</td>
+						<td >达到</td>
+						<td >0.8</td>
+						<td id="P_0201"></td>
+						<td id="G_0201"></td>
+					</tr>
+					<tr>
+						<td colspan="2">小学</td>
+						<td >达到</td>
+						<td >0.8</td>
+						<td id="P_0202"></td>
+						<td id="G_0202"></td>
+					</tr>
+					<tr>
+						<td colspan="2">初中</td>
+						<td >达到</td>
+						<td >0.8</td>
+						<td id="P_0203"></td>
+						<td id="G_0203"></td>
+					</tr>
+					<tr>
+						<td colspan="2">普通高中</td>
+						<td >达到</td>
+						<td >0.8</td>
+						<td id="P_0204"></td>
+						<td id="G_0204"></td>
+					</tr>
+					<tr>
+						<td colspan="2">中职学校</td>
+						<td >达到</td>
+						<td >0.8</td>
+						<td id="P_0205"></td>
+						<td id="G_0205"></td>
+					</tr>
+					</tr>
+					<tr>
+						<td>社会力量</td>
+						<td colspan="3">
+							3.全社会教育投入（不含公共财政教育经费）比上一年度增长</td>
+						<td >达到</td>
+						<td >2</td>
+						<td id="P_03"></td>
+						<td id="G_03"></td>
+					</tr>
+					<tr>
+						<td rowspan="18">教师保障（15分）</td>
+						<td rowspan="7">教师队伍结构</td>
+						<td rowspan="7">4.生师比</td>
+						<td colspan="2">幼儿园(班师比)</td>
+						<td >1:2</td>
+						<td >0.5</td>
+						<td id="P_0401"></td>
+						<td id="G_0401"></td>
+					</tr>
+					<tr>
+						<td colspan="2">小学</td>
+						<td >19:1</td>
+						<td >0.5</td>
+						<td id="P_0402"></td>
+						<td id="G_0402"></td>
+					</tr>
+					<tr>
+						<td colspan="2">初中</td>
+						<td >13.5:1</td>
+						<td >0.5</td>
+						<td id="P_0403"></td>
+						<td id="G_0403"></td>
+					</tr>
+					<tr>
+						<td colspan="2">普通高中</td>
+						<td >12.5:1</td>
+						<td >0.5</td>
+						<td id="P_0404"></td>
+						<td id="G_0404"></td>
+					</tr>
+					<tr>
+						<td colspan="2">中职学校</td>
+						<td >12:1</td>
+						<td >0.5</td>
+						<td id="P_0405"></td>
+						<td id="G_0405"></td>
+					</tr>
+					<tr>
+						<td colspan="2">特殊学校</td>
+						<td >3:1</td>
+						<td >0.5</td>
+						<td id="P_0406"></td>
+						<td id="G_0406"></td>
+					</tr>
+					<tr>
+						<td colspan="2">成人学校</td>
+						<td >2/每万人</td>
+						<td >0.5</td>
+						<td id="P_0407"></td>
+						<td id="G_0407"></td>
+					</tr>
+					<tr>
+						<td rowspan="7">教师学历职称资格</td>
+						<td rowspan="7">5.各类教师学历及其它要求</td>
+						<td rowspan="2">幼儿园专任教师</td>
+						<td>持有教师资格证比例</td>
+						<td>100%</td>
+						<td>0.5</td>
+						<td id="P_050101"></td>
+						<td id="G_050101"></td>
+					</tr>
+					<tr>
+						<td>专科及以上</td>
+						<td >95%</td>
+						<td >0.5</td>
+						<td id="P_050102"></td>
+						<td id="G_050102"></td>
+					</tr>
+					<tr>
+						<td colspan="2">小学教师本科及以上</td>
+						<td >90%</td>
+						<td >0.5</td>
+						<td id="P_0502"></td>
+						<td id="G_0502"></td>
+					</tr>
+					<tr>
+						<td colspan="2">初中教师研究生及以上</td>
+						<td >8%</td>
+						<td >0.5</td>
+						<td id="P_0503"></td>
+						<td id="G_0503"></td>
+					</tr>
+					<tr>
+						<td colspan="2">高中教师研究生及以上</td>
+						<td >20%</td>
+						<td >0.5</td>
+						<td id="P_0504"></td>
+						<td id="G_0504"></td>
+					</tr>
+					<tr>
+						<td rowspan="2">职业院校专任教师</td>
+						<td>双师型比例</td>
+						<td>92%</td>
+						<td>0.5</td>
+						<td id="P_050501"></td>
+						<td id="G_050501"></td>
+					</tr>
+					<tr>
+						<td>其中技师以上职称占双师型教师比例</td>
+						<td>60%</td>
+						<td>0.5</td>
+						<td id="P_050502"></td>
+						<td id="G_050502"></td>
+					</tr>
+					<tr>
+						<td rowspan="3">教师待遇</td>
+						<td colspan="3">6.在编中小学教师平均工资水平不低于当地公务员平均工资水平，按为公务员发放各种考核奖同步增加教师绩效工资总量</td>
+						<td>达到</td>
+						<td>3</td>
+						<td id="P_06"></td>
+						<td id="G_06"></td>
+					</tr>
+					<tr>
+						<td rowspan="2">7.非编中小学（含幼儿园）教师年均收入达到当地在编教师平均收入</td>
+						<td colspan="2">幼儿园</td>
+						<td>达到</td>
+						<td>1.5</td>
+						<td id="P_0701"></td>
+						<td id="G_0701"></td>
+					</tr>
+					<tr>
+						<td colspan="2">民办民工子弟学校</td>
+						<td>达到</td>
+						<td>1.5</td>
+						<td id="P_0702"></td>
+						<td id="G_0702"></td>
+					</tr>
+					<tr>
+						<td>教师培训</td>
+						<td colspan="3">8.中小学教师专业发展培训工作绩效考核成绩</td>
+						<td>98%</td>
+						<td>2</td>
+						<td id="P_08"></td>
+						<td id="G_08"></td>
+					</tr>
+					<tr>
+						<td rowspan="12">资源保障（10分）</td>
+						<td rowspan="8">条件保障</td>
+						<td colspan="3">9.义务教育标准化学校比例</td>
+						<td>100%</td>
+						<td>2.5</td>
+						<td id="P_09"></td>
+						<td id="G_09"></td>
+					</tr>
+					<tr>
+						<td rowspan="4">10.生均教学仪器设备值达标</td>
+						<td>小学</td>
+						<td>目标值</td>
+						<td>3000元</td>
+						<td>0.5</td>
+						<td id="P_1001"></td>
+						<td id="G_1001"></td>
+					</tr>
+					<tr>
+						<td>初中</td>
+						<td>目标值</td>
+						<td>3500元</td>
+						<td>0.5</td>
+						<td id="P_1002"></td>
+						<td id="G_1002"></td>
+					</tr>
+					<tr>
+						<td>普通高中</td>
+						<td>目标值</td>
+						<td>5500元</td>
+						<td>0.5</td>
+						<td id="P_1003"></td>
+						<td id="G_1003"></td>
+					</tr>
+					<tr>
+						<td>中职</td>
+						<td>目标值</td>
+						<td>7000元</td>
+						<td>0.5</td>
+						<td id="P_1004"></td>
+						<td id="G_1004"></td>
+					</tr>
+					<tr>
+						<td rowspan="3">11.中小学校生均图书达到目标值的学校比例</td>
+						<td>小学</td>
+						<td>生均30册</td>
+						<td>100%</td>
+						<td>0.5</td>
+						<td id="P_1101"></td>
+						<td id="G_1101"></td>
+					</tr>
+					<tr>
+						<td>初中</td>
+						<td>生均40册</td>
+						<td>100%</td>
+						<td>0.5</td>
+						<td id="P_1102"></td>
+						<td id="G_1102"></td>
+					</tr>
+					<tr>
+						<td>高中</td>
+						<td>生均50册</td>
+						<td>100%</td>
+						<td>0.5</td>
+						<td id="P_1103"></td>
+						<td id="G_1103"></td>
+					</tr>
+					<tr>
+						<td rowspan="4">信息技术保障</td>
+						<td colspan="3">12.每百名学生拥有功能教室、创新实验室的数量</td>
+						<td>2</td>
+						<td>2</td>
+						<td id="P_12"></td>
+						<td id="G_12"></td>
+					</tr>
+					<tr>
+						<td rowspan="2" colspan="3">13.校园网出口带宽达到1G_以上，
+							且教学场所实现无线校园网覆盖的学校比例</td>
+						<td>100%</td>
+						<td>0.5</td>
+						<td id="P_1301"></td>
+						<td id="G_1301"></td>
+					</tr>
+					<tr>
+						<td>100%</td>
+						<td>0.5</td>
+						<td id="P_1302"></td>
+						<td id="G_1302"></td>
+					</tr>
+					<tr>
+						<td colspan="3">14.省级（区域）教育资源服务平台教师活跃度</td>
+						<td>80%</td>
+						<td>1</td>
+						<td id="P_14"></td>
+						<td id="G_14"></td>
+					</tr>
+					<tr>
+						<td rowspan="12">育人为本（15分）</td>
+						<td rowspan="6">教育教学(9分)</td>
+						<td rowspan="6">素质教育实施</td>
+						<td colspan="3">15.开设劳动实践教育课程的学校比例</td>
+						<td>100%</td>
+						<td>1</td>
+						<td id="P_15"></td>
+						<td id="G_15"></td>
+					</tr>
+					<tr>
+						<td colspan="3">16.建有规范化心理健康辅导站的中小学校比例</td>
+						<td>100%</td>
+						<td>1</td>
+						<td id="P_16"></td>
+						<td id="G_16"></td>
+					</tr>
+					<tr>
+						<td colspan="3">17. 建有规范化卫生保健室（含托管）的中小学校比例</td>
+						<td>100%</td>
+						<td>2</td>
+						<td id="P_17"></td>
+						<td id="G_17"></td>
+					</tr>
+					<tr>
+						<td colspan="3">18. 生均体育运动场馆面积达标学校比例</td>
+						<td>100%</td>
+						<td>2</td>
+						<td id="P_18"></td>
+						<td id="G_18"></td>
+					</tr>
+					<tr>
+						<td rowspan="2">19.课程开设丰富多样</td>
+						<td colspan="2">义务段拓展性课程课时达到10%的学校比例</td>
+						<td>100%</td>
+						<td>1.5</td>
+						<td id="P_1901"></td>
+						<td id="G_1901"></td>
+					</tr>
+					<tr>
+						<td colspan="2">普通高中选修课程课时达到20%的学校比例</td>
+						<td>100%</td>
+						<td>1.5</td>
+						<td id="P_1902"></td>
+						<td id="G_1902"></td>
+					</tr>
+					<tr>
+						<td rowspan="6">对外开放(6分)</td>
+						<td rowspan="4">教师国际交流</td>
+						<td rowspan="3">20.专任教师拥有境外学习研修经历的比例</td>
+						<td colspan="2">小学</td>
+						<td>3%</td>
+						<td>1</td>
+						<td id="P_2001"></td>
+						<td id="G_2001"></td>
+					</tr>
+					<tr>
+						<td colspan="2">初中</td>
+						<td>3%</td>
+						<td>1</td>
+						<td id="P_2002"></td>
+						<td id="G_2002"></td>
+					</tr>
+					<tr>
+						<td colspan="2">高中</td>
+						<td>10%</td>
+						<td>1</td>
+						<td id="P_2003"></td>
+						<td id="G_2003"></td>
+					</tr>
+					<tr>
+						<td colspan="3">21.拥有全职外籍教师的学校比例</td>
+						<td>10%</td>
+						<td>1</td>
+						<td id="P_21"></td>
+						<td id="G_21"></td>
+					</tr>
+					<tr>
+						<td rowspan="2">友好学校</td>
+						<td colspan="3" rowspan="2">22.与境外学校建立友好关系的学校比例
+							其中，建设千校结好特色品牌项目的学校比例</td>
+						<td>30%</td>
+						<td>1</td>
+						<td id="P_2201"></td>
+						<td id="G_2201"></td>
+					</tr>
+					<tr>
+						<td>10%</td>
+						<td>1</td>
+						<td id="P_2202"></td>
+						<td id="G_2202"></td>
+					</tr>
+					<tr>
+						<td rowspan="20">促进公平（25分）</td>
+						<td rowspan="10">义务教育优质均衡（14分）</td>
+						<td rowspan="2">资源均衡</td>
+						<td colspan="3">23.所有小学办学条件校际优质均衡差异系数</td>
+						<td>0.40</td>
+						<td>3.5</td>
+						<td id="P_23"></td>
+						<td id="G_23"></td>
+					</tr>
+					<tr>
+						<td colspan="3">24.所有初中办学条件校际优质均衡差异系数</td>
+						<td>0.35</td>
+						<td>3.5</td>
+						<td id="P_24"></td>
+						<td id="G_24"></td>
+					</tr>
+					<tr>
+						<td>招生均衡</td>
+						<td colspan="3">25.优质高中招生名额分配到初中学校比例</td>
+						<td>60%</td>
+						<td>1</td>
+						<td id="P_25"></td>
+						<td id="G_25"></td>
+					</tr>
+					<tr>
+						<td rowspan="5">班额均衡</td>
+						<td colspan="3">26.小学、初中学校规模2000人以内（九年一贯制学校2500人）</td>
+						<td>达到</td>
+						<td>1</td>
+						<td id="P_26"></td>
+						<td id="G_26"></td>
+					</tr>
+					<tr>
+						<td rowspan="4">27.达到规定班额的比例</td>
+						<td colspan="2">幼儿园小班25人，中班30人，大班35人及以下</td>
+						<td>90%</td>
+						<td>1</td>
+						<td id="P_2701"></td>
+						<td id="G_2701"></td>
+					</tr>
+					<tr>
+						<td colspan="2">小学40人及以下</td>
+						<td>90%</td>
+						<td>1</td>
+						<td id="P_2702"></td>
+						<td id="G_2702"></td>
+					</tr>
+					<tr>
+						<td colspan="2">初中45人及以下</td>
+						<td>90%</td>
+						<td>1</td>
+						<td id="P_2703"></td>
+						<td id="G_2703"></td>
+					</tr>
+					<tr>
+						<td colspan="2">高中40人及以下</td>
+						<td>80%</td>
+						<td>1</td>
+						<td id="P_2704"></td>
+						<td id="G_2704"></td>
+					</tr>
+					<tr>
+						<td rowspan="2">师资均衡</td>
+						<td rowspan="2" colspan="3">28.义务教育公办学校参加交流的校长、教师占符合交流条件的校长、教师的比例。其中，骨干教师占总交流教师的比例</td>
+						<td>10%</td>
+						<td>0.5</td>
+						<td id="P_2801"></td>
+						<td id="G_2801"></td>
+					</tr>
+					<tr>
+						<td>20%</td>
+						<td>0.5</td>
+						<td id="P_2802"></td>
+						<td id="G_2802"></td>
+					</tr>
+					<tr>
+						<td rowspan="10">教育协调发展(11分)</td>
+						<td rowspan="2">学前教育</td>
+						<td colspan="3">29.普惠性幼儿园覆盖面</td>
+						<td>90%</td>
+						<td>1</td>
+						<td id="P_29"></td>
+						<td id="G_29"></td>
+					</tr>
+					<tr>
+						<td colspan="3">30.省二级及以上幼儿园覆盖面</td>
+						<td>60%</td>
+						<td>1</td>
+						<td id="P_30"></td>
+						<td id="G_30"></td>
+					</tr>
+					<tr>
+						<td>职业教育</td>
+						<td colspan="3">31.在省级以上专业就读学生数占全体中职生比例</td>
+						<td>40%</td>
+						<td>1</td>
+						<td id="P_31"></td>
+						<td id="G_31"></td>
+					</tr>
+					<tr>
+						<td rowspan="2">继续教育</td>
+						<td colspan="3">32.创建省级学习型城市 </td>
+						<td>达到</td>
+						<td>1</td>
+						<td id="P_32"></td>
+						<td id="G_32"></td>
+					</tr>
+					<tr>
+						<td colspan="3">33.省级成校现代化率 </td>
+						<td>30%</td>
+						<td>1</td>
+						<td id="P_33"></td>
+						<td id="G_33"></td>
+					</tr>
+					<tr>
+						<td>随迁子女教育</td>
+						<td colspan="3">34.随迁子女在公办学校就读比例</td>
+						<td>80%</td>
+						<td>2</td>
+						<td id="P_34"></td>
+						<td id="G_34"></td>
+					</tr>
+					<tr>
+						<td rowspan="4">特殊教育</td>
+						<td rowspan="3">35.适龄持证残疾儿童少年入学率</td>
+						<td colspan="2">学前教育</td>
+						<td>85%</td>
+						<td>1</td>
+						<td id="P_3501"></td>
+						<td id="G_3501"></td>
+					</tr>
+					<tr>
+						<td colspan="2">义务段</td>
+						<td>95%</td>
+						<td>1</td>
+						<td id="P_3502"></td>
+						<td id="G_3502"></td>
+					</tr>
+					<tr>
+						<td colspan="2">高中段</td>
+						<td>85%</td>
+						<td>1</td>
+						<td id="P_3503"></td>
+						<td id="G_3503"></td>
+					</tr>
+					<tr>
+						<td colspan="3">36.义务教育段拥有资源教室的学校比例</td>
+						<td>30%</td>
+						<td>1</td>
+						<td id="P_36"></td>
+						<td id="G_36"></td>
+					</tr>
+					<tr>
+						<td rowspan="12">教育质量（15分）</td>
+						<td rowspan="4">教育发展水平(7分)</td>
+						<td>学前教育</td>
+						<td colspan="3">37.学前教育入园率</td>
+						<td>98%</td>
+						<td>2</td>
+						<td id="P_37"></td>
+						<td id="G_37"></td>
+					</tr>
+					<tr>
+						<td>义务教育</td>
+						<td colspan="3">38.义务教育巩固率</td>
+						<td>100%</td>
+						<td>2</td>
+						<td id="P_38"></td>
+						<td id="G_38"></td>
+					</tr>
+					<tr>
+						<td>高中教育</td>
+						<td colspan="3">39.高中教育毛入学率</td>
+						<td>98%</td>
+						<td>2</td>
+						<td id="P_39"></td>
+						<td id="G_39"></td>
+					</tr>
+					<tr>
+						<td>成人教育</td>
+						<td colspan="3">40.成人学校社会培训成果存入学分银行</td>
+						<td>20%</td>
+						<td>1</td>
+						<td id="P_40"></td>
+						<td id="G_40"></td>
+					</tr>
+					<tr>
+						<td rowspan="8">学生发展(8分)</td>
+						<td rowspan="4">义务教育</td>
+						<td rowspan="2">41.义务教育段每百名学生拥有中高级以上职称教师数</td>
+						<td colspan="2">小学</td>
+						<td>4</td>
+						<td>1</td>
+						<td id="P_4101"></td>
+						<td id="G_4101"></td>
+					</tr>
+					<tr>
+						<td colspan="2">初中</td>
+						<td>6</td>
+						<td>1</td>
+						<td id="P_4102"></td>
+						<td id="G_4102"></td>
+					</tr>
+					<tr>
+						<td rowspan="2">42.义务教育学生</td>
+						<td colspan="2">小学</td>
+						<td>98%</td>
+						<td>1</td>
+						<td id="P_4201"></td>
+						<td id="G_4201"></td>
+					</tr>
+					<tr>
+						<td colspan="2">初中</td>
+						<td>98%</td>
+						<td>1</td>
+						<td id="P_4202"></td>
+						<td id="G_4202"></td>
+					</tr>
+					<tr>
+						<td rowspan="4">高中教育</td>
+						<td colspan="3">43.普通高中学业水平考试累计合格率</td>
+						<td>97%</td>
+						<td>1</td>
+						<td id="P_43"></td>
+						<td id="G_43"></td>
+					</tr>
+					<tr>
+						<td rowspan="2" colspan="3">44.高校新生体质健康合格率与优良率</td>
+						<td>95%</td>
+						<td>1</td>
+						<td id="P_4401"></td>
+						<td id="G_4401"></td>
+					</tr>
+					<tr>
+						<td>25%</td>
+						<td>1</td>
+						<td id="P_4402"></td>
+						<td id="G_4402"></td>
+					</tr>
+					<tr>
+						<td colspan="3">45.中职学生省级及以上职业能力大赛获奖率</td>
+						<td>2.5%</td>
+						<td>1</td>
+						<td id="P_45"></td>
+						<td id="G_45"></td>
+					</tr>
+					<tr>
+						<td>社会认可（10分）</td>
+						<td>教育满意（10分)</td>
+						<td>教育满意度测评</td>
+						<td colspan="3">46.社会公众（含学生、家长、教师、校长、社会代表等）对教育工作的满意度调查</td>
+						<td>90</td>
+						<td>10</td>
+						<td id="P_46"></td>
+						<td id="G_46"></td>
+					</tr>
+					<tr>
+						<td>反向扣分</td>
+						<td colspan="6">1.教育工作出现重大安全事故、师德师风、群体事件、公共卫生、招生违规等问题并产生较大负面影响（4分）；2.存在小学班额超45人、中学（初中、高中）班额超50人的（1分）。</td>
+						<td>5</td>
+						<td id="P_47"></td>
+						<td id="G_47"></td>
+					</tr>
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+
+
+
+
+		<!-- <form id="chartForm" style="display:none" method="post" enctype="multipart/form-data" action="monitor/exportPng"> -->
+		 <form id="chartForm" style="display:none" method="post" action="${base!}/platform/evaluate/exportCounty?evaluateId=${evaluateId!}">
+		    <!-- <input id="imageValue1" name="radarCounty64" type="text" maxlength="50000" /> 
+		    <input id="imageValue2" name="fileType" type="text" value=".png" />-->
+		    <input id="radar1" name="radar1" type="text" maxlength="50000" />
+		    <input id="bar2" name="bar2" type="text" maxlength="50000" />
+		    <input id="barp" name="barp" type="text" maxlength="50000" />
+<!-- 		    <input id="imageValue1" name="bar_t" type="text" maxlength="50000" /> -->
+		     <input class="easyui-textbox" name="fileType" style="width:90%" data-options="label:'电话:'"> 
+		     <!-- <input class="easyui-textbox" name="radarCounty64" style="width:90%" data-options="label:'用户名:',required:true"> -->
+		</form>
+	</div>
+</section>
+
+
+<script type="text/javascript">
+	 // 基于准备好的dom，初始化echarts图表
+	 var chartRadar1 = echarts.init(document.getElementById('amain'));
+	 var chartBar2 = echarts.init(document.getElementById('bmain')); 
+	 var chartBarp = echarts.init(document.getElementById('cmain'));
+//     var chartBart = echarts.init(document.getElementById('dmain'));
+     chartRadar1.setOption(radarOption);
+     chartBar2.setOption(barOption_v);
+     chartBarp.setOption(barOption_h);
+
+     function showScoreByCity1(xzqhdm,chartBar)
+     {
+         // 基于准备好的dom，初始化echarts图表
+         //var aname = xzqhmc+'一级指标得分比较';
+         //$.get('monitor/getCountyScore1?year='+year+'&xzqhdm='+xzqhdm).done(function (data){
+         $.get('${base!}/platform/evaluate/getCountyScore1?xzqhdm='+xzqhdm).done(function (data){
+             console.log('一级指标得分返回值')
+             console.log(data);//前端调试控制台输出数据，看看是否符合要求
+             chartBar.setOption({
+                 legend:{
+                     data:[ '得分', '目标值','浙江省' ]
+                 },
+                 series:[{
+
+                     data:data
+                 }]
+             });
+             window.onresize = chartRadar1.resize;
+         });
+     }
+     function showScoreByCity2(xzqhdm,chartBar)
+     {
+         //var aname = xzqhmc+'二级指标得分比较';
+         $.get('${base!}/platform/evaluate/getCountyScore2?xzqhdm='+xzqhdm).done(function (data){
+             console.log('二级指标得分返回值')
+             console.log(data);
+
+             chartBar.setOption({
+                 legend:{
+                     data:['得分','省均值','目标值']
+                 },
+                 xAxis :[{
+                     data :catalog2[1]
+                 }],
+                 yAxis:[{
+                     interval:5,
+                     max:function(value){
+                         return Math.ceil(value.max/5)*5;
+                     }
+                 }],
+                 series:[{
+                     name:'得分',
+                     data:data[0].value
+                 },{
+                     name:'目标值',
+                     data:data[2].value
+                 },{
+                     name:'省均值',
+                     data:data[1].value
+                 }]
+             });
+
+             window.onresize = chartBar2.resize;
+
+         });
+     }
+     function showScoreByCityp( xzqhdm,chartBar)
+     {
+         // 基于准备好的dom，初始化echarts图表
+
+         //var aname = xzqhmc+'五十四个指标得分比较';
+         $.get('${base!}/platform/evaluate/getCountyScorep?xzqhdm='+xzqhdm).done(function (data){
+             console.log('监测点得分返回值')
+             console.log(data);
+             var monitorname=[];
+             for(var i=0;i<data[0].value.length;i++){
+                 var name =i+1;
+                 monitorname.push(name);
+             }
+             chartBar.setOption({
+                 legend:{
+                     data:['得分','目标值','省均值']
+                 },
+
+                 yAxis:[{
+                     data:monitorname
+                 }],
+                 series:[{
+                     name:'得分',
+                     data:data[0].value
+                 },{
+                     name:'目标值',
+                     data:data[2].value
+                 },{
+                     name:'省均值',
+                     data:data[1].value
+                 }]
+             });
+         });
+     }
+     $(document).ready(function () {
+         showScoreByCity1('${xzqh!}',chartRadar1);
+         showScoreByCity2('${xzqh!}',chartBar2);
+         showScoreByCityp('${xzqh!}',chartBarp);
+         htmlobj=$.ajax({url:"${base}/platform/evaluate/get?evaluateId=${evaluateId!}", success: function(data){
+                 // for(var key in data){
+                 //     var value = data[key];
+                 //     $("#"+key).text(value);
+                 // }
+				for(var i=0;i<data.length;i++)
+				{
+				    var c=data[i].code;
+				    var value=data[i].svalue;
+				    var score=data[i].score;
+				    $("#P_"+c).text(value);
+				    $("#G_"+c).text(score);
+				}
+             }});
+         $("#export").on("click",function(){
+         <% if(!@shiro.hasRole("sysadmin")){%>
+			if('${status!}'==='true'){
+                Toast.error("报告还在修改中，不能导出");
+				return false;
+             }
+		<%}%>
+             var chartExportUrl = '${base!}/platform/evaluate/exportCounty?evaluateId=${evaluateId!}';
+             var picRadar1 = chartRadar1.getDataURL();//获取echarts图的base64编码，为png格式。
+             var picBar2 = chartBar2.getDataURL();//获取echarts图的base64编码，为png格式。
+             var picBarp = chartBarp.getDataURL();//获取echarts图的base64编码，为png格式。
+             //var picBart = chartBart.getDataURL();//获取echarts图的base64编码，为png格式。
+             $('#radar1').val(picRadar1);//将编码赋值给输入框
+             $('#bar2').val(picBar2);//将编码赋值给输入框
+             $('#barp').val(picBarp);//将编码赋值给输入框
+
+             $('#chartForm').submit();
+//             $('#chartForm').form('submit',{
+//                 url: chartExportUrl,
+//                 onSubmit: function(){
+//                     return true;
+//                     //return $(this).form('validate');
+//                 },
+//                 success: function(result){
+//                     var result = eval('('+result+')');
+//                     if (result.errorMsg){
+//                         $.messager.show({
+//                             title: 'Error',
+//                             msg: result.errorMsg
+//                         });
+//                     }
+//                 }
+//             });
+
+         });
+//         $('#chartForm').ajaxForm({
+//             dataType: 'json',
+//             beforeSubmit: function (arr, form, options) {
+//                 form.find("button:submit").button("loading");
+//             },
+//             success: function (data, statusText, xhr, form) {
+//                 if (data.code == 0) {
+//                     Toast.success(data.msg);
+//
+//                 } else {
+//                     Toast.error(data.msg);
+//                 }
+//                 form.find("button:submit").button("reset");
+//             }
+//         });
+
+     });
+
+	</script>
+<%}%>

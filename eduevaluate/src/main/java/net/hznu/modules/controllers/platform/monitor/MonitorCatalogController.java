@@ -119,9 +119,11 @@ public class MonitorCatalogController {
 	@At({"/tree","/tree/?"})
 	@Ok("json")
 	@RequiresAuthentication
-	public Object tree(String evatype,@Param("pid") String pid) {
+	public Object tree(@Param("year") int year,@Param("pid") String pid) {
 		Cnd cnd = Cnd.where("parentId", "=", Strings.sBlank(pid));
-
+		if(year!=0){
+			cnd = cnd.and("year","=",year);
+		}
 		List<Monitor_catalog> list = monitorCatalogService.query(cnd.asc("catacode"));
 		List<Map<String, Object>> tree = new ArrayList<>();
 		for (Monitor_catalog catalog : list) {

@@ -54,7 +54,7 @@ public class Globals {
                 case "AppUploadPath":
                     Globals.AppUploadPath = sysConfig.getConfigValue();
                     break;
-                case "Selfdeadline":
+                case "EvaluateYear":
 
                     String evaluateYear = sysConfig.getConfigValue();
                     Globals.EvaluateYear=  Integer.parseInt(evaluateYear);

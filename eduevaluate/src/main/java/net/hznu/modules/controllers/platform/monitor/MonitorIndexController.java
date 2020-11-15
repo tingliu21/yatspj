@@ -94,7 +94,7 @@ public class MonitorIndexController {
     @RequiresAuthentication
     public Object edit(String id,HttpServletRequest req) {
 		Monitor_index index = monitorIndexService.fetch(id);
-		index = monitorIndexService.fetchLinks(index,"dept");
+		//index = monitorIndexService.fetchLinks(index,"dept");
 
 		req.setAttribute("id", id);
 		return index;
@@ -147,7 +147,7 @@ public class MonitorIndexController {
 		}
 		return null;
     }
-	// Add by Liut 2018-10-29
+	// 仅指标统计用indexvalue，Add by Liut 2018-10-29
 	@At
 	@Ok("json")
 	@RequiresAuthentication
@@ -161,6 +161,27 @@ public class MonitorIndexController {
 			obj.put("id", index.getCode());
 			obj.put("text", index.getLocation()+"."+index.getName());
 
+			tree.add(obj);
+		}
+		return tree;
+	}
+	// Add by Liut 2020-09-11
+	@At
+	@Ok("json")
+	@RequiresAuthentication
+	public Object tree_cid(@Param("catalogid") String catalogid,@Param("pid") String pid) {
+
+		Cnd cnd = Cnd.where("parentId", "=", Strings.sBlank(pid));
+		if(!Strings.isBlank(catalogid)){
+			cnd = cnd.and("catalogid","=",catalogid);
+		}
+		List<Monitor_index> list = monitorIndexService.query(cnd.asc("code"));
+		List<Map<String, Object>> tree = new ArrayList<>();
+		for (Monitor_index index : list) {
+			Map<String, Object> obj = new HashMap<>();
+			obj.put("id", index.getId());
+			obj.put("text", index.getName());
+			obj.put("children", index.isHasChildren());
 			tree.add(obj);
 		}
 		return tree;

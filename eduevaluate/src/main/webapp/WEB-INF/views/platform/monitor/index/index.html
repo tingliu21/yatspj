@@ -3,7 +3,18 @@ layout("/layouts/platform.html"){
 %>
 <aside class="sidebar-250 canvas-right bg-default ">
     <header class="header navbar clearfix bb bg-default pl0 pr0">
-        <p class="navbar-text"><i class="fa fa-sitemap mr5"></i> 指标列表</p>
+        <div class="btn-group" >
+            <p class="navbar-text"><i class="fa fa-sitemap mr5"></i> 指标列表</p>
+            <div class="pull-right" style="padding-top: 10px;">
+                <label for="year">评估年度：</label>
+                <select id="year" name="year"  placeholder="选择评估年度" >
+                    <option value="2016">2016</option>
+                    <option value="2017">2017</option>
+                    <option value="2018" >2018</option>
+                    <option value="2019" selected>2019</option>
+                </select>
+            </div>
+        </div>
     </header>
     <div class="content-wrap no-p">
         <div class="wrapper2">
@@ -38,7 +49,7 @@ layout("/layouts/platform.html"){
                     <!--<th class="col-md-3">评分细则</th>-->
                     <th class="col-md-1">权重</th>
 
-                    <th class="col-md-1">评测专家</th>
+                    <!--<th class="col-md-1">评测专家</th>-->
                     <th class="col-md-1">操作</th>
                 </tr>
                 </thead>
@@ -125,7 +136,7 @@ layout("/layouts/platform.html"){
                 {"data": "name", "bSortable": true},
                 {"data": "mvalue", "bSortable": true},
                 {"data": "weights", "bSortable": true},
-                {"data": "masterrolename", "bSortable": true}
+//                {"data": "masterrolename", "bSortable": true}
             ],
             "columnDefs": [
 
@@ -138,7 +149,7 @@ layout("/layouts/platform.html"){
                             '<li><a href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a></li>' +
                             '</ul></div>';
                     },
-                    "targets": 5
+                    "targets": 4
                 }
             ]
         });
@@ -148,13 +159,13 @@ layout("/layouts/platform.html"){
         });
     }
 
-    function initTreeView() {
-        $("#jsTree").jstree({
+    function initTreeView( year) {
+       $("#jsTree").jstree({
             plugins: ["wholerow"],
             core: {
                 data: {
                     url: function (node) {
-                        return node.id === "#" ? "${base}/platform/monitor/catalog/tree" : "${base}/platform/monitor/catalog/tree?pid=" + node.id
+                        return node.id === "#" ? "${base}/platform/monitor/catalog/tree?year="+year : "${base}/platform/monitor/catalog/tree?pid=" + node.id
                     }
                 },
                 state : {
@@ -208,10 +219,20 @@ layout("/layouts/platform.html"){
 
 
     $(document).ready(function () {
-        initTreeView();
+        initTreeView($("#year").val());
         initDatatable();
         $("#dialogDetail").on("hidden.bs.modal", function () {
             $(this).removeData("bs.modal");
+        });
+        $("#year").change(function(){
+
+
+            //$('#jsTree').jstree("destroy");
+            $('#jsTree').data('jstree', false).empty();
+
+            //tree.ajax.refresh();
+            initTreeView($("#year").val());
+
         });
     });
 

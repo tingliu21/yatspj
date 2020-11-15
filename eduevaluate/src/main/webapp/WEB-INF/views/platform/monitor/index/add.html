@@ -29,6 +29,7 @@ layout("/layouts/platform.html"){
 			                             		</span>
                                 </div>
                                 <input type="hidden" name="catalogId" value="<%if(!isEmpty(catalog)){%>${catalog.id}<%}%>">
+                                <input type="hidden" name="year" value="<%if(!isEmpty(catalog)){%>${catalog.year}<%}%>">
                             </div>
                         </div>
                         <div class="form-group has-feedback">
@@ -87,14 +88,14 @@ layout("/layouts/platform.html"){
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="masterrole" class="col-sm-2 control-label">评测专家</label>
-                            <div class="col-sm-8">
-                                <select class="form-control" name="masterrole" id="masterrole">
+                        <!--<div class="form-group">-->
+                            <!--<label for="masterrole" class="col-sm-2 control-label">评测专家</label>-->
+                            <!--<div class="col-sm-8">-->
+                                <!--<select class="form-control" name="masterrole" id="masterrole">-->
 
-                                </select>
-                            </div>
-                        </div>
+                                <!--</select>-->
+                            <!--</div>-->
+                        <!--</div>-->
                         <!--<div class="form-group">
                             <label for="qualify" class="col-sm-2 control-label">是否达标性指标</label>
                             <div class="col-sm-8 switcha">
@@ -156,6 +157,9 @@ layout("/layouts/platform.html"){
                 </div>
             </div>
             <div class="modal-footer">
+                <div class="pull-left">
+                    <button type="button" class="btn btn-success" data-dismiss="modal" onclick="selectFirstMenu()">设为顶级监测点</button>
+                </div>
                 <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
                 <button type="button" class="btn btn-primary" onclick="selectParentIndex()">确认选择</button>
             </div>
@@ -166,27 +170,30 @@ layout("/layouts/platform.html"){
 
 
 
-    function initTreeView() {
+    function initTreeView(year) {
         $("#jsTree").jstree({
             plugins: ["wholerow", "json_data"],
             core: {
                 data: {
                     dataType: "json",
                     url: function (node) {
-                        return node.id === "#" ? "${base}/platform/monitor/catalog/tree" : "${base}/platform/monitor/catalog/tree?pid=" + node.id                    }
+                        return node.id === "#" ? "${base}/platform/monitor/catalog/tree?year=" + year : "${base}/platform/monitor/catalog/tree?pid=" + node.id
+                    }
                 },
                 multiple: false
             }
         }).on("dblclick.jstree", function (node) {
             select();
         });
+    }
+    function initIndexTreeView(catalogId){
         $("#jsTreeParentIndex").jstree({
             plugins: ["wholerow", "json_data"],
             core: {
                 data: {
                     dataType: "json",
                     url: function (node) {
-                        return node.id === "#" ? "${base}/platform/monitor/index/tree" : "${base}/platform/monitor/index/tree?pid=" + node.id
+                        return node.id === "#" ? "${base}/platform/monitor/index/tree_cid?catalogid="+catalogId : "${base}/platform/monitor/index/tree_cid?pid=" + node.id
                     }
                 },
                 multiple: false
@@ -195,13 +202,18 @@ layout("/layouts/platform.html"){
             selectParentIndex();
         });
     }
-    //选择父菜单
+    //选择所属指标
     function select() {
         var tree = $.jstree.reference("#jsTree");
         var node = tree.get_selected(true);
         var a = "#addForm #catalogId";
         $(a).val(node[0].text);
         $("#addForm input[name='catalogId']").val(node[0].id);
+        //所属监测点重置
+        $("#addForm input[name='parentId']").val("");
+        $("#addForm #parentId").val("");
+        $('#jsTreeParentIndex').data('jstree', false).empty();
+        initIndexTreeView($("#addForm input[name='catalogId']").val());
         $("#dialogSelect").modal("hide");
     }
     //选择所属监测点
@@ -210,6 +222,12 @@ layout("/layouts/platform.html"){
         var node = tree.get_selected(true);
         $("#addForm #parentId").val(node[0].text);
         $("#addForm input[name='parentId']").val(node[0].id);
+        $("#dialogSelectParentIndex").modal("hide");
+    }
+    //设置顶级监测点
+    function selectFirstMenu() {
+        $("#addForm #parentId").val("顶级监测点");
+        $("#addForm input[name='parentId']").val("");
         $("#dialogSelectParentIndex").modal("hide");
     }
     //选择审核角色
@@ -234,7 +252,8 @@ layout("/layouts/platform.html"){
         }
     }
     $(document).ready(function () {
-        initTreeView()
+        initTreeView($("#addForm input[name='year']").val());
+        initIndexTreeView($("#addForm input[name='catalogId']").val());
         $('#addForm').ajaxForm({
             dataType: 'json',
             beforeSubmit: function (arr, form, options) {
@@ -243,7 +262,19 @@ layout("/layouts/platform.html"){
             success: function (data, statusText, xhr, form) {
                 if (data.code == 0) {
                     Toast.success(data.msg);
+
+                    //刷新父级菜单
+                    //$.jstree.reference("#jsTree").refresh();
+//                    $.jstree.reference("#jsTreeParentIndex").refresh();
+                    $('#jsTreeParentIndex').data('jstree', false).empty();
+                    initIndexTreeView($("#addForm input[name='catalogId']").val());
+
+                    var catalogName = $("#addForm #catalogId").val();
+                    var parentName = $("#addForm #parentId").val();
                     form.resetForm();
+
+                    $("#addForm #catalogId").val(catalogName);
+                    $("#addForm #parentId").val(parentName);
                 } else {
                     Toast.error(data.msg);
                 }

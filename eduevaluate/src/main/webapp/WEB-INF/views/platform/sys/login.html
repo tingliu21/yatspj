@@ -79,14 +79,21 @@
                                             <input type="hidden" id="captcha" name="captcha">
 
                                             <div class="form-group">
-                                                <input type="text" id="username" name="username" required
-                                                       class="form-control input-lg mb25"
-                                                       placeholder="${msg['login.username']}">
+                                                <span class="block input-icon input-icon-right">
+                                                    <input type="text" id="username" name="username" required
+                                                           class="form-control input-lg mb25"
+                                                           placeholder="${msg['login.username']}">
+                                                    <i class="ace-icon fa fa-user"></i>
+                                                </span>
+
                                             </div>
-                                            <div class="form-group">
-                                                <input type="password" id="password" name="password" required
-                                                       class="form-control input-lg mb25"
-                                                       placeholder="${msg['login.password']}">
+                                            <div class="block clearfix form-group">
+                                                <span class="block input-icon input-icon-right">
+                                                    <input type="password" id="password" name="password" required
+                                                           class="form-control input-lg mb25"
+                                                           placeholder="${msg['login.password']}">
+                                                    <i class="ace-icon fa fa-eye" id="see_pwd"  title="查看密码"></i>
+                                                </span>
                                             </div>
                                             <p id="tip" class="bg-danger p15" style="display:none"></p>
 
@@ -161,6 +168,20 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $("#year").html(new Date().getFullYear());
+        $('#see_pwd').bind("click", function() {
+            var staffPwd = $('#password').val();
+            var iType = document.getElementById("password").type;
+            if(iType=="text"){
+                document.getElementById("password").type = "password";
+                document.getElementById("see_pwd"). setAttribute("class", "ace-icon fa  fa-eye");
+                document.getElementById("see_pwd"). setAttribute("title", "查看密码");
+            }else{
+                document.getElementById("password").type = "text";
+                document.getElementById("see_pwd"). setAttribute("title", "隐藏密码");
+                document.getElementById("see_pwd"). setAttribute("class", "ace-icon fa  fa-eye-slash");
+            }
+            document.getElementById("password").value = staffPwd;
+        });
         $("#loginForm").ajaxForm({
             dataType: 'json',
             beforeSubmit: function (arr, form, options) {

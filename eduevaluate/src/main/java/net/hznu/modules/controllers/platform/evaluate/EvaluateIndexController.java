@@ -13,6 +13,7 @@ import net.hznu.common.util.XwpfUtil;
 import net.hznu.modules.models.evaluate.Evaluate_index;
 import net.hznu.modules.models.evaluate.Evaluate_records;
 import net.hznu.modules.models.evaluate.Evaluate_special;
+import net.hznu.modules.models.monitor.MonitorIndexReport;
 import net.hznu.modules.models.monitor.Monitor_catalog;
 import net.hznu.modules.models.monitor.Monitor_index;
 import net.hznu.modules.models.sys.Sys_unit;
@@ -26,6 +27,7 @@ import net.hznu.modules.services.sys.SysUnitService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
@@ -141,8 +143,10 @@ public class EvaluateIndexController {
 			req.setAttribute("xzqhmc",record.getXzqhmc());
 			req.setAttribute("year",record.getYear());
 			req.setAttribute("status",record.isStatus());
-			req.setAttribute("selfevaurl",record.getSelfevaurl());
-			return "beetl:/platform/evaluate/evaluate_county.html";
+//			if(StringUtils.isNotBlank(record.getSelfevaurl())) {
+				req.setAttribute("selfevaurl", record.getSelfevaurl());
+//			}else req.setAttribute("selfevaurl","#");
+			return "beetl:/platform/evaluate/evaluate_county_"+record.getYear()+".html";
 		}
 		else {
 			//获取当前用户id
@@ -159,7 +163,7 @@ public class EvaluateIndexController {
 				req.setAttribute("status",record.isStatus());
 				req.setAttribute("year",record.getYear());
 				req.setAttribute("selfevaurl",record.getSelfevaurl());
-				return "beetl:/platform/evaluate/evaluate_county.html";
+				return "beetl:/platform/evaluate/evaluate_county_"+record.getYear()+".html";
 			} else {
 				return "redirect:/platform/evaluate/records";
 			}
@@ -473,6 +477,7 @@ public class EvaluateIndexController {
 	//导出县报告（2018年的导出方式，更替了模板，XwpfUtil-->Wordtemplate）
 	@At
 	@Ok("void")
+	@RequiresPermissions("evaluate.index.export")
 	public void exportCounty(HttpServletResponse resp, HttpServletRequest req, @Param("evaluateId") String evaluateId,
 							 @Param("radar1") String picRadar1, @Param("bar2") String picBar2, @Param("barp") String picBarp, @Param("bark") String picBark) {
 		String tempPath = req.getSession().getServletContext().getRealPath("/tmp");
@@ -485,6 +490,7 @@ public class EvaluateIndexController {
 
 			XwpfUtil xwpfUtil = new XwpfUtil();
 			//读入word模板
+			System.out.println(getClass().getClassLoader().getResource("template/CountyTemplate_"+Globals.EvaluateYear+".docx"));
 			InputStream is = getClass().getClassLoader().getResourceAsStream("template/CountyTemplate_" + Globals.EvaluateYear + ".docx");
 			try {
 
@@ -528,9 +534,17 @@ public class EvaluateIndexController {
         paramsPara.put("remark2",special.getRemark2());
         paramsPara.put("remarkp",special.getRemarkp());
 
+        /* 2018年评估报告 建议直接存放在专家评语表中；2019年评估报告按照2级指标导出
         //评语建议
         String strSuggestion = special.getSuggestion();
         paramsPara.put("suggestion",strSuggestion);
+		*/
+        //以下为2019评估报告建议生成代码，add by Liut 2020-11-15
+		List<Monitor_catalog> catalogList = monitorCatalogService.query(Cnd.where("year", "=", Globals.EvaluateYear).and("mark", "=", true).asc("catacode"));
+		for (Monitor_catalog catalog : catalogList) {
+			List<MonitorIndexReport>rptTemps1 = dao.query(MonitorIndexReport.class, Cnd.where("year", "=", Globals.EvaluateYear).and("catacode", "like", catalog.getCatacode() + "%").asc("catacode").asc("code"));
+			paramsPara.put("sugg"+catalog.getCatacode(),evaluateIndexService.monitorIndexReport(evalId,rptTemps1));
+		}
 
         //省平均值
         Evaluate_records record = evaluateRecordsService.fetch(evalId);
@@ -598,12 +612,12 @@ public class EvaluateIndexController {
 		chart.setHeight(710);
 		chart.setWidth(420);
 		paramsPara.put("barp", chart);
-		chart = new StatChart();
-		chart.setFilePath(picBark);
-		chart.setFileType("png");
-		chart.setHeight(470);
-		chart.setWidth(420);
-		paramsPara.put("bar_key", chart);
+//		chart = new StatChart();
+//		chart.setFilePath(picBark);
+//		chart.setFileType("png");
+//		chart.setHeight(470);
+//		chart.setWidth(420);
+//		paramsPara.put("bar_key", chart);
 
 		wordDataMap.put("parametersMap", paramsPara);
 		return wordDataMap;
@@ -694,7 +708,7 @@ public class EvaluateIndexController {
 		result2 = evaluateIndexService.getScoreByXZQH(viewname, fieldnames, xzqhdm,"desc" );
 
 
-
+		System.out.println(getClass().getClassLoader().getResource("template/Provincetemplate_"+Globals.EvaluateYear+".docx"));
 		InputStream is = getClass().getClassLoader().getResourceAsStream("template/Provincetemplate_"+Globals.EvaluateYear+".docx");
 		try {
 			String filename = "浙江省县（市、区）教育现代化发展水平报告_"+Globals.EvaluateYear+".docx";

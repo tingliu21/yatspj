@@ -478,17 +478,19 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
             }
             suggestion += cNo1 + catalog1.getName()+"</strong></p>";
             List<MonitorIndexReport> rptTemps1=null;
-            if(catalog1.isMark()) {//false是反向扣分和社会认可
+            if(!catalog1.isMark()) {//true是反向扣分和社会认可
                 List<Monitor_catalog> catalogList2 = dao().query(Monitor_catalog.class, Cnd.where("level", "=", 2).and("year", "=", year).
                         and("catacode", "like", catalog1.getCatacode() + "%").asc("catacode"));
                 for (Monitor_catalog catalog2 : catalogList2) {
                     suggestion += "<p>&nbsp;&nbsp;<strong>" + Integer.valueOf(catalog2.getCatacode().substring(3, 4)) + ".关于" + catalog2.getName() + "</strong></p>";
                     rptTemps1 = dao().query(MonitorIndexReport.class, Cnd.where("year", "=", year).and("catacode", "like", catalog2.getCatacode() + "%").asc("catacode").asc("code"));
-                    suggestion=monitorIndexReport(eid,suggestion,rptTemps1);
+                    suggestion +="<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + monitorIndexReport(eid,rptTemps1)+"</p><br/>";
+
                 }
             }else {
                     rptTemps1= dao().query(MonitorIndexReport.class, Cnd.where("year","=",year).and("catacode", "like", catalog1.getCatacode()+"%").asc("catacode").asc("code"));
-                    suggestion=monitorIndexReport(eid,suggestion,rptTemps1);
+                    suggestion +="<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + monitorIndexReport(eid,rptTemps1)+"</p><br/>";
+
             }
         }
         dao().execute(Sqls.create("insert into evaluate_special(evaluateid,remark1,remark2,remarkp,suggestion) values (@evaluateid,@remark1,@remark2,@remarkp,@suggestion)")
@@ -497,12 +499,11 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
     }
     /**
      * 是否保留评语
-     * @param suggestion
+     * @param eid
      * @param rptTemps1
      */
-    public String monitorIndexReport(String eid,String suggestion,List<MonitorIndexReport>rptTemps1){
+    public String monitorIndexReport(String eid,List<MonitorIndexReport>rptTemps1){
         String strRemarks2 = "";
-        suggestion+="<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         for (MonitorIndexReport temp : rptTemps1) {
             //得到监测点代码和临界值
             String code = temp.getcode();
@@ -539,13 +540,11 @@ public class EvaluateIndexService extends Service<Evaluate_index> {
                 result = StringUtil.calculateExpression(scores_1, condition);
             }
             strRemarks2+=((sumScore < threshold)||result==1? strRemark : "");
-            suggestion+=((sumScore < threshold)||result==1? strRemark : "");
         }
         if (Strings.isEmpty(strRemarks2)) {
-            suggestion+="无";
+            strRemarks2 ="无";
         }
-        suggestion+="</p><br/>";
-        return suggestion;
+        return strRemarks2;
     }
     /**
      * 导出word文件

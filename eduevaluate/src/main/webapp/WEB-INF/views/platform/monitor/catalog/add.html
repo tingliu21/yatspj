@@ -104,14 +104,15 @@ layout("/layouts/platform.html"){
     </div>
 </div>
 <script language="JavaScript">
-    function initTreeView() {
+    function initTreeView( year ) {
         $("#jsTreeParentUnit").jstree({
             plugins: ["wholerow", "json_data"],
             core: {
                 data: {
                     dataType: "json",
                     url: function (node) {
-                        return node.id === "#" ? "${base}/platform/monitor/catalog/tree" : "${base}/platform/monitor/catalog/tree?pid=" + node.id
+
+                        return node.id === "#" ? "${base}/platform/monitor/catalog/tree?year="+year : "${base}/platform/monitor/catalog/tree?pid=" + node.id
                     }
                 },
                 multiple: false
@@ -134,7 +135,7 @@ layout("/layouts/platform.html"){
         $("#dialogSelectParentUnit").modal("hide");
     }
     $(document).ready(function () {
-        initTreeView();
+        initTreeView($("#year").val());
         myForm.init();
         $("#save").on("click",function(){
             $('#addForm').submit();
@@ -149,9 +150,9 @@ layout("/layouts/platform.html"){
                     Toast.success(data.msg);
                     //刷新父级菜单
                     $.jstree.reference("#jsTreeParentUnit").refresh();
-                    var parentName = $("#unitAddForm #parentId").val();
+                    var parentName = $("#addForm #parentId").val();
                     form.resetForm();
-                    $("#unitAddForm #parentId").val(parentName);
+                    $("#addForm #parentId").val(parentName);
 
                 } else {
                     Toast.error(data.msg);

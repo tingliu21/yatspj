@@ -10,7 +10,9 @@ layout("/layouts/platform.html"){
                 <select id="year" name="year"  placeholder="选择评估年度" >
                     <option value="2016">2016</option>
                     <option value="2017">2017</option>
-                    <option value="2018" selected>2018</option>
+                    <option value="2018">2018</option>
+                    <option value="2019" selected
+                    >2019</option>
                 </select>
             </div>
         </div>
@@ -166,6 +168,21 @@ layout("/layouts/platform.html"){
         $.get(uploadedDataURL, function (geoJson) {
             echarts.registerMap('Zhejiang', geoJson);
             $("#year").change(function () {
+                //是否要切换地图
+                var newDataURL=uploadedDataURL;
+                if($("#year").val()<2019){
+                    newDataURL = "${base!}/assets/data/zjxzqh-2017.json";
+                }else{
+                    newDataURL = "${base!}/assets/data/zjxzqh.json";
+                }
+                if(newDataURL != uploadedDataURL){
+                    $.get(newDataURL, function (geoJson) {
+                        echarts.registerMap('Zhejiang', geoJson);
+                    });
+                    uploadedDataURL = newDataURL;
+                }
+
+                //切换年度重新获取数据
                 showProvince($("#year").val(),myChart);
             });
             showProvince($("#year").val(),myChart);

@@ -340,66 +340,37 @@ public class WordTemplate {
                     XWPFRun insertNewRun = xWPFParagraph.insertNewRun(beginRunIndex);
                     insertNewRun.getCTR().setRPr(beginRun.getCTR().getRPr());
                     key.append(beginRunText.substring(1, endIndex));
-                    Object oValue = parametersMap.get(key.toString());
-                    if(oValue instanceof StatChart) {//图表添加
-                        StatChart chart = (StatChart)oValue ;
-                        try {
-
-                            InputStream input = new FileInputStream(chart.getFilePath());
-
-                            insertNewRun.addPicture(input, getPictureType(chart.getFileType()),
-                                    chart.getFilePath(), Units.toEMU(chart.getWidth()), Units.toEMU(chart.getHeight()));
-                        } catch (InvalidFormatException | IOException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }else {//文本替换
-                        String value = String.valueOf(oValue);
-                        if(value!=""){
-                            if(value.indexOf("<p>")!=-1){
-                                org.jsoup.nodes.Document document = Jsoup.parseBodyFragment(value);
-                                Elements paraEles = document.select("p");
-                                for(Element element: paraEles){
-                                    XWPFRun run = xWPFParagraph.createRun();
-                                    Elements boldElements = element.select("strong");
-                                    if(boldElements.size()>0) {
-                                        for (Element boldEle : boldElements) {
-                                            run.getCTR().setRPr(beginRun.getCTR().getRPr());
-                                            run.setText(element.text());
-
-                                        }
-                                    }else{
-                                        //run.addTab();
-                                        run.setText(element.text());
-                                    }
-                                    run.addCarriageReturn();
-                                }
-                            }
-                            else {
-                                int iNewLine = value.indexOf("\n");
-                                if (iNewLine != -1) {
-                                    XWPFRun run = xWPFParagraph.createRun();
-                                    run.setText(value.substring(0, iNewLine));
-                                    run.addCarriageReturn();
-                                    run.addTab();
-                                    run.setText(value.substring(iNewLine, value.length()));
-
-                                } else {
-                                    insertNewRun.setText(value);
-                                }
-                            }
-                        }
-                    }
+                    //设置文本或插入图像
+                    replacePicOrText(parametersMap.get(key.toString()),xWPFParagraph,insertNewRun);
                     xWPFParagraph.removeRun(beginRunIndex + 1);
                 } else {
                     // 该run标签为**{**}** 或者 **{**} 或者{**}**，替换key后，还需要加上原始key前后的文本
-                    XWPFRun insertNewRun = xWPFParagraph.insertNewRun(beginRunIndex);
-                    insertNewRun.getCTR().setRPr(beginRun.getCTR().getRPr());
                     // 设置文本
                     key.append(beginRunText.substring(beginRunText.indexOf("{")+1, beginRunText.indexOf("}")));
-                    String textString=beginRunText.substring(0, beginIndex) + getValueBykey(key.toString(),parametersMap)
-                            + beginRunText.substring(endIndex + 1);
-                    insertNewRun.setText(textString);
+//                    String textString=beginRunText.substring(0, beginIndex) + getValueBykey(key.toString(),parametersMap)
+//                            + beginRunText.substring(endIndex + 1);
+//                    insertNewRun.setText(textString);
+                    if(beginIndex!=0){
+                        //该run标签为**{**}** 或者 **{**}，先插入{前面的**
+                        String preText = beginRunText.substring(0, beginIndex);
+                        XWPFRun insertNewRun = xWPFParagraph.insertNewRun(beginRunIndex);
+                        insertNewRun.getCTR().setRPr(beginRun.getCTR().getRPr());
+                        insertNewRun.setText(preText);
+                    }
+                    //处理{**}内容的替换
+                    XWPFRun insertNewRun = xWPFParagraph.insertNewRun(beginRunIndex);
+                    insertNewRun.getCTR().setRPr(beginRun.getCTR().getRPr());
+                    //设置文本或插入图像
+                    replacePicOrText(parametersMap.get(key.toString()),xWPFParagraph,insertNewRun);
+                    //处理}后面的**
+                    if(endIndex != length - 1){
+                        //该run标签为**{**}** 或者{**}**
+                        String suffText = beginRunText.substring(endIndex + 1);
+                        insertNewRun = xWPFParagraph.insertNewRun(endRunIndex);
+                        insertNewRun.getCTR().setRPr(beginRun.getCTR().getRPr());
+                        // 设置文本
+                        insertNewRun.setText(suffText);
+                    }
                     xWPFParagraph.removeRun(beginRunIndex + 1);
                 }
 
@@ -442,15 +413,23 @@ public class WordTemplate {
                     XWPFRun insertNewRun = xWPFParagraph.insertNewRun(beginRunIndex);
                     insertNewRun.getCTR().setRPr(beginRun.getCTR().getRPr());
                     // 设置文本
-                    insertNewRun.setText(getValueBykey(key.toString(),parametersMap));
+//                    insertNewRun.setText(getValueBykey(key.toString(),parametersMap));
+                    replacePicOrText(parametersMap.get(key.toString()),xWPFParagraph,insertNewRun);
                     xWPFParagraph.removeRun(beginRunIndex + 1);//移除原始的run
                 }else {
                     // 该run标签为**{**或者 {** ，替换key后，还需要加上原始key前的文本
                     XWPFRun insertNewRun = xWPFParagraph.insertNewRun(beginRunIndex);
                     insertNewRun.getCTR().setRPr(beginRun.getCTR().getRPr());
                     // 设置文本
-                    String textString=beginRunText.substring(0,beginRunText.indexOf("{"))+getValueBykey(key.toString(),parametersMap);
+//                    String textString=beginRunText.substring(0,beginRunText.indexOf("{"))+getValueBykey(key.toString(),parametersMap);
+                    String textString=beginRunText.substring(0,beginRunText.indexOf("{"));
                     insertNewRun.setText(textString);
+
+                    insertNewRun = xWPFParagraph.insertNewRun(beginRunIndex);
+                    insertNewRun.getCTR().setRPr(beginRun.getCTR().getRPr());
+                    xWPFParagraph.removeRun(beginRunIndex + 1);//移除原始的run
+                    //设置文本或插入图像
+                    replacePicOrText(parametersMap.get(key.toString()),xWPFParagraph,insertNewRun);
                     xWPFParagraph.removeRun(beginRunIndex + 1);//移除原始的run
                 }
 
@@ -673,6 +652,59 @@ public class WordTemplate {
         return returnValue;
     }
 
+    //处理key的替换，文本替换or图片替换
+    private void replacePicOrText(Object oValue,XWPFParagraph xWPFParagraph,XWPFRun insertNewRun){
+
+        if(oValue instanceof StatChart) {//图表添加
+            StatChart chart = (StatChart)oValue ;
+            try {
+
+                InputStream input = new FileInputStream(chart.getFilePath());
+
+                insertNewRun.addPicture(input, getPictureType(chart.getFileType()),
+                        chart.getFilePath(), Units.toEMU(chart.getWidth()), Units.toEMU(chart.getHeight()));
+            } catch (InvalidFormatException | IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }else {//文本替换
+            String value = String.valueOf(oValue);
+            if(value!=""){
+                if(value.indexOf("<p>")!=-1){
+                    org.jsoup.nodes.Document document = Jsoup.parseBodyFragment(value);
+                    Elements paraEles = document.select("p");
+                    for(Element element: paraEles){
+                        XWPFRun run = xWPFParagraph.createRun();
+                        Elements boldElements = element.select("strong");
+                        if(boldElements.size()>0) {
+                            for (Element boldEle : boldElements) {
+                                run.getCTR().setRPr(insertNewRun.getCTR().getRPr());
+                                run.setText(element.text());
+
+                            }
+                        }else{
+                            //run.addTab();
+                            run.setText(element.text());
+                        }
+                        run.addCarriageReturn();
+                    }
+                }
+                else {
+                    int iNewLine = value.indexOf("\n");
+                    if (iNewLine != -1) {
+                        XWPFRun run = xWPFParagraph.createRun();
+                        run.setText(value.substring(0, iNewLine));
+                        run.addCarriageReturn();
+                        run.addTab();
+                        run.setText(value.substring(iNewLine, value.length()));
+
+                    } else {
+                        insertNewRun.setText(value);
+                    }
+                }
+            }
+        }
+    }
 
 
 
